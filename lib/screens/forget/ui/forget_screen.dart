@@ -8,6 +8,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import '../../../core/widgets/already_have_account_text.dart';
 import '../../../logic/cubit/auth_cubit.dart';
 import '../../../core/widgets/password_reset.dart';
+import '../../../routing/routes.dart';
 
 class ForgetScreen extends StatefulWidget {
   const ForgetScreen({super.key});
@@ -50,16 +51,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                 BlocConsumer<AuthCubit, AuthState>(
                   listenWhen: (previous, current) => previous != current,
                   listener: (context, state) async {
-                    if (state is AuthLoading) {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return const CircularProgressIndicator();
-                        },
-                      );
-                    } else if (state is AuthError) {
-                      Navigator.pop(context); // close the progress dialog
+                    if (state is AuthError) {
                       await AwesomeDialog(
                         context: context,
                         dialogType: DialogType.error,
@@ -68,14 +60,23 @@ class _ForgetScreenState extends State<ForgetScreen> {
                         desc: state.message,
                       ).show();
                     } else if (state is ResetPasswordSent) {
-                      Navigator.pop(context); // close the progress dialog
-                      AwesomeDialog(
+                      await AwesomeDialog(
                         context: context,
                         dialogType: DialogType.info,
                         animType: AnimType.rightSlide,
                         title: 'Reset Password',
                         desc:
                             'Link to reset password sent to your email, please check your inbox.',
+                        dismissOnTouchOutside: false,
+                        dismissOnBackKeyPress: false,
+                        btnOkText: 'OK',
+                        btnOkOnPress: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            Routes.loginScreen,
+                            (Route<dynamic> route) => false,
+                          );
+                        },
                       ).show();
                     }
                   },
@@ -87,7 +88,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                       children: [
                         const PasswordReset(),
                         Gap(24.h),
-                        const AlreadyHaveAccountText(), // Moved here to be directly below the reset functionality
+                        const AlreadyHaveAccountText(),
                       ],
                     );
                   },
@@ -103,6 +104,5 @@ class _ForgetScreenState extends State<ForgetScreen> {
   @override
   void initState() {
     super.initState();
-    // No need to call BlocProvider.of here if you're not using it immediately
   }
 }
