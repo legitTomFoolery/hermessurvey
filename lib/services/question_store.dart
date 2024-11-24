@@ -36,8 +36,8 @@ class QuestionStore extends ChangeNotifier {
           newQuestions.add(doc.data());
         }
 
-        // Sort questions by name
-        newQuestions.sort((a, b) => a.name.compareTo(b.name));
+        // Sort questions by document ID
+        newQuestions.sort((a, b) => a.id.compareTo(b.id));
 
         // Update questions list
         _questions

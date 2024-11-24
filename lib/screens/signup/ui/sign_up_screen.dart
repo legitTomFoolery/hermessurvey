@@ -41,6 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
+    bool isDialogShowing = false;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
@@ -65,15 +66,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   listener: (context, state) async {
                     if (state is UserSingupButNotVerified) {
                       _showVerificationDialog();
-                    } else if (state is AuthError) {
-                      AwesomeDialog(
+                    } else if (state is AuthError && !isDialogShowing) {
+                      isDialogShowing = true;
+                      await AwesomeDialog(
                         context: context,
                         dialogType: DialogType.error,
                         animType: AnimType.rightSlide,
                         title: 'Error',
                         desc: state.message,
                         btnOkText: 'OK',
-                        btnOkOnPress: () {},
+                        btnOkOnPress: () {
+                          isDialogShowing = false;
+                        },
                       ).show();
                     }
                   },

@@ -3,8 +3,8 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gsecsurvey/screens/home/question_card.dart';
-import 'package:gsecsurvey/screens/home/submission_result_screen.dart';
 import 'package:gsecsurvey/services/question_store.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,27 +60,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Future<void> _handleLogout(BuildContext context) async {
-    try {
-      final authCubit = context.read<AuthCubit>();
-      await authCubit.signOut();
-      if (!mounted) return;
-
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        Routes.loginScreen,
-        (Route<dynamic> route) => false,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error signing out: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   Future<void> _checkAccountAndProceed() async {
     final authCubit = context.read<AuthCubit>();
     bool accountExists = await authCubit.checkUserAccountExists();
@@ -91,7 +70,7 @@ class _HomeState extends State<Home> {
         context: context,
         builder: (BuildContext context) {
           return AccountNotExistsPopup(
-            onLogout: () => _handleLogout(context),
+            onLogout: () => context.read<AuthCubit>().signOut(),
           );
         },
       );
@@ -128,11 +107,9 @@ class _HomeState extends State<Home> {
               responses.clear();
             });
             if (!mounted) return;
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SubmissionResultScreen(),
-              ),
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/submission_result',
+              (Route<dynamic> route) => false,
             );
           }).catchError((error) {
             print("Failed to upload responses: $error");
@@ -150,79 +127,89 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
 
-    return Scaffold(
-      backgroundColor: theme.colorScheme.tertiary,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        leading: Container(),
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: 200,
-            ),
-            child: Text(
-              'Feedback Evaluation Tool',
-              style: theme.textTheme.displayLarge?.copyWith(
-                color: theme.colorScheme.onPrimary,
-                fontSize: 22,
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is UserSignedOut) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            Routes.loginScreen,
+            (Route<dynamic> route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: theme.colorScheme.tertiary,
+        appBar: AppBar(
+          backgroundColor: theme.colorScheme.primary,
+          leading: Container(),
+          title: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 200,
               ),
-              textAlign: TextAlign.center,
+              child: Text(
+                'Feedback Evaluation Tool',
+                style: theme.textTheme.displayLarge?.copyWith(
+                  color: theme.colorScheme.onPrimary,
+                  fontSize: 22,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
+          centerTitle: true,
+          actions: [
+            SizedBox(
+              width: 48,
+              child: IconButton(
+                icon: Icon(
+                  Icons.logout,
+                  color: theme.colorScheme.onPrimary,
+                  size: 20,
+                ),
+                onPressed: () => context.read<AuthCubit>().signOut(),
+              ),
+            ),
+          ],
         ),
-        centerTitle: true,
-        actions: [
-          SizedBox(
-            width: 48,
-            child: IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: theme.colorScheme.onPrimary,
-                size: 20,
-              ),
-              onPressed: () => _handleLogout(context),
-            ),
-          ),
-        ],
-      ),
-      body: Consumer<QuestionStore>(
-        builder: (context, questionStore, child) {
-          return Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ListView.builder(
-                    key: const PageStorageKey('question_list'),
-                    itemCount: questionStore.questions.length,
-                    itemBuilder: (context, index) {
-                      final question = questionStore.questions[index];
-                      return QuestionCard(
-                        key: ValueKey(question.id),
-                        question: question,
-                        onResponse: _updateResponse,
-                        initialResponse: responses[question.id],
-                      );
-                    },
+        body: Consumer<QuestionStore>(
+          builder: (context, questionStore, child) {
+            return Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ListView.builder(
+                      key: const PageStorageKey('question_list'),
+                      itemCount: questionStore.questions.length,
+                      itemBuilder: (context, index) {
+                        final question = questionStore.questions[index];
+                        return QuestionCard(
+                          key: ValueKey(question.id),
+                          question: question,
+                          onResponse: _updateResponse,
+                          initialResponse: responses[question.id],
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                width: double.infinity,
-                color: theme.colorScheme.secondary,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildProgressBar(theme),
-                    _buildSubmitButton(theme),
-                  ],
+                Container(
+                  width: double.infinity,
+                  color: theme.colorScheme.secondary,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildProgressBar(theme),
+                      _buildSubmitButton(theme),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
