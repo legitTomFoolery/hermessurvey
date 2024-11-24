@@ -3,6 +3,7 @@ import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/services/response_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:intl/intl.dart';
 
 class QuestionCard extends StatefulWidget {
   final Question question;
@@ -23,6 +24,7 @@ class QuestionCard extends StatefulWidget {
 class _QuestionCardState extends State<QuestionCard> {
   String? _selectedOption;
   final TextEditingController _textController = TextEditingController();
+  final _dateFormat = DateFormat('yyyy-MM-dd');
 
   @override
   void initState() {
@@ -37,65 +39,89 @@ class _QuestionCardState extends State<QuestionCard> {
     }
   }
 
+  List<DropdownMenuItem<String>> _buildDropdownItems(
+      List<String> options, ThemeData theme) {
+    List<String> sortedOptions = List.from(options)..sort();
+    return sortedOptions.map<DropdownMenuItem<String>>((String value) {
+      return DropdownMenuItem<String>(
+        value: value,
+        child: Text(
+          value,
+          style: TextStyle(color: theme.colorScheme.shadow),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
+    final responseProvider = Provider.of<ResponseProvider>(context);
 
-    return Card(
-      color: theme.colorScheme.secondary,
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary,
+        borderRadius: BorderRadius.circular(4.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
-            Text(
-              widget.question.name,
-              style: theme.textTheme.displayLarge?.copyWith(
-                color: theme.colorScheme.onSecondary,
-                fontSize: 16,
+            Center(
+              child: Text(
+                widget.question.name,
+                style: theme.textTheme.displayLarge?.copyWith(
+                  color: theme.colorScheme.onSecondary,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-            Consumer<ResponseProvider>(
-              builder: (context, responseProvider, child) {
-                return _buildResponseWidget(responseProvider);
-              },
-            ),
+            const SizedBox(height: 8),
+            _buildResponseWidget(responseProvider, theme),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildResponseWidget(ResponseProvider responseProvider) {
-    final theme = AdaptiveTheme.of(context).theme;
+  Widget _buildResponseWidget(
+      ResponseProvider responseProvider, ThemeData theme) {
     switch (widget.question.type) {
       case 'radio':
       case 'yesNo':
-        return _buildRadioButtons();
+        return _buildRadioButtons(theme);
       case 'dropdown':
-        return _buildDropdown(widget.question.options);
+        return _buildDropdown(widget.question.options, theme);
       case 'rotation':
         return _buildDropdown(
-            widget.question.rotationDetails?.keys.toList() ?? [],
-            isRotation: true);
+          widget.question.rotationDetails?.keys.toList() ?? [],
+          theme,
+          isRotation: true,
+        );
       case 'attending':
         return responseProvider.attendings.isNotEmpty
-            ? _buildDropdown(responseProvider.attendings, isAttending: true)
-            : Text(
-                'Please select a rotation first.',
-                style: theme.textTheme.displayLarge?.copyWith(
-                  color: theme.colorScheme.shadow,
+            ? _buildDropdown(responseProvider.attendings, theme,
+                isAttending: true)
+            : Center(
+                child: Text(
+                  'Please select a rotation first.',
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.colorScheme.shadow,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               );
       case 'date':
-        return _buildDatePicker();
+        return _buildDatePicker(theme);
       default:
-        return _buildTextField();
+        return _buildTextField(theme);
     }
   }
 
-  Widget _buildRadioButtons() {
-    final theme = AdaptiveTheme.of(context).theme;
+  Widget _buildRadioButtons(ThemeData theme) {
     return Column(
       children: widget.question.options.map((option) {
         return RadioListTile<String>(
@@ -109,45 +135,42 @@ class _QuestionCardState extends State<QuestionCard> {
           groupValue: _selectedOption,
           activeColor: theme.colorScheme.primary,
           onChanged: (value) {
-            setState(() {
-              _selectedOption = value;
-              widget.onResponse(widget.question.id, value!);
-            });
+            if (value != null) {
+              setState(() {
+                _selectedOption = value;
+                widget.onResponse(widget.question.id, value);
+              });
+            }
           },
         );
       }).toList(),
     );
   }
 
-  Widget _buildTextField() {
-    final theme = AdaptiveTheme.of(context).theme;
-
+  Widget _buildTextField(ThemeData theme) {
     return Padding(
-      padding:
-          const EdgeInsets.only(top: 8.0), // Adds padding above the TextField
+      padding: const EdgeInsets.only(top: 8.0),
       child: TextField(
         controller: _textController,
-        cursorColor:
-            theme.colorScheme.primary, // Sets the cursor color to primary color
+        cursorColor: theme.colorScheme.primary,
+        textAlign: TextAlign.center,
         decoration: InputDecoration(
           labelText: 'Your Answer',
-          labelStyle:
-              TextStyle(color: theme.colorScheme.shadow), // Custom label color
+          alignLabelWithHint: true,
+          labelStyle: TextStyle(color: theme.colorScheme.shadow),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: theme
-                  .colorScheme.surface, // Custom border color when not focused
+              color: theme.colorScheme.surface,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color:
-                  theme.colorScheme.primary, // Custom border color when focused
+              color: theme.colorScheme.primary,
             ),
           ),
-          border: const OutlineInputBorder(), // Default border style
+          border: const OutlineInputBorder(),
         ),
-        style: TextStyle(color: theme.colorScheme.shadow), // Custom text color
+        style: TextStyle(color: theme.colorScheme.shadow),
         onChanged: (value) {
           widget.onResponse(widget.question.id, value);
         },
@@ -155,101 +178,90 @@ class _QuestionCardState extends State<QuestionCard> {
     );
   }
 
-  Widget _buildDropdown(List<String> options,
+  Widget _buildDropdown(List<String> options, ThemeData theme,
       {bool isRotation = false, bool isAttending = false}) {
-    final theme = AdaptiveTheme.of(context).theme;
-
-    // Sort the options list alphabetically
-    List<String> sortedOptions = List.from(options)..sort();
-
-    if (isAttending && !sortedOptions.contains(_selectedOption)) {
+    if (isAttending && !options.contains(_selectedOption)) {
       _selectedOption = null;
     }
 
-    return Theme(
-      data: Theme.of(context).copyWith(
-        canvasColor: theme.colorScheme.surface, // Dropdown background color
-        primaryColor:
-            theme.colorScheme.primary, // Item text color when selected
-        textTheme: theme.textTheme,
-        iconTheme: IconThemeData(
-          color: theme.colorScheme.onSecondary, // Dropdown arrow icon color
+    return Center(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          canvasColor: theme.colorScheme.surface,
+          primaryColor: theme.colorScheme.primary,
+          textTheme: theme.textTheme,
+          iconTheme: IconThemeData(
+            color: theme.colorScheme.onSecondary,
+          ),
         ),
-      ),
-      child: DropdownButton<String>(
-        value: _selectedOption,
-        hint: Text(
-          'Select Option',
-          style: TextStyle(color: theme.colorScheme.shadow), // Hint text color
-        ),
-        onChanged: (String? newValue) {
-          setState(() {
-            _selectedOption = newValue;
-            widget.onResponse(widget.question.id, newValue!);
-            if (isRotation) {
-              context.read<ResponseProvider>().clearResponse('attending');
-              context.read<ResponseProvider>().updateAttendings(
-                  widget.question.rotationDetails?[newValue] ?? []);
+        child: DropdownButton<String>(
+          value: _selectedOption,
+          hint: Text(
+            'Select Option',
+            style: TextStyle(color: theme.colorScheme.shadow),
+            textAlign: TextAlign.center,
+          ),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _selectedOption = newValue;
+                widget.onResponse(widget.question.id, newValue);
+                if (isRotation) {
+                  final provider = context.read<ResponseProvider>();
+                  provider.clearResponse('attending');
+                  provider.updateAttendings(
+                      widget.question.rotationDetails?[newValue] ?? []);
+                }
+              });
             }
-          });
-        },
-        items: sortedOptions.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(
-              value,
-              style: TextStyle(color: theme.colorScheme.shadow),
-            ),
-          );
-        }).toList(),
+          },
+          items: _buildDropdownItems(options, theme),
+        ),
       ),
     );
   }
 
-  Widget _buildDatePicker() {
-    final theme = AdaptiveTheme.of(context).theme;
-    return Column(
-      children: [
-        TextButton(
-          onPressed: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-              builder: (context, child) {
-                return Theme(
-                  data: theme.copyWith(
-                    colorScheme:
-                        AdaptiveTheme.of(context).theme.colorScheme.copyWith(
-                              primary: theme.colorScheme.primary,
-                              shadow: theme.colorScheme
-                                  .shadow, // Customize this to change the text color
-                              surface: theme.colorScheme.secondary,
-                              onSurface: theme.colorScheme.shadow,
-                            ),
+  Widget _buildDatePicker(ThemeData theme) {
+    return Center(
+      child: TextButton(
+        onPressed: () async {
+          final DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2100),
+            builder: (context, child) {
+              return Theme(
+                data: theme.copyWith(
+                  colorScheme: theme.colorScheme.copyWith(
+                    primary: theme.colorScheme.primary,
+                    shadow: theme.colorScheme.shadow,
+                    surface: theme.colorScheme.secondary,
+                    onSurface: theme.colorScheme.shadow,
                   ),
-                  child: child!,
-                );
-              },
-            );
-            if (pickedDate != null) {
-              setState(() {
-                _selectedOption = "${pickedDate.toLocal()}"
-                    .split(' ')[0]; // Format date as YYYY-MM-DD
-                widget.onResponse(widget.question.id, _selectedOption!);
-              });
-            }
-          },
-          child: Text(
-            _selectedOption == null ? 'Select Date' : _selectedOption!,
-            style: theme.textTheme.displayLarge?.copyWith(
-              color: theme.colorScheme.shadow,
-              fontSize: 16,
-            ),
+                ),
+                child: child!,
+              );
+            },
+          );
+
+          if (pickedDate != null) {
+            final formattedDate = _dateFormat.format(pickedDate);
+            setState(() {
+              _selectedOption = formattedDate;
+              widget.onResponse(widget.question.id, formattedDate);
+            });
+          }
+        },
+        child: Text(
+          _selectedOption ?? 'Select Date',
+          style: theme.textTheme.displayLarge?.copyWith(
+            color: theme.colorScheme.shadow,
+            fontSize: 16,
           ),
+          textAlign: TextAlign.center,
         ),
-      ],
+      ),
     );
   }
 

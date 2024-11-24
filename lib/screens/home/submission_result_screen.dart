@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/screens/home/home.dart'; // Ensure you import Home
+import 'package:gsecsurvey/screens/home/home.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:provider/provider.dart';
+import '../../logic/cubit/auth_cubit.dart';
+import '../../routing/routes.dart';
 
 class SubmissionResultScreen extends StatelessWidget {
   const SubmissionResultScreen({super.key});
@@ -8,9 +11,31 @@ class SubmissionResultScreen extends StatelessWidget {
   void _submitNewResponse(BuildContext context) {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const Home()),
+      MaterialPageRoute(
+        builder: (context) => const Home(),
+        maintainState: false,
+      ),
       (Route<dynamic> route) => false,
     );
+  }
+
+  Future<void> _handleLogout(BuildContext context) async {
+    try {
+      final authCubit = context.read<AuthCubit>();
+      await authCubit.signOut();
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        Routes.loginScreen,
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error signing out: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -18,20 +43,42 @@ class SubmissionResultScreen extends StatelessWidget {
     final theme = AdaptiveTheme.of(context).theme;
 
     return Scaffold(
-      backgroundColor: theme
-          .colorScheme.secondary, // Set the background color of the scaffold
+      backgroundColor: theme.colorScheme.secondary,
       appBar: AppBar(
-        title: Text(
-          'Feedback Evaluation Tool',
-          style: theme.textTheme.displayLarge?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontSize: 22,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        automaticallyImplyLeading: false, // Remove the back arrow
-        centerTitle: true,
         backgroundColor: theme.colorScheme.primary,
+        leading: Container(),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: 200,
+            ),
+            child: Text(
+              'Feedback Evaluation Tool',
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.onPrimary,
+                fontSize: 22,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        actions: [
+          SizedBox(
+            width: 48,
+            child: IconButton(
+              icon: Icon(
+                Icons.logout,
+                color: theme.colorScheme.onPrimary,
+                size: 20,
+              ),
+              onPressed: () => _handleLogout(context),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -50,14 +97,12 @@ class SubmissionResultScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _submitNewResponse(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme
-                    .primary, // Button background color when enabled
-                disabledBackgroundColor: theme.colorScheme
-                    .tertiary, // Button background color when disabled
+                backgroundColor: theme.colorScheme.primary,
+                disabledBackgroundColor: theme.colorScheme.tertiary,
               ),
-              child: const Text(
+              child: Text(
                 'Submit New Response',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.colorScheme.onPrimary),
               ),
             ),
           ],

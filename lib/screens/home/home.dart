@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -7,6 +8,9 @@ import 'package:gsecsurvey/screens/home/submission_result_screen.dart';
 import 'package:gsecsurvey/services/question_store.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../logic/cubit/auth_cubit.dart';
+import '../../routing/routes.dart';
+import '../../widgets/account_not_exists_popup.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,55 +20,106 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Map<String, String> responses = {};
+  final Map<String, String> responses = {};
   bool isOnline = false;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<QuestionStore>(context, listen: false).fetchQuestionsOnce();
     _checkConnectivity();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _initializeQuestions();
+      _isInitialized = true;
+    }
+  }
+
+  void _initializeQuestions() {
+    final questionStore = Provider.of<QuestionStore>(context, listen: false);
+    questionStore.reset();
+    questionStore.fetchQuestionsOnce();
   }
 
   void _checkConnectivity() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     _updateConnectionStatus(connectivityResult);
-    Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
   void _updateConnectionStatus(ConnectivityResult result) {
+    if (!mounted) return;
     setState(() {
       isOnline = result != ConnectivityResult.none;
     });
+  }
+
+  Future<void> _handleLogout(BuildContext context) async {
+    try {
+      final authCubit = context.read<AuthCubit>();
+      await authCubit.signOut();
+      if (!mounted) return;
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        Routes.loginScreen,
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error signing out: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _checkAccountAndProceed() async {
+    final authCubit = context.read<AuthCubit>();
+    bool accountExists = await authCubit.checkUserAccountExists();
+
+    if (!accountExists) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AccountNotExistsPopup(
+            onLogout: () => _handleLogout(context),
+          );
+        },
+      );
+    } else {
+      _uploadResponses();
+    }
   }
 
   void _uploadResponses() async {
     if (_allQuestionsAnswered()) {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null && user.email != null) {
-        String userEmail =
-            user.email!; // Safely use the email as it's non-null here
+        String userEmail = user.email!;
 
-        // Reference to the user's document in the `userSubmissions` collection
         DocumentReference userDoc = FirebaseFirestore.instance
             .collection('userSubmissions')
             .doc(userEmail);
 
         FirebaseFirestore.instance.runTransaction((transaction) async {
-          // Get the document
           DocumentSnapshot snapshot = await transaction.get(userDoc);
 
-          // Check if document exists
           if (snapshot.exists) {
-            // Increment the submission count
             int currentCount = snapshot.get('submissionCount') as int;
             transaction.update(userDoc, {'submissionCount': currentCount + 1});
           } else {
-            // Create the document with submissionCount set to 1
             transaction.set(userDoc, {'submissionCount': 1});
           }
         }).then((value) {
-          // Continue with your existing code to upload responses
           FirebaseFirestore.instance.collection('surveyResponses').add({
             'responses': responses,
             'timestamp': FieldValue.serverTimestamp(),
@@ -72,7 +127,8 @@ class _HomeState extends State<Home> {
             setState(() {
               responses.clear();
             });
-            Navigator.push(
+            if (!mounted) return;
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => const SubmissionResultScreen(),
@@ -85,30 +141,9 @@ class _HomeState extends State<Home> {
           print("Failed to update submission count: $error");
         });
       } else {
-        // Handle the case where there is no user or email is not available
         print("No user logged in or email not available");
       }
     }
-  }
-
-  void _showConnectivityError() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('No Internet Connection'),
-          content: const Text('You need to be online to submit the responses.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -118,50 +153,76 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: theme.colorScheme.tertiary,
       appBar: AppBar(
-        title: Text(
-          'Feedback Evaluation Tool',
-          style: theme.textTheme.displayLarge?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontSize: 22,
+        backgroundColor: theme.colorScheme.primary,
+        leading: Container(),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: 200,
+            ),
+            child: Text(
+              'Feedback Evaluation Tool',
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.onPrimary,
+                fontSize: 22,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         centerTitle: true,
-        backgroundColor: theme.colorScheme.primary,
+        actions: [
+          SizedBox(
+            width: 48,
+            child: IconButton(
+              icon: Icon(
+                Icons.logout,
+                color: theme.colorScheme.onPrimary,
+                size: 20,
+              ),
+              onPressed: () => _handleLogout(context),
+            ),
+          ),
+        ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Consumer<QuestionStore>(
-                builder: (context, questionStore, child) {
-                  return ListView.builder(
+      body: Consumer<QuestionStore>(
+        builder: (context, questionStore, child) {
+          return Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ListView.builder(
+                    key: const PageStorageKey('question_list'),
                     itemCount: questionStore.questions.length,
                     itemBuilder: (context, index) {
                       final question = questionStore.questions[index];
                       return QuestionCard(
+                        key: ValueKey(question.id),
                         question: question,
                         onResponse: _updateResponse,
                         initialResponse: responses[question.id],
                       );
                     },
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            color: theme.colorScheme.secondary,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildProgressBar(theme),
-                _buildSubmitButton(theme),
-              ],
-            ),
-          ),
-        ],
+              Container(
+                width: double.infinity,
+                color: theme.colorScheme.secondary,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildProgressBar(theme),
+                    _buildSubmitButton(theme),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -213,7 +274,7 @@ class _HomeState extends State<Home> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: ElevatedButton(
-        onPressed: allAnswered && isOnline ? _uploadResponses : null,
+        onPressed: allAnswered && isOnline ? _checkAccountAndProceed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: allAnswered && isOnline
               ? theme.colorScheme.primary
@@ -246,5 +307,11 @@ class _HomeState extends State<Home> {
     setState(() {
       responses[questionId] = response;
     });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
   }
 }

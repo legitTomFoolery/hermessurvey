@@ -4,35 +4,69 @@ import 'package:gsecsurvey/services/firestore_service.dart';
 
 class QuestionStore extends ChangeNotifier {
   final List<Question> _questions = [];
+  bool _hasLoaded = false;
+  bool _isLoading = false;
 
-  get questions => _questions;
+  List<Question> get questions => List.unmodifiable(_questions);
+  bool get isLoading => _isLoading;
 
-  // add question
   void addQuestion(Question question) async {
     await FirestoreService.addQuestion(question);
-
     _questions.add(question);
     notifyListeners();
   }
 
-  // remove question
   void removeQuestion(Question question) async {
     await FirestoreService.deleteQuestion(question);
-
     _questions.remove(question);
     notifyListeners();
   }
 
-  // initially fetch questions
-  void fetchQuestionsOnce() async {
-    if (questions.length == 0) {
-      final snapshot = await FirestoreService.getQuestionsOnce();
-
-      for (var doc in snapshot.docs) {
-        _questions.add(doc.data());
-      }
-
+  Future<void> fetchQuestionsOnce() async {
+    if (!_hasLoaded && !_isLoading) {
+      _isLoading = true;
       notifyListeners();
+
+      try {
+        _questions.clear();
+        final snapshot = await FirestoreService.getQuestionsOnce();
+
+        final List<Question> newQuestions = [];
+        for (var doc in snapshot.docs) {
+          newQuestions.add(doc.data());
+        }
+
+        // Sort questions by name
+        newQuestions.sort((a, b) => a.name.compareTo(b.name));
+
+        // Update questions list
+        _questions
+          ..clear()
+          ..addAll(newQuestions);
+
+        _hasLoaded = true;
+      } catch (e) {
+        print('Error fetching questions: $e');
+        _hasLoaded = false;
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
+  }
+
+  void reset() {
+    _questions.clear();
+    _hasLoaded = false;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _questions.clear();
+    _hasLoaded = false;
+    _isLoading = false;
+    super.dispose();
   }
 }

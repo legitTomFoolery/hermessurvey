@@ -13,9 +13,9 @@ class FirestoreService {
     await ref.doc(question.id).set(question);
   }
 
-  // get questions once
+  // get questions once with ordering
   static Future<QuerySnapshot<Question>> getQuestionsOnce() {
-    return ref.get();
+    return ref.orderBy('name').get();
   }
 
   // delete a question

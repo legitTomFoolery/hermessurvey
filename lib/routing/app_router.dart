@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:provider/provider.dart';
 import '../logic/cubit/auth_cubit.dart';
 import '../screens/create_password/ui/create_password.dart';
 import '../screens/forget/ui/forget_screen.dart';
 import '../screens/home/home.dart';
 import '../screens/login/ui/login_screen.dart';
 import '../screens/signup/ui/sign_up_sceen.dart';
+import '../services/question_store.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -16,7 +17,7 @@ class AppRouter {
     authCubit = AuthCubit();
   }
 
-  Route? generateRoute(RouteSettings settings) {
+  Route generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.forgetScreen:
         return MaterialPageRoute(
@@ -28,12 +29,15 @@ class AppRouter {
 
       case Routes.homeScreen:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: authCubit,
-            child: const MaterialApp(
-              home: Home(),
-            ),
-          ),
+          builder: (context) {
+            // Reset QuestionStore when navigating to home
+            Provider.of<QuestionStore>(context, listen: false).reset();
+            return BlocProvider.value(
+              value: authCubit,
+              child: const Home(),
+            );
+          },
+          maintainState: false,
         );
 
       case Routes.createPassword:
@@ -49,6 +53,7 @@ class AppRouter {
             ),
           );
         }
+        return _errorRoute();
 
       case Routes.signupScreen:
         return MaterialPageRoute(
@@ -59,13 +64,34 @@ class AppRouter {
         );
 
       case Routes.loginScreen:
+      case '/':
+      case '/login':
         return MaterialPageRoute(
           builder: (_) => BlocProvider.value(
             value: authCubit,
             child: const LoginScreen(),
           ),
         );
+
+      default:
+        return _errorRoute();
     }
-    return null;
+  }
+
+  Route _errorRoute() {
+    return MaterialPageRoute(
+      builder: (_) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Error'),
+        ),
+        body: const Center(
+          child: Text('Page not found'),
+        ),
+      ),
+    );
+  }
+
+  void dispose() {
+    authCubit.close();
   }
 }

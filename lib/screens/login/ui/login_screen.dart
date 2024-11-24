@@ -5,6 +5,7 @@ import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/widgets/login_and_signup_animated_form.dart';
 import '../../../core/widgets/no_internet.dart';
 import '../../../core/widgets/progress_indicator.dart';
@@ -25,29 +26,55 @@ class _LoginScreenState extends State<LoginScreen> {
   final RiveAnimationControllerHelper riveHelper =
       RiveAnimationControllerHelper();
 
+  Future<void> _launchDeleteAccountURL() async {
+    final Uri url = Uri.parse(
+        'https://goodmancenter.stanford.edu/research/feedback-evaluation-app.html');
+    try {
+      if (!await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      )) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open delete account page'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening link: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = AdaptiveTheme.of(context).theme; // Access the adaptive theme
+    final theme = AdaptiveTheme.of(context).theme;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.secondary, // Use theme colors
+      backgroundColor: theme.colorScheme.secondary,
       body: OfflineBuilder(
         connectivityBuilder: (
           BuildContext context,
-          ConnectivityResult
-              connectivity, // Changed this from List<ConnectivityResult> to ConnectivityResult
+          ConnectivityResult connectivity,
           Widget child,
         ) {
-          final bool connected = connectivity !=
-              ConnectivityResult
-                  .none; // Adjust this check based on the current ConnectivityResult
+          final bool connected = connectivity != ConnectivityResult.none;
           return connected
               ? _loginPage(context, theme)
-              : const BuildNoInternet(); // Display the no internet widget if not connected
+              : const BuildNoInternet();
         },
         child: Center(
           child: CircularProgressIndicator(
-            color: theme.colorScheme.primary, // Use theme color
+            color: theme.colorScheme.primary,
           ),
         ),
       ),
@@ -113,9 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'GSEC Survey Login', // Header Text
+                          'GSEC Survey Login',
                           style: TextStyle(
-                            fontSize: 28, // Larger text for the app name
+                            fontSize: 28,
                             color: theme.colorScheme.onSecondary,
                           ),
                         ),
@@ -125,6 +152,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   EmailAndPassword(),
                   Gap(15.h),
                   const DoNotHaveAccountText(),
+                  Gap(20.h),
+                  TextButton(
+                    onPressed: _launchDeleteAccountURL,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    ),
+                    child: Text(
+                      'Delete my account',
+                      style: TextStyle(
+                        color: theme.colorScheme.error,
+                        decoration: TextDecoration.underline,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ],
               );
             },

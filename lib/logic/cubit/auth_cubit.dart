@@ -68,10 +68,8 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthError('Google Sign In Failed'));
         return;
       }
-      // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -79,9 +77,7 @@ class AuthCubit extends Cubit<AuthState> {
       final UserCredential authResult =
           await _auth.signInWithCredential(credential);
       if (authResult.additionalUserInfo!.isNewUser) {
-        // Delete the user account if it is a new user to Create it automatically in Next Screen
         await _auth.currentUser!.delete();
-
         emit(IsNewUser(googleUser: googleUser, credential: credential));
       } else {
         emit(UserSignIn());
@@ -109,6 +105,44 @@ class AuthCubit extends Cubit<AuthState> {
       emit(UserSingupButNotVerified());
     } catch (e) {
       emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<bool> checkUserAccountExists() async {
+    try {
+      // Get current user
+      User? user = _auth.currentUser;
+      if (user == null) return false;
+
+      // Try to reload user data from Firebase
+      await user.reload();
+
+      // Get fresh user instance after reload
+      user = _auth.currentUser;
+      if (user == null) return false;
+
+      // Verify email if using email/password auth
+      if (!user.providerData.any((info) => info.providerId == 'google.com') &&
+          !user.emailVerified) {
+        return false;
+      }
+
+      // Verify token hasn't expired
+      String? token = await user.getIdToken(true);
+      return token != null;
+    } on FirebaseAuthException catch (e) {
+      // Handle specific Firebase Auth errors
+      if (e.code == 'user-token-expired' ||
+          e.code == 'user-not-found' ||
+          e.code == 'user-disabled') {
+        return false;
+      }
+      // Re-throw unexpected Firebase Auth errors
+      rethrow;
+    } catch (e) {
+      // Handle any other errors
+      print('Error checking user account: $e');
+      return false;
     }
   }
 }
