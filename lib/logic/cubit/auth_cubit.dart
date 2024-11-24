@@ -10,6 +10,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit() : super(AuthInitial());
 
+  void resetState() {
+    emit(AuthInitial());
+  }
+
   Future<void> createAccountAndLinkItWithGoogleAccount(
       String email,
       String password,
@@ -53,7 +57,6 @@ class AuthCubit extends Cubit<AuthState> {
       } else {
         await _auth.signOut();
         emit(AuthError('Email not verified. Please check your email.'));
-        emit(UserNotVerified());
       }
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -95,14 +98,27 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signUpWithEmail(
       String name, String email, String password) async {
-    emit(AuthLoading());
     try {
+      // First check if email exists
+      var methods = await _auth.fetchSignInMethodsForEmail(email);
+      if (methods.isNotEmpty) {
+        emit(AuthError('Email already in use'));
+        return;
+      }
+
+      emit(AuthLoading());
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       await _auth.currentUser!.updateDisplayName(name);
       await _auth.currentUser!.sendEmailVerification();
       await _auth.signOut();
       emit(UserSingupButNotVerified());
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        emit(AuthError('Email already in use'));
+      } else {
+        emit(AuthError(e.message ?? 'An error occurred'));
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -110,37 +126,29 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<bool> checkUserAccountExists() async {
     try {
-      // Get current user
       User? user = _auth.currentUser;
       if (user == null) return false;
 
-      // Try to reload user data from Firebase
       await user.reload();
 
-      // Get fresh user instance after reload
       user = _auth.currentUser;
       if (user == null) return false;
 
-      // Verify email if using email/password auth
       if (!user.providerData.any((info) => info.providerId == 'google.com') &&
           !user.emailVerified) {
         return false;
       }
 
-      // Verify token hasn't expired
       String? token = await user.getIdToken(true);
       return token != null;
     } on FirebaseAuthException catch (e) {
-      // Handle specific Firebase Auth errors
       if (e.code == 'user-token-expired' ||
           e.code == 'user-not-found' ||
           e.code == 'user-disabled') {
         return false;
       }
-      // Re-throw unexpected Firebase Auth errors
       rethrow;
     } catch (e) {
-      // Handle any other errors
       print('Error checking user account: $e');
       return false;
     }

@@ -41,7 +41,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
-    bool isDialogShowing = false;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
@@ -63,12 +62,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 BlocConsumer<AuthCubit, AuthState>(
                   buildWhen: (previous, current) => previous != current,
                   listenWhen: (previous, current) => previous != current,
-                  listener: (context, state) async {
+                  listener: (context, state) {
                     if (state is UserSingupButNotVerified) {
                       _showVerificationDialog();
-                    } else if (state is AuthError && !isDialogShowing) {
-                      isDialogShowing = true;
-                      await AwesomeDialog(
+                    } else if (state is AuthError) {
+                      AwesomeDialog(
                         context: context,
                         dialogType: DialogType.error,
                         animType: AnimType.rightSlide,
@@ -76,8 +74,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         desc: state.message,
                         btnOkText: 'OK',
                         btnOkOnPress: () {
-                          isDialogShowing = false;
+                          // Navigate using named route which will properly provide the AuthCubit
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            Routes.signupScreen,
+                            (route) => false,
+                          );
                         },
+                        dismissOnTouchOutside: false,
+                        dismissOnBackKeyPress: false,
                       ).show();
                     }
                   },
