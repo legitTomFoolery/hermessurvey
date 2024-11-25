@@ -30,6 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       title: 'Verification Email Sent',
       desc: 'Please check your email for a verification link.',
       btnOkText: 'Return to Login',
+      btnOkColor: AdaptiveTheme.of(context).theme.colorScheme.primary,
       btnOkOnPress: () {
         Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
       },
@@ -85,6 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         dismissOnTouchOutside: false,
                         dismissOnBackKeyPress: false,
+                        btnOkColor: theme.colorScheme.primary,
                       ).show();
                     } else if (state is AuthError) {
                       AwesomeDialog(
@@ -94,6 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         title: 'Error',
                         desc: state.message,
                         btnOkText: 'OK',
+                        btnOkColor: theme.colorScheme.primary,
                         btnOkOnPress: () {
                           Navigator.pushNamedAndRemoveUntil(
                             context,

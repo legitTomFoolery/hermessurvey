@@ -105,6 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: 'Error',
                   desc: 'Invalid email/password, please try again.',
                   btnOkText: 'OK',
+                  btnOkColor: theme.colorScheme.primary,
                   btnOkOnPress: () {
                     context.read<AuthCubit>().resetState();
                     Navigator.pushNamedAndRemoveUntil(
@@ -134,6 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: 'Email Not Verified',
                   desc: 'Please check your email and verify your account.',
                   btnOkText: 'OK',
+                  btnOkColor: theme.colorScheme.primary,
                   btnOkOnPress: () {
                     context.read<AuthCubit>().resetState();
                     Navigator.pushNamedAndRemoveUntil(

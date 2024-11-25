@@ -58,6 +58,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                         animType: AnimType.rightSlide,
                         title: 'Error',
                         desc: state.message,
+                        btnOkColor: theme.colorScheme.primary,
                       ).show();
                     } else if (state is ResetPasswordSent) {
                       await AwesomeDialog(
@@ -70,6 +71,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                         dismissOnTouchOutside: false,
                         dismissOnBackKeyPress: false,
                         btnOkText: 'OK',
+                        btnOkColor: theme.colorScheme.primary,
                         btnOkOnPress: () {
                           Navigator.pushNamedAndRemoveUntil(
                             context,
