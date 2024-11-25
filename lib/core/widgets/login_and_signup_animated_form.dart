@@ -162,10 +162,10 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               }
 
               // Check if the email ends with @stanford.edu
-              if (!email.endsWith('@stanford.edu')) {
-                riveHelper.addFailController();
-                return 'Please enter a Stanford email address';
-              }
+              //if (!email.endsWith('@stanford.edu')) {
+              //  riveHelper.addFailController();
+              //  return 'Please enter a Stanford email address';
+              //}
             },
             controller: emailController,
           ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/cubit/auth_cubit.dart';
 import '../../routing/routes.dart';
+import '../../widgets/account_not_exists_popup.dart';
 
 class SubmissionResultScreen extends StatelessWidget {
   const SubmissionResultScreen({super.key});
@@ -13,6 +14,23 @@ class SubmissionResultScreen extends StatelessWidget {
       Routes.homeScreen,
       (Route<dynamic> route) => false,
     );
+  }
+
+  Future<void> _checkAccountAndProceed(BuildContext context) async {
+    final authCubit = context.read<AuthCubit>();
+    bool accountExists = await authCubit.checkUserAccountExists();
+
+    if (!accountExists) {
+      // Capture the BuildContext with AuthCubit access
+      final currentContext = context;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AccountNotExistsPopup(
+          onLogout: () => currentContext.read<AuthCubit>().signOut(),
+        ),
+      );
+    }
   }
 
   @override

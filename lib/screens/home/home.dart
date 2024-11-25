@@ -66,13 +66,14 @@ class _HomeState extends State<Home> {
 
     if (!accountExists) {
       if (!mounted) return;
+      // Capture the BuildContext with AuthCubit access
+      final currentContext = context;
       showDialog(
         context: context,
-        builder: (BuildContext context) {
-          return AccountNotExistsPopup(
-            onLogout: () => context.read<AuthCubit>().signOut(),
-          );
-        },
+        barrierDismissible: false,
+        builder: (dialogContext) => AccountNotExistsPopup(
+          onLogout: () => currentContext.read<AuthCubit>().signOut(),
+        ),
       );
     } else {
       _uploadResponses();
