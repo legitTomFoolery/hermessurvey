@@ -126,15 +126,17 @@ class AuthCubit extends Cubit<AuthState> {
 
           if (userCredential.user!.emailVerified) {
             await _auth.signOut();
-            emit(AuthError('Email already in use.'));
+            emit(AuthError(
+                'Email already in use. Please sign in or use a different email.'));
           } else {
             await _auth.signOut();
             emit(ExistingEmailNotVerified()); //ExistingEmailNotVerified());
             //TODO: Populate this AuthError
           }
-        } on FirebaseAuthException catch (signInError) {
+        } on FirebaseAuthException catch (_) {
           // If we can't sign in, emit ExistingEmailNotVerified
-          emit(AuthError('Email already in use.'));
+          emit(AuthError(
+              'Email already in use. Please sign in or use a different email.'));
         }
       } else {
         emit(AuthError(
