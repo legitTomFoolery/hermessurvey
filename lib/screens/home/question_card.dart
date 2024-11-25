@@ -62,29 +62,35 @@ class _QuestionCardState extends State<QuestionCard> {
     final theme = AdaptiveTheme.of(context).theme;
     final responseProvider = Provider.of<ResponseProvider>(context);
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          children: [
-            Center(
-              child: Text(
-                widget.question.name,
-                style: theme.textTheme.displayLarge?.copyWith(
-                  color: theme.colorScheme.onSecondary,
-                  fontSize: 16,
+    return GestureDetector(
+      onTap: () {
+        // Unfocus any active text fields when tapping on this question
+        FocusScope.of(context).unfocus();
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4.0),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.secondary,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            children: [
+              Center(
+                child: Text(
+                  widget.question.name,
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.colorScheme.onSecondary,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 4),
-            _buildResponseWidget(responseProvider, theme),
-          ],
+              const SizedBox(height: 4),
+              _buildResponseWidget(responseProvider, theme),
+            ],
+          ),
         ),
       ),
     );
@@ -131,7 +137,7 @@ class _QuestionCardState extends State<QuestionCard> {
         return Theme(
           data: Theme.of(context).copyWith(
             listTileTheme: ListTileThemeData(
-              horizontalTitleGap: 8, // Increased from 0
+              horizontalTitleGap: 8,
             ),
           ),
           child: RadioListTile<String>(
@@ -147,6 +153,8 @@ class _QuestionCardState extends State<QuestionCard> {
             activeColor: theme.colorScheme.primary,
             onChanged: (value) {
               if (value != null) {
+                // Unfocus any active text fields when selecting a radio option
+                FocusScope.of(context).unfocus();
                 setState(() {
                   _selectedOption = value;
                   widget.onResponse(widget.question.id, value);
@@ -154,8 +162,7 @@ class _QuestionCardState extends State<QuestionCard> {
               }
             },
             dense: true,
-            visualDensity: const VisualDensity(
-                vertical: -4), // Keep vertical density reduced
+            visualDensity: const VisualDensity(vertical: -4),
           ),
         );
       }).toList(),
@@ -230,6 +237,8 @@ class _QuestionCardState extends State<QuestionCard> {
           ),
           onChanged: (String? newValue) {
             if (newValue != null) {
+              // Unfocus any active text fields when selecting a dropdown option
+              FocusScope.of(context).unfocus();
               setState(() {
                 _selectedOption = newValue;
                 widget.onResponse(widget.question.id, newValue);
@@ -252,6 +261,8 @@ class _QuestionCardState extends State<QuestionCard> {
     return Center(
       child: TextButton(
         onPressed: () async {
+          // Unfocus any active text fields when opening date picker
+          FocusScope.of(context).unfocus();
           final DateTime? pickedDate = await showDatePicker(
             context: context,
             initialDate: DateTime.now(),

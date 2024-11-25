@@ -136,81 +136,87 @@ class _HomeState extends State<Home> {
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: theme.colorScheme.tertiary,
-        appBar: AppBar(
-          backgroundColor: theme.colorScheme.primary,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: Container(),
-          title: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.center,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minWidth: 200,
-              ),
-              child: Text(
-                'Feedback Evaluation Tool',
-                style: theme.textTheme.displayLarge?.copyWith(
-                  color: theme.colorScheme.onPrimary,
-                  fontSize: 22,
+      child: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard and unfocus any text fields when tapping outside
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: theme.colorScheme.tertiary,
+          appBar: AppBar(
+            backgroundColor: theme.colorScheme.primary,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: Container(),
+            title: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: 200,
                 ),
-                textAlign: TextAlign.center,
+                child: Text(
+                  'Feedback Evaluation Tool',
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.colorScheme.onPrimary,
+                    fontSize: 22,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
+            centerTitle: true,
+            actions: [
+              SizedBox(
+                width: 48,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.logout,
+                    color: theme.colorScheme.onPrimary,
+                    size: 20,
+                  ),
+                  onPressed: () => context.read<AuthCubit>().signOut(),
+                ),
+              ),
+            ],
           ),
-          centerTitle: true,
-          actions: [
-            SizedBox(
-              width: 48,
-              child: IconButton(
-                icon: Icon(
-                  Icons.logout,
-                  color: theme.colorScheme.onPrimary,
-                  size: 20,
-                ),
-                onPressed: () => context.read<AuthCubit>().signOut(),
-              ),
-            ),
-          ],
-        ),
-        body: Consumer<QuestionStore>(
-          builder: (context, questionStore, child) {
-            return Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListView.builder(
-                      key: const PageStorageKey('question_list'),
-                      itemCount: questionStore.questions.length,
-                      itemBuilder: (context, index) {
-                        final question = questionStore.questions[index];
-                        return QuestionCard(
-                          key: ValueKey(question.id),
-                          question: question,
-                          onResponse: _updateResponse,
-                          initialResponse: responses[question.id],
-                        );
-                      },
+          body: Consumer<QuestionStore>(
+            builder: (context, questionStore, child) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ListView.builder(
+                        key: const PageStorageKey('question_list'),
+                        itemCount: questionStore.questions.length,
+                        itemBuilder: (context, index) {
+                          final question = questionStore.questions[index];
+                          return QuestionCard(
+                            key: ValueKey(question.id),
+                            question: question,
+                            onResponse: _updateResponse,
+                            initialResponse: responses[question.id],
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  width: double.infinity,
-                  color: theme.colorScheme.secondary,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildProgressBar(theme),
-                      _buildSubmitButton(theme),
-                    ],
+                  Container(
+                    width: double.infinity,
+                    color: theme.colorScheme.secondary,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildProgressBar(theme),
+                        _buildSubmitButton(theme),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

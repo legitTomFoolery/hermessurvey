@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   dialogType: DialogType.info,
                   animType: AnimType.rightSlide,
                   title: 'Email Not Verified',
-                  desc: 'Please check your email and verify your email.',
+                  desc: 'Please check your email and verify your account.',
                   btnOkText: 'OK',
                   btnOkOnPress: () {
                     context.read<AuthCubit>().resetState();
