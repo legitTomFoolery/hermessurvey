@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
+      resizeToAvoidBottomInset: false,
       body: OfflineBuilder(
         connectivityBuilder: (
           BuildContext context,
@@ -87,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding:
             EdgeInsets.only(left: 30.w, right: 30.w, bottom: 15.h, top: 5.h),
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: BlocConsumer<AuthCubit, AuthState>(
             buildWhen: (previous, current) => previous != current,
             listenWhen: (previous, current) => previous != current,

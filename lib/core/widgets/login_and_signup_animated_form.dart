@@ -59,33 +59,38 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
     return Form(
       key: formKey,
       child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(), // Ensures no scrolling
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (riveHelper.riveArtboard != null)
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: 200.h, // Set a maximum height for the animation
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (riveHelper.riveArtboard != null)
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 200.h,
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Rive(
+                        artboard: riveHelper.riveArtboard!, fit: BoxFit.cover),
+                  ),
                 ),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Rive(
-                      artboard: riveHelper.riveArtboard!, fit: BoxFit.cover),
-                ),
-              ),
-            nameField(),
-            emailField(),
-            passwordField(),
-            if (widget.isSignUpPage ?? false) Gap(16.h),
-            passwordConfirmationField(),
-            forgetPasswordTextButton(),
-            if (widget.isSignUpPage ?? false)
-              PasswordValidations(hasMinLength: hasMinLength),
-            if (widget.isSignUpPage ?? false) Gap(10.h),
-            loginOrSignUpOrPasswordButton(context),
-          ],
+              nameField(),
+              emailField(),
+              passwordField(),
+              if (widget.isSignUpPage ?? false) Gap(16.h),
+              passwordConfirmationField(),
+              forgetPasswordTextButton(),
+              if (widget.isSignUpPage ?? false)
+                PasswordValidations(hasMinLength: hasMinLength),
+              if (widget.isSignUpPage ?? false) Gap(10.h),
+              loginOrSignUpOrPasswordButton(context),
+            ],
+          ),
         ),
       ),
     );
@@ -129,7 +134,6 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
           AppTextFormField(
             hint: 'Email',
             onChanged: (value) {
-              // Handle visual cues based on the length of the input or other criteria
               if (value.isNotEmpty &&
                   value.length <= 13 &&
                   !riveHelper.isLookingLeft) {
@@ -146,7 +150,6 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               String email = (value ?? '').trim();
               emailController.text = email;
 
-              // Check if the email field is empty
               if (email.isEmpty) {
                 riveHelper.addFailController();
                 return 'Please enter an email address';
@@ -185,9 +188,8 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
           alignment: Alignment.centerRight,
           child: Text('forgot password?',
               style: TextStyle(
-                fontSize: 14, // Consistent font size
-                color: theme.colorScheme
-                    .primary, // Secondary color for interactive elements
+                fontSize: 14,
+                color: theme.colorScheme.primary,
               )),
         ),
       );
@@ -213,9 +215,8 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
     return AppTextButton(
       buttonText: "Login",
       textStyle: TextStyle(
-        fontSize: 16, // Consistent font size
-        color: theme
-            .colorScheme.onPrimary, // Secondary color for interactive elements
+        fontSize: 16,
+        color: theme.colorScheme.onPrimary,
       ),
       onPressed: () async {
         passwordFocuseNode.unfocus();
@@ -385,9 +386,8 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
     return AppTextButton(
       buttonText: "Create Account",
       textStyle: TextStyle(
-        fontSize: 16, // Consistent font size
-        color: theme
-            .colorScheme.onPrimary, // Secondary color for interactive elements
+        fontSize: 16,
+        color: theme.colorScheme.onPrimary,
       ),
       onPressed: () async {
         passwordFocuseNode.unfocus();

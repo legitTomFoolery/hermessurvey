@@ -38,34 +38,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ).show();
   }
 
-  void _showExistingUnverifiedEmailDialog() {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.info,
-      animType: AnimType.rightSlide,
-      title: 'Email Already Registered',
-      desc:
-          'This email has been registered but not yet verified. Please check your email for the verification link.',
-      btnOkText: 'Return to Login',
-      btnOkOnPress: () {
-        Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
-      },
-      dismissOnTouchOutside: false,
-      dismissOnBackKeyPress: false,
-    ).show();
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding:
               EdgeInsets.only(left: 30.w, right: 30.w, bottom: 15.h, top: 5.h),
           child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -83,7 +68,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (state is UserSingupButNotVerified) {
                       _showVerificationDialog();
                     } else if (state is ExistingEmailNotVerified) {
-                      _showExistingUnverifiedEmailDialog();
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.info,
+                        animType: AnimType.rightSlide,
+                        title: 'Email Already Registered',
+                        desc:
+                            'This email has been registered but not yet verified. Please check your email for the verification link.',
+                        btnOkText: 'Return to Login',
+                        btnOkOnPress: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            Routes.loginScreen,
+                            (route) => false,
+                          );
+                        },
+                        dismissOnTouchOutside: false,
+                        dismissOnBackKeyPress: false,
+                      ).show();
                     } else if (state is AuthError) {
                       AwesomeDialog(
                         context: context,

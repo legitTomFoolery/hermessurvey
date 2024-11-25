@@ -107,32 +107,6 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signUpWithEmail(
       String name, String email, String password) async {
     try {
-      // First check if email exists
-      var methods = await _auth.fetchSignInMethodsForEmail(email);
-      if (methods.isNotEmpty) {
-        // Try to sign in to check verification status
-        try {
-          UserCredential userCredential =
-              await _auth.signInWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
-          if (userCredential.user!.emailVerified) {
-            await _auth.signOut();
-            emit(AuthError('Email already in use.'));
-          } else {
-            await _auth.signOut();
-            emit(ExistingEmailNotVerified());
-          }
-        } on FirebaseAuthException {
-          // If sign in fails, assume email exists but is verified
-          // (since unverified emails are eventually deleted by Firebase)
-          emit(AuthError('Email already in use.'));
-        }
-        return;
-      }
-
-      // If we get here, email doesn't exist, proceed with new registration
       emit(AuthLoading());
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -142,7 +116,25 @@ class AuthCubit extends Cubit<AuthState> {
       emit(UserSingupButNotVerified());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        emit(AuthError('Email already in use.'));
+        // Email exists, try to sign in to check verification status
+        try {
+          UserCredential userCredential =
+              await _auth.signInWithEmailAndPassword(
+            email: email,
+            password: password,
+          );
+
+          if (userCredential.user!.emailVerified) {
+            await _auth.signOut();
+            emit(AuthError('Email already in use.'));
+          } else {
+            await _auth.signOut();
+            emit(ExistingEmailNotVerified());
+          }
+        } on FirebaseAuthException catch (signInError) {
+          // If we can't sign in, emit ExistingEmailNotVerified
+          emit(ExistingEmailNotVerified());
+        }
       } else {
         emit(AuthError(
             'An error occurred while creating your account. Please try again.'));
