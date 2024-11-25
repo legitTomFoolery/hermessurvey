@@ -31,7 +31,8 @@ class AuthCubit extends Cubit<AuthState> {
       await _auth.currentUser!.updatePhotoURL(googleUser.photoUrl);
       emit(UserSingupAndLinkedWithGoogle());
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(
+          'An error occurred while creating your account. Please try again.'));
     }
   }
 
@@ -41,7 +42,8 @@ class AuthCubit extends Cubit<AuthState> {
       await _auth.sendPasswordResetEmail(email: email);
       emit(ResetPasswordSent());
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(
+          'Unable to send password reset email. Please verify your email address.'));
     }
   }
 
@@ -56,10 +58,16 @@ class AuthCubit extends Cubit<AuthState> {
         emit(UserSignIn());
       } else {
         await _auth.signOut();
-        emit(AuthError('Email not verified. Please check your email.'));
+        emit(UserNotVerified());
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        emit(AuthError('Invalid email/password, please try again.'));
+      } else {
+        emit(AuthError('An error occurred. Please try again.'));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError('An unexpected error occurred. Please try again.'));
     }
   }
 
@@ -68,7 +76,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
-        emit(AuthError('Google Sign In Failed'));
+        emit(AuthError('Google Sign In was cancelled'));
         return;
       }
       final GoogleSignInAuthentication googleAuth =
@@ -86,7 +94,7 @@ class AuthCubit extends Cubit<AuthState> {
         emit(UserSignIn());
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError('Unable to sign in with Google. Please try again.'));
     }
   }
 
@@ -102,10 +110,29 @@ class AuthCubit extends Cubit<AuthState> {
       // First check if email exists
       var methods = await _auth.fetchSignInMethodsForEmail(email);
       if (methods.isNotEmpty) {
-        emit(AuthError('Email already in use'));
+        // Try to sign in to check verification status
+        try {
+          UserCredential userCredential =
+              await _auth.signInWithEmailAndPassword(
+            email: email,
+            password: password,
+          );
+          if (userCredential.user!.emailVerified) {
+            await _auth.signOut();
+            emit(AuthError('Email already in use.'));
+          } else {
+            await _auth.signOut();
+            emit(ExistingEmailNotVerified());
+          }
+        } on FirebaseAuthException {
+          // If sign in fails, assume email exists but is verified
+          // (since unverified emails are eventually deleted by Firebase)
+          emit(AuthError('Email already in use.'));
+        }
         return;
       }
 
+      // If we get here, email doesn't exist, proceed with new registration
       emit(AuthLoading());
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -115,12 +142,13 @@ class AuthCubit extends Cubit<AuthState> {
       emit(UserSingupButNotVerified());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        emit(AuthError('Email already in use'));
+        emit(AuthError('Email already in use.'));
       } else {
-        emit(AuthError(e.message ?? 'An error occurred'));
+        emit(AuthError(
+            'An error occurred while creating your account. Please try again.'));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError('An unexpected error occurred. Please try again.'));
     }
   }
 

@@ -101,7 +101,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   dialogType: DialogType.error,
                   animType: AnimType.rightSlide,
                   title: 'Error',
-                  desc: state.message,
+                  desc: 'Invalid email/password, please try again.',
+                  btnOkText: 'OK',
+                  btnOkOnPress: () {
+                    context.read<AuthCubit>().resetState();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      Routes.loginScreen,
+                      (route) => false,
+                    );
+                  },
+                  dismissOnTouchOutside: false,
+                  dismissOnBackKeyPress: false,
                 ).show();
               } else if (state is UserSignIn) {
                 riveHelper.addSuccessController();
@@ -120,6 +131,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   animType: AnimType.rightSlide,
                   title: 'Email Not Verified',
                   desc: 'Please check your email and verify your email.',
+                  btnOkText: 'OK',
+                  btnOkOnPress: () {
+                    context.read<AuthCubit>().resetState();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      Routes.loginScreen,
+                      (route) => false,
+                    );
+                  },
+                  dismissOnTouchOutside: false,
+                  dismissOnBackKeyPress: false,
                 ).show();
               } else if (state is IsNewUser) {
                 context.pushNamedAndRemoveUntil(
@@ -161,9 +183,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Delete my account',
                       style: TextStyle(
-                        color: theme.colorScheme.error,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.displayLarge?.color
+                                ?.withOpacity(0.6) ??
+                            Colors.grey,
                         decoration: TextDecoration.underline,
-                        fontSize: 16,
                       ),
                     ),
                   ),
@@ -174,5 +199,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<AuthCubit>(context);
   }
 }

@@ -140,6 +140,8 @@ class _HomeState extends State<Home> {
         backgroundColor: theme.colorScheme.tertiary,
         appBar: AppBar(
           backgroundColor: theme.colorScheme.primary,
+          elevation: 0,
+          scrolledUnderElevation: 0,
           leading: Container(),
           title: FittedBox(
             fit: BoxFit.scaleDown,

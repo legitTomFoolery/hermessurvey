@@ -38,6 +38,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ).show();
   }
 
+  void _showExistingUnverifiedEmailDialog() {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.info,
+      animType: AnimType.rightSlide,
+      title: 'Email Already Registered',
+      desc:
+          'This email has been registered but not yet verified. Please check your email for the verification link.',
+      btnOkText: 'Return to Login',
+      btnOkOnPress: () {
+        Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
+      },
+      dismissOnTouchOutside: false,
+      dismissOnBackKeyPress: false,
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
@@ -65,6 +82,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   listener: (context, state) {
                     if (state is UserSingupButNotVerified) {
                       _showVerificationDialog();
+                    } else if (state is ExistingEmailNotVerified) {
+                      _showExistingUnverifiedEmailDialog();
                     } else if (state is AuthError) {
                       AwesomeDialog(
                         context: context,
@@ -74,7 +93,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         desc: state.message,
                         btnOkText: 'OK',
                         btnOkOnPress: () {
-                          // Navigate using named route which will properly provide the AuthCubit
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             Routes.signupScreen,

@@ -47,7 +47,10 @@ class _QuestionCardState extends State<QuestionCard> {
         value: value,
         child: Text(
           value,
-          style: TextStyle(color: theme.colorScheme.shadow),
+          style: TextStyle(
+            color: theme.colorScheme.shadow,
+            fontSize: 16,
+          ),
           textAlign: TextAlign.center,
         ),
       );
@@ -60,13 +63,13 @@ class _QuestionCardState extends State<QuestionCard> {
     final responseProvider = Provider.of<ResponseProvider>(context);
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(4.0),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
             Center(
@@ -79,7 +82,7 @@ class _QuestionCardState extends State<QuestionCard> {
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             _buildResponseWidget(responseProvider, theme),
           ],
         ),
@@ -110,6 +113,7 @@ class _QuestionCardState extends State<QuestionCard> {
                   'Please select a rotation first.',
                   style: theme.textTheme.displayLarge?.copyWith(
                     color: theme.colorScheme.shadow,
+                    fontSize: 16,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -124,24 +128,35 @@ class _QuestionCardState extends State<QuestionCard> {
   Widget _buildRadioButtons(ThemeData theme) {
     return Column(
       children: widget.question.options.map((option) {
-        return RadioListTile<String>(
-          title: Text(
-            option,
-            style: theme.textTheme.displayLarge?.copyWith(
-              color: theme.colorScheme.shadow,
+        return Theme(
+          data: Theme.of(context).copyWith(
+            listTileTheme: ListTileThemeData(
+              horizontalTitleGap: 8, // Increased from 0
             ),
           ),
-          value: option,
-          groupValue: _selectedOption,
-          activeColor: theme.colorScheme.primary,
-          onChanged: (value) {
-            if (value != null) {
-              setState(() {
-                _selectedOption = value;
-                widget.onResponse(widget.question.id, value);
-              });
-            }
-          },
+          child: RadioListTile<String>(
+            title: Text(
+              option,
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.shadow,
+                fontSize: 16,
+              ),
+            ),
+            value: option,
+            groupValue: _selectedOption,
+            activeColor: theme.colorScheme.primary,
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  _selectedOption = value;
+                  widget.onResponse(widget.question.id, value);
+                });
+              }
+            },
+            dense: true,
+            visualDensity: const VisualDensity(
+                vertical: -4), // Keep vertical density reduced
+          ),
         );
       }).toList(),
     );
@@ -149,11 +164,15 @@ class _QuestionCardState extends State<QuestionCard> {
 
   Widget _buildTextField(ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 4.0),
       child: TextField(
         controller: _textController,
         cursorColor: theme.colorScheme.primary,
         textAlign: TextAlign.center,
+        style: TextStyle(
+          color: theme.colorScheme.shadow,
+          fontSize: 16,
+        ),
         decoration: InputDecoration(
           labelText: 'Your Answer',
           alignLabelWithHint: true,
@@ -162,15 +181,20 @@ class _QuestionCardState extends State<QuestionCard> {
             borderSide: BorderSide(
               color: theme.colorScheme.surface,
             ),
+            borderRadius: BorderRadius.circular(8.0),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: theme.colorScheme.primary,
             ),
+            borderRadius: BorderRadius.circular(8.0),
           ),
-          border: const OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
-        style: TextStyle(color: theme.colorScheme.shadow),
         onChanged: (value) {
           widget.onResponse(widget.question.id, value);
         },
@@ -198,7 +222,10 @@ class _QuestionCardState extends State<QuestionCard> {
           value: _selectedOption,
           hint: Text(
             'Select Option',
-            style: TextStyle(color: theme.colorScheme.shadow),
+            style: TextStyle(
+              color: theme.colorScheme.shadow,
+              fontSize: 16,
+            ),
             textAlign: TextAlign.center,
           ),
           onChanged: (String? newValue) {
