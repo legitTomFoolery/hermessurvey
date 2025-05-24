@@ -69,15 +69,31 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (riveHelper.riveArtboard != null)
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: 200.h,
-                  ),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Rive(
-                        artboard: riveHelper.riveArtboard!, fit: BoxFit.cover),
-                  ),
+                Builder(
+                  builder: (context) {
+                    try {
+                      return ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: 200.h,
+                        ),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Rive(
+                            artboard: riveHelper.riveArtboard!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      // If there's an error with the Rive animation, return an empty container
+                      print('Error rendering Rive animation: $e');
+                      return Container(
+                        height: 100.h,
+                        alignment: Alignment.center,
+                        child: Text('Animation not available'),
+                      );
+                    }
+                  },
                 ),
               nameField(),
               emailField(),

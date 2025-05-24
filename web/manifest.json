@@ -1,11 +1,11 @@
 {
-    "name": "flutter_masterclass",
-    "short_name": "flutter_masterclass",
+    "name": "GSEC Survey App",
+    "short_name": "GSEC Survey",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#8D1B1B",
+    "theme_color": "#8D1B1B",
+    "description": "The GSEC Survey App is developed for the Goodman Surgical Education Center at Stanford Medicine. It facilitates the collection of survey responses to improve surgical education and training programs.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
