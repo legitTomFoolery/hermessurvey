@@ -122,10 +122,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 await Future.delayed(const Duration(seconds: 2));
                 riveHelper.dispose();
                 if (!context.mounted) return;
-                context.pushNamedAndRemoveUntil(
-                  Routes.homeScreen,
-                  predicate: (route) => false,
-                );
+
+                // Direct user to admin screen or home screen based on admin status
+                if (state.isAdmin) {
+                  context.pushNamedAndRemoveUntil(
+                    Routes.adminScreen,
+                    predicate: (route) => false,
+                  );
+                } else {
+                  context.pushNamedAndRemoveUntil(
+                    Routes.homeScreen,
+                    predicate: (route) => false,
+                  );
+                }
               } else if (state is UserNotVerified) {
                 riveHelper.addFailController();
                 AwesomeDialog(

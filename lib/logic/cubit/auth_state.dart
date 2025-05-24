@@ -29,7 +29,11 @@ class UserNotVerified extends AuthState {}
 
 class UserSignedOut extends AuthState {}
 
-class UserSignIn extends AuthState {}
+class UserSignIn extends AuthState {
+  final bool isAdmin;
+
+  UserSignIn({this.isAdmin = false});
+}
 
 class UserSingupAndLinkedWithGoogle extends AuthState {}
 

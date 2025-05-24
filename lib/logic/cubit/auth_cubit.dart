@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gsecsurvey/services/user_service.dart';
 
 part 'auth_state.dart';
 
@@ -55,7 +56,9 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
       );
       if (userCredential.user!.emailVerified) {
-        emit(UserSignIn());
+        // Check if user is admin
+        bool isAdmin = await UserService.isCurrentUserAdmin();
+        emit(UserSignIn(isAdmin: isAdmin));
       } else {
         await _auth.signOut();
         emit(UserNotVerified());
@@ -91,7 +94,9 @@ class AuthCubit extends Cubit<AuthState> {
         await _auth.currentUser!.delete();
         emit(IsNewUser(googleUser: googleUser, credential: credential));
       } else {
-        emit(UserSignIn());
+        // Check if user is admin
+        bool isAdmin = await UserService.isCurrentUserAdmin();
+        emit(UserSignIn(isAdmin: isAdmin));
       }
     } catch (e) {
       emit(AuthError('Unable to sign in with Google. Please try again.'));

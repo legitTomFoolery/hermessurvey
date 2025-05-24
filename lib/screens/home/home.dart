@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsecsurvey/core/environment_config.dart';
 import 'package:gsecsurvey/screens/home/question_card.dart';
 import 'package:gsecsurvey/services/question_store.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,7 @@ class _HomeState extends State<Home> {
   bool isOnline = false;
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   bool _isInitialized = false;
+  final _envConfig = EnvironmentConfig();
 
   @override
   void initState() {
@@ -87,7 +89,7 @@ class _HomeState extends State<Home> {
         String userEmail = user.email!;
 
         DocumentReference userDoc = FirebaseFirestore.instance
-            .collection('userSubmissions')
+            .collection(_envConfig.getCollectionName('userSubmissions'))
             .doc(userEmail);
 
         FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -100,7 +102,9 @@ class _HomeState extends State<Home> {
             transaction.set(userDoc, {'submissionCount': 1});
           }
         }).then((value) {
-          FirebaseFirestore.instance.collection('surveyResponses').add({
+          FirebaseFirestore.instance
+              .collection(_envConfig.getCollectionName('surveyResponses'))
+              .add({
             'responses': responses,
             'timestamp': FieldValue.serverTimestamp(),
           }).then((value) {

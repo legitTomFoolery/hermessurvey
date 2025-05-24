@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gsecsurvey/core/environment_config.dart';
 import 'package:gsecsurvey/models/question.dart';
 
 class FirestoreService {
-  static final ref = FirebaseFirestore.instance
-      .collection('questions')
+  static final _envConfig = EnvironmentConfig();
+
+  static CollectionReference<Question> get ref => FirebaseFirestore.instance
+      .collection(_envConfig.getCollectionName('questions'))
       .withConverter(
           fromFirestore: Question.fromFirestore,
           toFirestore: (Question q, _) => q.toFirestore());
