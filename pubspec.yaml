@@ -37,6 +37,12 @@ dependencies:
   rive: ^0.13.4
   url_launcher: ^6.2.5
   uuid: ^4.3.3
+  excel: ^2.1.0
+  path_provider: ^2.1.2
+  file_saver: ^0.2.9
+  share_plus: ^7.2.1
+  data_table_2: ^2.5.10
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../logic/cubit/auth_cubit.dart';
-import '../screens/admin/admin_screen.dart';
+import '../screens/admin/main_admin_screen_with_bottom_nav.dart';
 import '../screens/create_password/ui/create_password.dart';
 import '../screens/forget/ui/forget_screen.dart';
 import '../screens/home/home.dart';
@@ -42,7 +42,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => BlocProvider.value(
             value: authCubit,
-            child: const AdminScreen(),
+            child: const MainAdminScreenWithBottomNav(),
           ),
         );
 
