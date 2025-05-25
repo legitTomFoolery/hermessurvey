@@ -24,8 +24,8 @@ class Question {
       'name': name,
       'type': type,
       'options': options,
-      'rotationDetails':
-          rotationDetails, // Include rotation details in Firestore document
+      'map':
+          rotationDetails, // Save as 'map' to match the field name in Firestore
     };
   }
 
