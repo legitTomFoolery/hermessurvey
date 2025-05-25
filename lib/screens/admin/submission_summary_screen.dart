@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
 import 'package:gsecsurvey/services/admin_service.dart';

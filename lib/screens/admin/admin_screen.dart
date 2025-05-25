@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
-import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
 import 'package:gsecsurvey/screens/admin/widgets/question_modal.dart';
+import 'package:gsecsurvey/screens/admin/widgets/expandable_question_card.dart';
 import 'package:gsecsurvey/services/firestore_service.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -115,21 +115,9 @@ class _AdminScreenState extends State<AdminScreen> {
               await AdminUtils.deleteQuestion(context, question);
               _loadQuestions();
             },
-            child: Card(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              child: ListTile(
-                title: Text(question.name),
-                subtitle: Text('Type: ${question.type} | ID: ${question.id}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    showQuestionModal(context, question);
-                  },
-                ),
-              ),
+            child: ExpandableQuestionCard(
+              question: question,
+              onSave: _loadQuestions,
             ),
           );
         },

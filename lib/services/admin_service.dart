@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gsecsurvey/core/environment_config.dart';
 import 'package:gsecsurvey/models/admin_user.dart';
@@ -7,7 +6,6 @@ import 'package:gsecsurvey/models/admin_user.dart';
 class AdminService {
   static final _envConfig = EnvironmentConfig();
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Get collection references with environment configuration
   static CollectionReference get _usersCollection =>

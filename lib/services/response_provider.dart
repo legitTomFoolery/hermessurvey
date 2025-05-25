@@ -17,13 +17,11 @@ class ResponseProvider with ChangeNotifier {
   }
 
   void updateAttendings(List<String> newAttendings) {
-    print("Updating attendings with: $newAttendings"); // Debugging line
     _attendings = newAttendings;
     notifyListeners();
   }
 
   void clearResponse(String questionId) {
-    print("Clearing: $questionId"); // Debugging line
     _responses[questionId] = "";
     notifyListeners();
   }

@@ -46,7 +46,6 @@ class QuestionStore extends ChangeNotifier {
 
         _hasLoaded = true;
       } catch (e) {
-        print('Error fetching questions: $e');
         _hasLoaded = false;
       } finally {
         _isLoading = false;
