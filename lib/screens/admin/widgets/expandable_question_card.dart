@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gsecsurvey/models/question.dart';
+import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/index.dart';
+import 'package:gsecsurvey/services/firestore_service.dart';
 
 class ExpandableQuestionCard extends StatefulWidget {
   final Question question;
@@ -32,24 +35,6 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
 
-  // Format rotation details to a string that can be parsed by RotationField
-  String _formatRotationDetails(Map<String, List<String>> rotationDetails) {
-    final buffer = StringBuffer('{');
-    int i = 0;
-    rotationDetails.forEach((rotation, attendings) {
-      buffer.write('"$rotation": [');
-      for (int j = 0; j < attendings.length; j++) {
-        buffer.write('"${attendings[j]}"');
-        if (j < attendings.length - 1) buffer.write(', ');
-      }
-      buffer.write(']');
-      if (i < rotationDetails.length - 1) buffer.write(', ');
-      i++;
-    });
-    buffer.write('}');
-    return buffer.toString();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -79,6 +64,9 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       }
     }
 
+    // Dispose existing controllers if they exist
+    _disposeControllersIfNeeded();
+
     // Initialize controllers
     _orderController = TextEditingController(text: initialOrder);
     _idController = TextEditingController(text: initialId);
@@ -89,11 +77,42 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     _optionsController =
         TextEditingController(text: widget.question.options.join(', '));
 
-    // For rotation details (formatted for proper parsing)
-    _rotationDetailsController = TextEditingController(
-        text: widget.question.rotationDetails == null
-            ? ''
-            : _formatRotationDetails(widget.question.rotationDetails!));
+    // For rotation details - pass the raw data to RotationField
+    _rotationDetailsController = TextEditingController(text: '');
+  }
+
+  void _disposeControllersIfNeeded() {
+    // This method is safe to call even if controllers haven't been initialized yet
+    try {
+      _orderController.dispose();
+    } catch (e) {
+      // Controller wasn't initialized yet
+    }
+    try {
+      _idController.dispose();
+    } catch (e) {
+      // Controller wasn't initialized yet
+    }
+    try {
+      _nameController.dispose();
+    } catch (e) {
+      // Controller wasn't initialized yet
+    }
+    try {
+      _typeController.dispose();
+    } catch (e) {
+      // Controller wasn't initialized yet
+    }
+    try {
+      _optionsController.dispose();
+    } catch (e) {
+      // Controller wasn't initialized yet
+    }
+    try {
+      _rotationDetailsController.dispose();
+    } catch (e) {
+      // Controller wasn't initialized yet
+    }
   }
 
   @override
@@ -118,27 +137,143 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       } else {
         _animationController.reverse();
         // Reset controllers to original values when collapsing
-        _initializeControllers();
+        _resetControllers();
       }
     });
   }
 
-  void _saveQuestion() {
-    QuestionSaveUtils.saveQuestion(
-      context: context,
-      isNewQuestion: false,
-      originalQuestion: widget.question,
-      orderController: _orderController,
-      idController: _idController,
-      nameController: _nameController,
-      typeController: _typeController,
-      optionsController: _optionsController,
-      rotationDetailsController: _rotationDetailsController,
-      onSaveSuccess: () {
-        _toggleExpanded(); // Close the card after saving
-        widget.onSave();
-      },
+  void _resetControllers() {
+    // Reset to original values without reinitializing
+    final idParts = widget.question.id.split('-');
+    String initialOrder = '';
+    String initialId = '';
+
+    if (idParts.isNotEmpty) {
+      initialOrder = idParts.first;
+      if (idParts.length > 1) {
+        initialId = idParts.sublist(1).join('-');
+      }
+    }
+
+    _orderController.text = initialOrder;
+    _idController.text = initialId;
+    _nameController.text = widget.question.name;
+    _typeController.text = widget.question.type;
+    _optionsController.text = widget.question.options.join(', ');
+    _rotationDetailsController.text = '';
+  }
+
+  void _saveQuestion() async {
+    // Custom save logic to avoid Navigator.pop() issue
+    // Validate required fields
+    if (_orderController.text.isEmpty ||
+        _idController.text.isEmpty ||
+        _nameController.text.isEmpty ||
+        _typeController.text.isEmpty) {
+      AdminUtils.showSnackBar(
+        context,
+        'Order, ID, Question Text, and Type are required',
+        isError: true,
+      );
+      return;
+    }
+
+    // Validate order is a number
+    final order = int.tryParse(_orderController.text);
+    if (order == null) {
+      AdminUtils.showSnackBar(
+        context,
+        'Order must be a valid number',
+        isError: true,
+      );
+      return;
+    }
+
+    // Create new document ID
+    final newDocId = '${_orderController.text}-${_idController.text}';
+
+    // Check if document with this ID already exists (unless it's the same document)
+    if (newDocId != widget.question.id) {
+      try {
+        final docSnapshot = await FirebaseFirestore.instance
+            .collection(FirestoreService.ref.path)
+            .doc(newDocId)
+            .get();
+
+        if (docSnapshot.exists) {
+          if (!mounted) return;
+          AdminUtils.showSnackBar(
+            context,
+            'A question with this order-id already exists',
+            isError: true,
+          );
+          return;
+        }
+      } catch (e) {
+        if (!mounted) return;
+        AdminUtils.showSnackBar(
+          context,
+          'Error checking document existence: $e',
+          isError: true,
+        );
+        return;
+      }
+    }
+
+    // Parse options from comma-separated string
+    final options = _optionsController.text
+        .split(',')
+        .map((option) => option.trim())
+        .where((option) => option.isNotEmpty)
+        .toList();
+
+    // Handle rotation details for rotation type questions
+    Map<String, List<String>>? rotationDetails;
+    if (_typeController.text == 'rotation') {
+      // For rotation questions, keep the existing rotation details
+      // The RotationField component handles the editing internally
+      rotationDetails = widget.question.rotationDetails;
+    }
+
+    // For yesNo type, set options to Yes and No
+    if (_typeController.text == 'yesNo') {
+      options.clear();
+      options.addAll(['Yes', 'No']);
+    }
+
+    // Create question object
+    final updatedQuestion = Question(
+      id: newDocId,
+      name: _nameController.text,
+      type: _typeController.text,
+      options: options,
+      rotationDetails: rotationDetails,
     );
+
+    try {
+      // If editing and ID changed, delete old document
+      if (newDocId != widget.question.id) {
+        await FirestoreService.deleteQuestion(widget.question);
+      }
+
+      // Save the question
+      await FirestoreService.addQuestion(updatedQuestion);
+
+      if (!mounted) return;
+      _toggleExpanded(); // Close the card after saving
+      widget.onSave();
+      AdminUtils.showSnackBar(
+        context,
+        'Question updated successfully',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      AdminUtils.showSnackBar(
+        context,
+        'Error saving question: $e',
+        isError: true,
+      );
+    }
   }
 
   @override
