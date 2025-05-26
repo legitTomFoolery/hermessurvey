@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gsecsurvey/screens/admin/admin_screen.dart';
+import 'package:gsecsurvey/screens/admin/response_management_screen.dart';
 import 'package:gsecsurvey/screens/admin/submission_summary_screen.dart';
 import 'package:gsecsurvey/screens/admin/user_management_screen.dart';
 import 'package:gsecsurvey/screens/admin/widgets/admin_layout.dart';
@@ -19,12 +20,14 @@ class _MainAdminScreenWithBottomNavState
   final List<Widget> _screens = [
     const AdminScreen(),
     const UserManagementScreen(),
+    const ResponseManagementScreen(),
     const SubmissionSummaryScreen(),
   ];
 
   final List<String> _titles = [
     'Question Management',
     'User Management',
+    'Response Management',
     'Submission Summary',
   ];
 
@@ -36,6 +39,10 @@ class _MainAdminScreenWithBottomNavState
     const BottomNavigationBarItem(
       icon: Icon(Icons.people),
       label: 'Users',
+    ),
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.assignment),
+      label: 'Responses',
     ),
     const BottomNavigationBarItem(
       icon: Icon(Icons.summarize),
