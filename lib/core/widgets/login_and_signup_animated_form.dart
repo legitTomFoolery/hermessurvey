@@ -69,35 +69,17 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (riveHelper.riveArtboard != null)
-                Builder(
-                  builder: (context) {
-                    try {
-                      return Center(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: 200.h,
-                            maxWidth: MediaQuery.of(context).size.width *
-                                0.28, // 28% of screen width (75% of 37.5%)
-                          ),
-                          child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Rive(
-                              artboard: riveHelper.riveArtboard!,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      );
-                    } catch (e) {
-                      // If there's an error with the Rive animation, return an empty container
-                      // Error rendering Rive animation: $e
-                      return Container(
-                        height: 100.h,
-                        alignment: Alignment.center,
-                        child: const Text('Animation not available'),
-                      );
-                    }
-                  },
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width > 800
+                        ? 800
+                        : MediaQuery.of(context).size.width,
+                    height: 200.h, // Reduced height to minimize unused space
+                    child: Rive(
+                      artboard: riveHelper.riveArtboard!,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               nameField(),
               emailField(),
