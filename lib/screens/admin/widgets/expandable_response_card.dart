@@ -31,7 +31,6 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -110,10 +109,6 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
 
     if (confirmed != true) return;
 
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       final success =
           await ResponseAdminService.deleteResponse(widget.response.id);
@@ -140,10 +135,6 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
         'Error deleting response: $e',
         isError: true,
       );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 

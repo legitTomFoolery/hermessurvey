@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/enhanced_admin_user.dart';
-import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
 import 'package:gsecsurvey/screens/admin/widgets/expandable_user_card.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
