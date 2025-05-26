@@ -8,11 +8,17 @@ import 'package:gsecsurvey/services/firestore_service.dart';
 class ExpandableQuestionCard extends StatefulWidget {
   final Question question;
   final VoidCallback onSave;
+  final bool isExpanded;
+  final VoidCallback onExpanded;
+  final VoidCallback onCollapsed;
 
   const ExpandableQuestionCard({
     Key? key,
     required this.question,
     required this.onSave,
+    this.isExpanded = false,
+    required this.onExpanded,
+    required this.onCollapsed,
   }) : super(key: key);
 
   @override
@@ -21,8 +27,6 @@ class ExpandableQuestionCard extends StatefulWidget {
 
 class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     with SingleTickerProviderStateMixin {
-  bool _isExpanded = false;
-
   late final TextEditingController _orderController;
   late final TextEditingController _idController;
   late final TextEditingController _nameController;
@@ -49,6 +53,26 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     );
 
     _initializeControllers();
+
+    // Set initial animation state
+    if (widget.isExpanded) {
+      _animationController.value = 1.0;
+    }
+  }
+
+  @override
+  void didUpdateWidget(ExpandableQuestionCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Handle animation state changes when parent updates
+    if (widget.isExpanded != oldWidget.isExpanded) {
+      if (widget.isExpanded) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+        _resetControllers();
+      }
+    }
   }
 
   void _initializeControllers() {
@@ -130,16 +154,17 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
   }
 
   void _toggleExpanded() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-      if (_isExpanded) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-        // Reset controllers to original values when collapsing
-        _resetControllers();
-      }
-    });
+    if (widget.isExpanded) {
+      // If currently expanded, collapse
+      widget.onCollapsed();
+      _animationController.reverse();
+      // Reset controllers to original values when collapsing
+      _resetControllers();
+    } else {
+      // If currently collapsed, expand
+      widget.onExpanded();
+      _animationController.forward();
+    }
   }
 
   void _resetControllers() {
@@ -286,10 +311,10 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
           ListTile(
             title: Text(widget.question.name),
             subtitle: Text(
-                'Type: ${widget.question.type} | ID: ${widget.question.id}'),
+                'Order: ${widget.question.id.split('-').first}\nID: ${widget.question.id.split('-').sublist(1).join('-')}'),
             trailing: IconButton(
               icon: AnimatedRotation(
-                turns: _isExpanded ? 0.5 : 0,
+                turns: widget.isExpanded ? 0.5 : 0,
                 duration: const Duration(milliseconds: 300),
                 child: const Icon(Icons.edit),
               ),
@@ -300,8 +325,9 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
           // Expanded view
           SizeTransition(
             sizeFactor: _expandAnimation,
-            child:
-                _isExpanded ? _buildExpandedContent() : const SizedBox.shrink(),
+            child: widget.isExpanded
+                ? _buildExpandedContent()
+                : const SizedBox.shrink(),
           ),
         ],
       ),

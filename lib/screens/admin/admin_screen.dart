@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
@@ -16,11 +17,54 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   bool _isLoading = false;
   List<Question> _questions = [];
+  bool _showFloatingButton = true;
+  String? _expandedQuestionId;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadQuestions();
+    _setupScrollListener();
+  }
+
+  void _setupScrollListener() {
+    _scrollController.addListener(() {
+      // Hide floating button when scrolling down (user swipes up)
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_showFloatingButton) {
+          setState(() {
+            _showFloatingButton = false;
+          });
+        }
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_showFloatingButton) {
+          setState(() {
+            _showFloatingButton = true;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onQuestionExpanded(String questionId) {
+    setState(() {
+      _expandedQuestionId = questionId;
+    });
+  }
+
+  void _onQuestionCollapsed() {
+    setState(() {
+      _expandedQuestionId = null;
+    });
   }
 
   Future<void> _loadQuestions() async {
@@ -54,12 +98,15 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildContent(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showQuestionModal(context, null);
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _showFloatingButton
+          ? FloatingActionButton(
+              onPressed: () {
+                showQuestionModal(context, null);
+              },
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
@@ -80,11 +127,19 @@ class _AdminScreenState extends State<AdminScreen> {
     return RefreshIndicator(
       onRefresh: _loadQuestions,
       child: ListView.builder(
+        controller: _scrollController,
         itemCount: _questions.length,
         itemBuilder: (context, index) {
           final question = _questions[index];
           return Dismissible(
             key: Key(question.id),
+            // Disable swipe when any card is expanded
+            dismissThresholds: _expandedQuestionId != null
+                ? const {
+                    DismissDirection.startToEnd: 1.0,
+                    DismissDirection.endToStart: 1.0
+                  }
+                : const {},
             background: Container(
               color: Colors.red,
               alignment: Alignment.centerRight,
@@ -104,6 +159,10 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ),
             confirmDismiss: (direction) async {
+              // Don't allow dismiss when any card is expanded
+              if (_expandedQuestionId != null) {
+                return false;
+              }
               return await AdminUtils.showConfirmationDialog(
                 context: context,
                 title: 'Confirm Deletion',
@@ -118,6 +177,9 @@ class _AdminScreenState extends State<AdminScreen> {
             child: ExpandableQuestionCard(
               question: question,
               onSave: _loadQuestions,
+              isExpanded: _expandedQuestionId == question.id,
+              onExpanded: () => _onQuestionExpanded(question.id),
+              onCollapsed: _onQuestionCollapsed,
             ),
           );
         },

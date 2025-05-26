@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BasicFields extends StatelessWidget {
   final TextEditingController orderController;
@@ -32,8 +33,11 @@ class BasicFields extends StatelessWidget {
           controller: idController,
           decoration: const InputDecoration(
             labelText: 'ID',
-            hintText: 'Unique identifier',
+            hintText: 'Only letters and hyphens allowed',
           ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\-]')),
+          ],
         ),
         TextFormField(
           controller: nameController,
