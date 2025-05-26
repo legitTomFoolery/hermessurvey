@@ -203,7 +203,6 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
             ),
           ),
           const SizedBox(height: 12),
-          _buildDetailRow('Submitted', widget.response.formattedDateTime),
           _buildDetailRow('Date', widget.response.date),
           _buildDetailRow('Rotation', widget.response.rotation),
           _buildDetailRow('Attending', widget.response.attending),
