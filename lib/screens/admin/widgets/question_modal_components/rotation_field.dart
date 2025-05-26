@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/rotation_card.dart';
+import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/expandable_rotation_card.dart';
 
 class RotationField extends StatefulWidget {
   final TextEditingController rotationDetailsController;
@@ -20,130 +20,181 @@ class RotationField extends StatefulWidget {
 }
 
 class _RotationFieldState extends State<RotationField> {
+  Map<String, List<String>> _rotations = {};
+  String? _expandedRotationId;
+
   @override
-  Widget build(BuildContext context) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        // Parse existing rotation details
-        Map<String, List<String>> rotations = {};
+  void initState() {
+    super.initState();
+    _parseRotationDetails();
+  }
 
-        try {
-          if (widget.rotationDetailsController.text.isNotEmpty) {
-            final text = widget.rotationDetailsController.text.trim();
-            if (text.startsWith('{') && text.endsWith('}')) {
-              final content = text.substring(1, text.length - 1);
-              final pairs = content.split('",').map((s) => s.trim());
+  void _parseRotationDetails() {
+    try {
+      if (widget.rotationDetailsController.text.isNotEmpty) {
+        final text = widget.rotationDetailsController.text.trim();
+        if (text.startsWith('{') && text.endsWith('}')) {
+          final content = text.substring(1, text.length - 1);
+          final pairs = content.split('",').map((s) => s.trim());
 
-              for (var pair in pairs) {
-                // Clean up the pair string
-                pair = pair
-                    .replaceAll('"', '')
-                    .replaceAll('{', '')
-                    .replaceAll('}', '');
+          for (var pair in pairs) {
+            // Clean up the pair string
+            pair = pair
+                .replaceAll('"', '')
+                .replaceAll('{', '')
+                .replaceAll('}', '');
 
-                // Split into key and value
-                final parts = pair.split(':');
-                if (parts.length == 2) {
-                  final key = parts[0].trim();
-                  final valueStr = parts[1].trim();
+            // Split into key and value
+            final parts = pair.split(':');
+            if (parts.length == 2) {
+              final key = parts[0].trim();
+              final valueStr = parts[1].trim();
 
-                  // Parse the array value
-                  if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
-                    final listContent =
-                        valueStr.substring(1, valueStr.length - 1);
-                    final items = listContent
-                        .split(',')
-                        .map((item) => item.trim().replaceAll('"', ''))
-                        .where((item) => item.isNotEmpty)
-                        .toList()
-                        .cast<String>();
+              // Parse the array value
+              if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
+                final listContent = valueStr.substring(1, valueStr.length - 1);
+                final items = listContent
+                    .split(',')
+                    .map((item) => item.trim().replaceAll('"', ''))
+                    .where((item) => item.isNotEmpty)
+                    .toList()
+                    .cast<String>();
 
-                    rotations[key] = items;
-                  }
-                }
+                _rotations[key] = items;
               }
             }
-          } else if (!widget.isNewQuestion &&
-              widget.rotationDetailsFromQuestion != null) {
-            rotations = Map<String, List<String>>.from(
-                widget.rotationDetailsFromQuestion);
           }
-        } catch (e) {
-          // If parsing fails, start with empty map
-          rotations = {};
         }
+      } else if (!widget.isNewQuestion &&
+          widget.rotationDetailsFromQuestion != null) {
+        _rotations =
+            Map<String, List<String>>.from(widget.rotationDetailsFromQuestion);
+      }
+    } catch (e) {
+      // If parsing fails, start with empty map
+      _rotations = {};
+    }
+  }
 
-        // Function to update the rotationDetailsController
-        void updateRotationDetails() {
-          final buffer = StringBuffer('{');
-          int i = 0;
-          rotations.forEach((rotation, attendings) {
-            buffer.write('"$rotation": [');
-            for (int j = 0; j < attendings.length; j++) {
-              buffer.write('"${attendings[j]}"');
-              if (j < attendings.length - 1) buffer.write(', ');
-            }
-            buffer.write(']');
-            if (i < rotations.length - 1) buffer.write(', ');
-            i++;
-          });
-          buffer.write('}');
-          widget.rotationDetailsController.text = buffer.toString();
+  void _updateRotationDetails() {
+    final buffer = StringBuffer('{');
+    int i = 0;
+    _rotations.forEach((rotation, attendings) {
+      buffer.write('"$rotation": [');
+      for (int j = 0; j < attendings.length; j++) {
+        buffer.write('"${attendings[j]}"');
+        if (j < attendings.length - 1) buffer.write(', ');
+      }
+      buffer.write(']');
+      if (i < _rotations.length - 1) buffer.write(', ');
+      i++;
+    });
+    buffer.write('}');
+    widget.rotationDetailsController.text = buffer.toString();
+  }
+
+  void _onRotationExpanded(String rotationId) {
+    setState(() {
+      _expandedRotationId = rotationId;
+    });
+  }
+
+  void _onRotationCollapsed() {
+    setState(() {
+      _expandedRotationId = null;
+    });
+  }
+
+  void _addRotation() {
+    setState(() {
+      final newRotationName = 'New Rotation ${_rotations.length + 1}';
+      _rotations[newRotationName] = [];
+      _updateRotationDetails();
+    });
+  }
+
+  void _deleteRotation(String rotationName) {
+    setState(() {
+      _rotations.remove(rotationName);
+      if (_expandedRotationId == rotationName) {
+        _expandedRotationId = null;
+      }
+      _updateRotationDetails();
+    });
+  }
+
+  void _updateRotationName(String oldName, String newName) {
+    if (newName.isNotEmpty &&
+        newName != oldName &&
+        !_rotations.containsKey(newName)) {
+      setState(() {
+        final attendings = _rotations[oldName]!;
+        _rotations.remove(oldName);
+        _rotations[newName] = attendings;
+        if (_expandedRotationId == oldName) {
+          _expandedRotationId = newName;
         }
+        _updateRotationDetails();
+      });
+    }
+  }
 
-        // Build UI for rotations
-        final rotationWidgets = <Widget>[];
+  void _updateAttendingsList(String rotationName, List<String> attendings) {
+    setState(() {
+      _rotations[rotationName] = attendings;
+      _updateRotationDetails();
+    });
+  }
 
-        rotationWidgets.add(
-          const Padding(
-            padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-            child: Text(
-              'Rotations',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+          child: Text(
+            'Rotations',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        );
+        ),
 
-        // Add existing rotations with expandable sections
-        rotations.forEach((rotation, attendings) {
-          rotationWidgets.add(
-            RotationCard(
-              rotation: rotation,
-              attendings: attendings,
-              rotations: rotations,
-              updateRotationDetails: updateRotationDetails,
-              scrollController: widget.scrollController,
-            ),
+        // List of rotation cards
+        ..._rotations.entries.map((entry) {
+          final rotationName = entry.key;
+          final attendings = entry.value;
+
+          return ExpandableRotationCard(
+            key: Key(rotationName),
+            rotation: rotationName,
+            attendings: attendings,
+            isExpanded: _expandedRotationId == rotationName,
+            onExpanded: () => _onRotationExpanded(rotationName),
+            onCollapsed: _onRotationCollapsed,
+            onRotationNameChanged: (newName) =>
+                _updateRotationName(rotationName, newName),
+            onAttendingsChanged: (newAttendingsList) =>
+                _updateAttendingsList(rotationName, newAttendingsList),
+            onDelete: () => _deleteRotation(rotationName),
+            scrollController: widget.scrollController,
           );
-        });
+        }).toList(),
 
-        // Add "Add Rotation" button
-        rotationWidgets.add(
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                final newRotationName = 'New Rotation ${rotations.length + 1}';
-                rotations[newRotationName] = [];
-                updateRotationDetails();
-              });
-            },
-            icon: const Icon(Icons.add),
-            label: const Text('Add Rotation'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade200,
-              foregroundColor: Colors.black87,
-            ),
+        // Add rotation button
+        const SizedBox(height: 8),
+        ElevatedButton.icon(
+          onPressed: _addRotation,
+          icon: const Icon(Icons.add),
+          label: const Text('Add Rotation'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.grey.shade200,
+            foregroundColor: Colors.black87,
           ),
-        );
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: rotationWidgets,
-        );
-      },
+        ),
+      ],
     );
   }
 }
