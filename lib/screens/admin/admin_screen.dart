@@ -21,6 +21,7 @@ class _AdminScreenState extends State<AdminScreen> {
   bool _showFloatingButton = true;
   String? _expandedQuestionId;
   final ScrollController _scrollController = ScrollController();
+  bool _showNewQuestionCard = false;
 
   @override
   void initState() {
@@ -68,6 +69,39 @@ class _AdminScreenState extends State<AdminScreen> {
     });
   }
 
+  void _addNewQuestion() {
+    setState(() {
+      _showNewQuestionCard = true;
+      _expandedQuestionId = 'new-question';
+    });
+
+    // Scroll to bottom after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  void _onNewQuestionSaved() {
+    setState(() {
+      _showNewQuestionCard = false;
+      _expandedQuestionId = null;
+    });
+    _loadQuestions();
+  }
+
+  void _onNewQuestionCancelled() {
+    setState(() {
+      _showNewQuestionCard = false;
+      _expandedQuestionId = null;
+    });
+  }
+
   Future<void> _loadQuestions() async {
     setState(() {
       _isLoading = true;
@@ -104,9 +138,7 @@ class _AdminScreenState extends State<AdminScreen> {
       body: _buildContent(context),
       floatingActionButton: _showFloatingButton
           ? FloatingActionButton(
-              onPressed: () {
-                showQuestionModal(context, null);
-              },
+              onPressed: _addNewQuestion,
               backgroundColor: theme.colorScheme.primary,
               shape: const CircleBorder(),
               child: Icon(
@@ -125,7 +157,7 @@ class _AdminScreenState extends State<AdminScreen> {
       return const LoadingView();
     }
 
-    if (_questions.isEmpty) {
+    if (_questions.isEmpty && !_showNewQuestionCard) {
       return Center(
         child: Text(
           'No questions found',
@@ -141,8 +173,25 @@ class _AdminScreenState extends State<AdminScreen> {
       onRefresh: _loadQuestions,
       child: ListView.builder(
         controller: _scrollController,
-        itemCount: _questions.length,
+        itemCount: _questions.length + (_showNewQuestionCard ? 1 : 0),
         itemBuilder: (context, index) {
+          // Show new question card at the end
+          if (index == _questions.length && _showNewQuestionCard) {
+            return ExpandableQuestionCard(
+              question: Question(
+                id: '',
+                name: '',
+                type: 'text',
+                options: [],
+              ),
+              onSave: _onNewQuestionSaved,
+              isExpanded: _expandedQuestionId == 'new-question',
+              onExpanded: () => _onQuestionExpanded('new-question'),
+              onCollapsed: _onNewQuestionCancelled,
+              isNewQuestion: true,
+            );
+          }
+
           final question = _questions[index];
           return Dismissible(
             key: Key(question.id),

@@ -360,7 +360,6 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
           if (widget.user.lastSignInTime != null)
             _buildDetailRow(
                 'Last Sign In', widget.user.lastSignInTime!.toString()),
-          _buildDetailRow('Data Sources', _getDataSourcesText()),
           const SizedBox(height: 16),
           Text(
             'Admin Actions',
@@ -454,12 +453,5 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
         ],
       ),
     );
-  }
-
-  String _getDataSourcesText() {
-    final sources = <String>[];
-    if (widget.user.isFromFirebaseAuth) sources.add('Firebase Auth');
-    if (widget.user.isFromCustomCollection) sources.add('Custom Collection');
-    return sources.isEmpty ? 'Unknown' : sources.join(', ');
   }
 }

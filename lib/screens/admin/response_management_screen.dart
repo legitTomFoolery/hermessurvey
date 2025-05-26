@@ -133,18 +133,26 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
   void _applyFilters() {
     _filteredResponses = _responses.where((response) {
-      // Date filter
+      // Date filter - use actual timestamp instead of user-entered date
       if (_startDate != null || _endDate != null) {
-        try {
-          final responseDate = DateFormat('MM/dd/yyyy').parse(response.date);
-          if (_startDate != null && responseDate.isBefore(_startDate!)) {
+        final responseTimestamp = response.timestamp;
+
+        if (_startDate != null) {
+          // Compare only the date part (ignore time)
+          final startOfDay =
+              DateTime(_startDate!.year, _startDate!.month, _startDate!.day);
+          if (responseTimestamp.isBefore(startOfDay)) {
             return false;
           }
-          if (_endDate != null && responseDate.isAfter(_endDate!)) {
+        }
+
+        if (_endDate != null) {
+          // End of the selected day (23:59:59)
+          final endOfDay = DateTime(
+              _endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+          if (responseTimestamp.isAfter(endOfDay)) {
             return false;
           }
-        } catch (e) {
-          // If date parsing fails, exclude this response from date filtering
         }
       }
 

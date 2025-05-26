@@ -12,6 +12,7 @@ class ExpandableQuestionCard extends StatefulWidget {
   final bool isExpanded;
   final VoidCallback onExpanded;
   final VoidCallback onCollapsed;
+  final bool isNewQuestion;
 
   const ExpandableQuestionCard({
     Key? key,
@@ -20,6 +21,7 @@ class ExpandableQuestionCard extends StatefulWidget {
     this.isExpanded = false,
     required this.onExpanded,
     required this.onCollapsed,
+    this.isNewQuestion = false,
   }) : super(key: key);
 
   @override
@@ -71,7 +73,9 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
         _animationController.forward();
       } else {
         _animationController.reverse();
-        _resetControllers();
+        if (!widget.isNewQuestion) {
+          _resetControllers();
+        }
       }
     }
   }
@@ -82,7 +86,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     String initialOrder = '';
     String initialId = '';
 
-    if (idParts.isNotEmpty) {
+    if (idParts.isNotEmpty && widget.question.id.isNotEmpty) {
       initialOrder = idParts.first;
       if (idParts.length > 1) {
         initialId = idParts.sublist(1).join('-');
@@ -159,8 +163,10 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       // If currently expanded, collapse
       widget.onCollapsed();
       _animationController.reverse();
-      // Reset controllers to original values when collapsing
-      _resetControllers();
+      // Reset controllers to original values when collapsing (except for new questions)
+      if (!widget.isNewQuestion) {
+        _resetControllers();
+      }
     } else {
       // If currently collapsed, expand
       widget.onExpanded();
@@ -174,7 +180,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     String initialOrder = '';
     String initialId = '';
 
-    if (idParts.isNotEmpty) {
+    if (idParts.isNotEmpty && widget.question.id.isNotEmpty) {
       initialOrder = idParts.first;
       if (idParts.length > 1) {
         initialId = idParts.sublist(1).join('-');
@@ -277,8 +283,8 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     );
 
     try {
-      // If editing and ID changed, delete old document
-      if (newDocId != widget.question.id) {
+      // If editing and ID changed, delete old document (but not for new questions)
+      if (newDocId != widget.question.id && !widget.isNewQuestion) {
         await FirestoreService.deleteQuestion(widget.question);
       }
 
@@ -286,11 +292,12 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       await FirestoreService.addQuestion(updatedQuestion);
 
       if (!mounted) return;
-      _toggleExpanded(); // Close the card after saving
       widget.onSave();
       AdminUtils.showSnackBar(
         context,
-        'Question updated successfully',
+        widget.isNewQuestion
+            ? 'Question created successfully'
+            : 'Question updated successfully',
       );
     } catch (e) {
       if (!mounted) return;
@@ -311,31 +318,48 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       decoration: BoxDecoration(
         color: theme.colorScheme.secondary,
         borderRadius: BorderRadius.circular(12.0),
+        border: widget.isNewQuestion
+            ? Border.all(color: theme.colorScheme.primary, width: 2)
+            : null,
       ),
       child: Column(
         children: [
           // Collapsed view
           ListTile(
             title: Text(
-              widget.question.name,
+              widget.isNewQuestion && widget.question.name.isEmpty
+                  ? 'New Question'
+                  : widget.question.name,
               style: theme.textTheme.displayLarge?.copyWith(
                 color: theme.colorScheme.onSecondary,
                 fontSize: 16,
+                fontStyle: widget.isNewQuestion && widget.question.name.isEmpty
+                    ? FontStyle.italic
+                    : FontStyle.normal,
               ),
             ),
-            subtitle: Text(
-              'Order: ${widget.question.id.split('-').first}\nID: ${widget.question.id.split('-').sublist(1).join('-')}',
-              style: theme.textTheme.displayLarge?.copyWith(
-                color: theme.colorScheme.shadow,
-                fontSize: 14,
-              ),
-            ),
+            subtitle: widget.isNewQuestion && widget.question.id.isEmpty
+                ? Text(
+                    'Fill in the details below',
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      color: theme.colorScheme.shadow,
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  )
+                : Text(
+                    'Order: ${widget.question.id.split('-').first}\nID: ${widget.question.id.split('-').sublist(1).join('-')}',
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      color: theme.colorScheme.shadow,
+                      fontSize: 14,
+                    ),
+                  ),
             trailing: IconButton(
               icon: AnimatedRotation(
                 turns: widget.isExpanded ? 0.5 : 0,
                 duration: const Duration(milliseconds: 300),
                 child: Icon(
-                  Icons.edit,
+                  widget.isNewQuestion ? Icons.add : Icons.edit,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -396,7 +420,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
                   backgroundColor: theme.colorScheme.primary,
                 ),
                 child: Text(
-                  'Save',
+                  widget.isNewQuestion ? 'Create' : 'Save',
                   style: TextStyle(color: theme.colorScheme.onPrimary),
                 ),
               ),
@@ -418,7 +442,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       return RotationField(
         rotationDetailsController: _rotationDetailsController,
         scrollController: _scrollController,
-        isNewQuestion: false,
+        isNewQuestion: widget.isNewQuestion,
         rotationDetailsFromQuestion: widget.question.rotationDetails,
       );
     } else if (_typeController.text == 'yesNo') {
