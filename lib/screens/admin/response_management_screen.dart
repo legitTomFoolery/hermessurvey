@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/models/survey_response.dart';
@@ -29,6 +30,8 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
   List<Question> _questions = [];
   bool _isLoading = true;
   String? _expandedResponseId;
+  bool _showFloatingButton = true;
+  final ScrollController _scrollController = ScrollController();
 
   // Filter state
   DateTime? _startDate;
@@ -42,6 +45,34 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _setupScrollListener();
+  }
+
+  void _setupScrollListener() {
+    _scrollController.addListener(() {
+      // Hide floating button when scrolling down (user swipes up)
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_showFloatingButton) {
+          setState(() {
+            _showFloatingButton = false;
+          });
+        }
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_showFloatingButton) {
+          setState(() {
+            _showFloatingButton = true;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -451,10 +482,11 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
                 ? _buildEmptyState()
                 : _buildResponsesList(),
       ),
-      floatingActionButton: _responses.isNotEmpty
+      floatingActionButton: _responses.isNotEmpty && _showFloatingButton
           ? FloatingActionButton(
               onPressed: _showExportModal,
               backgroundColor: theme.colorScheme.primary,
+              shape: const CircleBorder(),
               child: Icon(
                 Icons.save_alt,
                 color: theme.colorScheme.onPrimary,
@@ -507,6 +539,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
         // Responses list
         Expanded(
           child: ListView.builder(
+            controller: _scrollController,
             itemCount: _filteredResponses.length,
             itemBuilder: (context, index) {
               final response = _filteredResponses[index];

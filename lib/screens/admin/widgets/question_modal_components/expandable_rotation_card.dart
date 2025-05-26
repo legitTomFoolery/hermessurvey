@@ -99,19 +99,44 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      color: theme.colorScheme.secondary,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
       child: Column(
         children: [
           // Collapsed view
           ListTile(
-            title: Text(widget.rotation),
-            subtitle: Text('${widget.attendings.length} attending(s)'),
+            title: Text(
+              widget.rotation,
+              style: TextStyle(
+                color: theme.colorScheme.onSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            subtitle: Text(
+              '${widget.attendings.length} attending(s)',
+              style: TextStyle(
+                color: theme.colorScheme.shadow,
+              ),
+            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Colors.red.shade600,
+                  ),
                   onPressed: widget.onDelete,
                   iconSize: 20,
                 ),
@@ -119,7 +144,10 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
                   icon: AnimatedRotation(
                     turns: widget.isExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 300),
-                    child: const Icon(Icons.edit),
+                    child: Icon(
+                      Icons.edit,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                   onPressed: _toggleExpanded,
                 ),
@@ -169,8 +197,15 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
+              ElevatedButton(
                 onPressed: _toggleExpanded,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
                 child: const Text('Done'),
               ),
             ],

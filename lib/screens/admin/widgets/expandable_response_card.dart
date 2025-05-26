@@ -329,41 +329,81 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              questionText,
-              style: theme.textTheme.displayLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: theme.colorScheme.onSecondary,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.help_outline,
+                  size: 16,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    questionText,
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: theme.colorScheme.onSecondary,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: theme.colorScheme.tertiary,
                 border: Border.all(
-                    color: theme.colorScheme.shadow.withOpacity(0.3)),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                responseValue.isEmpty ? 'No response' : responseValue,
-                style: theme.textTheme.displayLarge?.copyWith(
-                  color: responseValue.isEmpty
-                      ? theme.colorScheme.shadow
-                      : theme.colorScheme.onSecondary,
-                  fontStyle: responseValue.isEmpty
-                      ? FontStyle.italic
-                      : FontStyle.normal,
-                  fontSize: 14,
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  width: 1,
                 ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: responseValue.isEmpty
+                          ? theme.colorScheme.shadow.withOpacity(0.5)
+                          : theme.colorScheme.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      responseValue.isEmpty
+                          ? 'No response provided'
+                          : responseValue,
+                      style: theme.textTheme.displayLarge?.copyWith(
+                        color: responseValue.isEmpty
+                            ? theme.colorScheme.shadow.withOpacity(0.7)
+                            : theme.colorScheme.onSecondary,
+                        fontStyle: responseValue.isEmpty
+                            ? FontStyle.italic
+                            : FontStyle.normal,
+                        fontSize: 14,
+                        fontWeight: responseValue.isEmpty
+                            ? FontWeight.w400
+                            : FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

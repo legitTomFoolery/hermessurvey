@@ -267,15 +267,6 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
         children: [
           // Collapsed view
           ListTile(
-            leading: CircleAvatar(
-              backgroundColor: widget.user.isAdmin
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.shadow,
-              child: Icon(
-                widget.user.isAdmin ? Icons.admin_panel_settings : Icons.person,
-                color: Colors.white,
-              ),
-            ),
             title: Text(
               widget.user.email ?? 'No email',
               style: theme.textTheme.displayLarge?.copyWith(
@@ -283,33 +274,15 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                 fontSize: 16,
               ),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.user.displayName != null)
-                  Text(
-                    'Name: ${widget.user.displayName}',
+            subtitle: widget.user.displayName != null
+                ? Text(
+                    widget.user.displayName!,
                     style: theme.textTheme.displayLarge?.copyWith(
                       color: theme.colorScheme.shadow,
                       fontSize: 14,
                     ),
-                  ),
-                Text(
-                  'Status: ${widget.user.statusText}',
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    color: theme.colorScheme.shadow,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  'UID: ${widget.user.uid}',
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    color: theme.colorScheme.shadow,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
+                  )
+                : null,
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

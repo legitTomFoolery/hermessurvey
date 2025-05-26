@@ -185,14 +185,23 @@ class _RotationFieldState extends State<RotationField> {
 
         // Add rotation button
         const SizedBox(height: 8),
-        ElevatedButton.icon(
-          onPressed: _addRotation,
-          icon: const Icon(Icons.add),
-          label: const Text('Add Rotation'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.grey.shade200,
-            foregroundColor: Colors.black87,
-          ),
+        Builder(
+          builder: (context) {
+            final theme = Theme.of(context);
+            return ElevatedButton.icon(
+              onPressed: _addRotation,
+              icon: const Icon(Icons.add),
+              label: const Text('Add Rotation'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

@@ -41,9 +41,10 @@ class AdminLayout extends StatelessWidget {
             title,
             style: theme.textTheme.displayLarge?.copyWith(
               color: theme.colorScheme.onPrimary,
-              fontSize: 22,
+              fontSize: 18,
             ),
           ),
+          centerTitle: true,
           iconTheme: IconThemeData(
             color: theme.colorScheme.onPrimary,
           ),

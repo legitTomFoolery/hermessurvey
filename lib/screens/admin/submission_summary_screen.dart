@@ -95,69 +95,193 @@ class _SubmissionSummaryScreenState extends State<SubmissionSummaryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Submission Summary',
-            style: theme.textTheme.displayLarge?.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSecondary,
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondary,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(
+                color: theme.colorScheme.primary.withOpacity(0.2),
+                width: 1,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Theme(
-                data: theme.copyWith(
-                  dataTableTheme: DataTableThemeData(
-                    headingRowColor:
-                        MaterialStateProperty.all(theme.colorScheme.surface),
-                    dataRowColor:
-                        MaterialStateProperty.all(theme.colorScheme.secondary),
-                    headingTextStyle: theme.textTheme.displayLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.shadow,
-                    ),
-                    dataTextStyle: theme.textTheme.displayLarge?.copyWith(
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Total Users: ${_summaryData.length}',
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                       color: theme.colorScheme.onSecondary,
                     ),
                   ),
                 ),
-                child: DataTable(
-                  columns: [
-                    DataColumn(
-                      label: Text(
-                        'Email',
-                        style: TextStyle(color: theme.colorScheme.shadow),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '${_summaryData.fold<int>(0, (sum, data) => sum + (data['submissionCount'] as int))} Total Submissions',
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondary,
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12.0),
+                        topRight: Radius.circular(12.0),
                       ),
                     ),
-                    DataColumn(
-                      label: Text(
-                        'Submission Count',
-                        style: TextStyle(color: theme.colorScheme.shadow),
-                      ),
-                    ),
-                  ],
-                  rows: _summaryData.map((data) {
-                    return DataRow(
-                      cells: [
-                        DataCell(
-                          Text(
-                            data['email'] ?? 'Unknown',
-                            style:
-                                TextStyle(color: theme.colorScheme.onSecondary),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            'Email Address',
+                            style: theme.textTheme.displayLarge?.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSecondary,
+                            ),
                           ),
                         ),
-                        DataCell(
-                          Text(
-                            data['submissionCount'].toString(),
-                            style:
-                                TextStyle(color: theme.colorScheme.onSecondary),
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            'Count',
+                            style: theme.textTheme.displayLarge?.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSecondary,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
-                    );
-                  }).toList(),
-                ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _summaryData.length,
+                      itemBuilder: (context, index) {
+                        final data = _summaryData[index];
+                        final isEven = index % 2 == 0;
+
+                        return Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: isEven
+                                ? theme.colorScheme.secondary
+                                : theme.colorScheme.surface.withOpacity(0.3),
+                            border: Border(
+                              bottom: BorderSide(
+                                color:
+                                    theme.colorScheme.primary.withOpacity(0.1),
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor:
+                                          theme.colorScheme.primary,
+                                      child: Text(
+                                        (data['email'] ?? 'U')[0].toUpperCase(),
+                                        style: TextStyle(
+                                          color: theme.colorScheme.onPrimary,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        data['email'] ?? 'Unknown',
+                                        style: theme.textTheme.displayLarge
+                                            ?.copyWith(
+                                          fontSize: 14,
+                                          color: theme.colorScheme.onSecondary,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary
+                                          .withOpacity(0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    data['submissionCount'].toString(),
+                                    style:
+                                        theme.textTheme.displayLarge?.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

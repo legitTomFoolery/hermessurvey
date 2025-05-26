@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:gsecsurvey/services/question_store.dart';
 import 'package:gsecsurvey/services/response_provider.dart';
+import 'package:gsecsurvey/services/user_service.dart';
 import 'package:gsecsurvey/firebase_options.dart';
 import 'package:gsecsurvey/routing/app_router.dart';
 import 'package:gsecsurvey/routing/routes.dart';
@@ -22,11 +23,18 @@ Future<void> main() async {
     preloadSVGs(['assets/svgs/google_logo.svg'])
   ]);
 
-  // Get the current user synchronously
+  // Get the current user and check admin status for app lifecycle behavior
   final user = FirebaseAuth.instance.currentUser;
-  final initialRoute = (user != null && user.emailVerified)
-      ? Routes.homeScreen
-      : Routes.loginScreen;
+  String initialRoute = Routes.loginScreen;
+
+  if (user != null && user.emailVerified) {
+    // Check if user is admin to determine app lifecycle behavior
+    bool isAdmin = await UserService.isCurrentUserAdmin();
+
+    // For admin users, always redirect to login on app restart for security
+    // For non-admin users, go to home screen
+    initialRoute = isAdmin ? Routes.loginScreen : Routes.homeScreen;
+  }
 
   runApp(MyApp(
     router: AppRouter(),
