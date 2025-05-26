@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 
 /// A reusable error view widget that displays an error message and a retry button
 class ErrorView extends StatelessWidget {
@@ -13,19 +14,30 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             errorMessage,
-            style: const TextStyle(color: Colors.red),
+            style: theme.textTheme.displayLarge?.copyWith(
+              color: theme.colorScheme.primary,
+              fontSize: 16,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+            ),
+            child: Text(
+              'Retry',
+              style: TextStyle(color: theme.colorScheme.onPrimary),
+            ),
           ),
         ],
       ),

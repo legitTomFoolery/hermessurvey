@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/screens/admin/admin_screen.dart';
 import 'package:gsecsurvey/screens/admin/response_management_screen.dart';
 import 'package:gsecsurvey/screens/admin/submission_summary_screen.dart';
@@ -52,6 +53,8 @@ class _MainAdminScreenWithBottomNavState
 
   @override
   Widget build(BuildContext context) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return AdminLayout(
       title: _titles[_selectedIndex],
       body: _screens[_selectedIndex],
@@ -63,8 +66,9 @@ class _MainAdminScreenWithBottomNavState
           });
         },
         items: _bottomNavItems,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: theme.colorScheme.shadow,
+        backgroundColor: theme.colorScheme.secondary,
         type: BottomNavigationBarType.fixed,
       ),
     );

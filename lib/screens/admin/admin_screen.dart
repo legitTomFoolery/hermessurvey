@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
@@ -96,30 +97,42 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.tertiary,
       body: _buildContent(context),
       floatingActionButton: _showFloatingButton
           ? FloatingActionButton(
               onPressed: () {
                 showQuestionModal(context, null);
               },
+              backgroundColor: theme.colorScheme.primary,
               shape: const CircleBorder(),
-              child: const Icon(Icons.add),
+              child: Icon(
+                Icons.add,
+                color: theme.colorScheme.onPrimary,
+              ),
             )
           : null,
     );
   }
 
   Widget _buildContent(BuildContext context) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     if (_isLoading) {
       return const LoadingView();
     }
 
     if (_questions.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No questions found',
-          style: TextStyle(fontSize: 18),
+          style: theme.textTheme.displayLarge?.copyWith(
+            fontSize: 18,
+            color: theme.colorScheme.shadow,
+          ),
         ),
       );
     }

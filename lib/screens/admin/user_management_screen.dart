@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/enhanced_admin_user.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
@@ -61,7 +62,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildContent(context);
+    final theme = AdaptiveTheme.of(context).theme;
+
+    return Container(
+      color: theme.colorScheme.tertiary,
+      child: _buildContent(context),
+    );
   }
 
   Widget _buildContent(BuildContext context) {
@@ -77,10 +83,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     }
 
     if (_users.isEmpty) {
-      return const Center(
+      final theme = AdaptiveTheme.of(context).theme;
+
+      return Center(
         child: Text(
           'No users found',
-          style: TextStyle(fontSize: 18),
+          style: theme.textTheme.displayLarge?.copyWith(
+            fontSize: 18,
+            color: theme.colorScheme.shadow,
+          ),
         ),
       );
     }

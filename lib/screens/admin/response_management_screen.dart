@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/models/survey_response.dart';
 import 'package:gsecsurvey/screens/admin/widgets/expandable_response_card.dart';
@@ -434,11 +435,18 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.tertiary,
       body: RefreshIndicator(
         onRefresh: _loadData,
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: theme.colorScheme.primary,
+                ),
+              )
             : _responses.isEmpty
                 ? _buildEmptyState()
                 : _buildResponsesList(),
@@ -446,37 +454,42 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
       floatingActionButton: _responses.isNotEmpty
           ? FloatingActionButton(
               onPressed: _showExportModal,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.save_alt, color: Colors.white),
+              backgroundColor: theme.colorScheme.primary,
+              child: Icon(
+                Icons.save_alt,
+                color: theme.colorScheme.onPrimary,
+              ),
             )
           : null,
     );
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    final theme = AdaptiveTheme.of(context).theme;
+
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.assignment_outlined,
             size: 64,
-            color: Colors.grey,
+            color: theme.colorScheme.shadow,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'No survey responses found',
-            style: TextStyle(
+            style: theme.textTheme.displayLarge?.copyWith(
               fontSize: 18,
-              color: Colors.grey,
+              color: theme.colorScheme.shadow,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Survey responses will appear here once users submit surveys',
-            style: TextStyle(
+            style: theme.textTheme.displayLarge?.copyWith(
               fontSize: 14,
-              color: Colors.grey,
+              color: theme.colorScheme.shadow,
             ),
             textAlign: TextAlign.center,
           ),
@@ -513,11 +526,13 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
   }
 
   Widget _buildFilterSection() {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: theme.colorScheme.secondary,
         border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
+          bottom: BorderSide(color: theme.colorScheme.surface),
         ),
       ),
       child: Column(
@@ -538,7 +553,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
                     children: [
                       Icon(
                         Icons.filter_list,
-                        color: Theme.of(context).primaryColor,
+                        color: theme.colorScheme.primary,
                         size: 24,
                       ),
                       if (_activeFilterCount > 0)
@@ -548,8 +563,8 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
                           child: Container(
                             width: 8,
                             height: 8,
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -559,22 +574,26 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
                   const SizedBox(width: 12),
                   Text(
                     '${_filteredResponses.length}/${_responses.length} responses',
-                    style: const TextStyle(
+                    style: theme.textTheme.displayLarge?.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSecondary,
                     ),
                   ),
                   const Spacer(),
                   if (_activeFilterCount > 0)
                     TextButton(
                       onPressed: _clearFilters,
-                      child: const Text('Clear All'),
+                      child: Text(
+                        'Clear All',
+                        style: TextStyle(color: theme.colorScheme.primary),
+                      ),
                     ),
                   Icon(
                     _isFilterExpanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: Colors.grey[600],
+                    color: theme.colorScheme.shadow,
                   ),
                 ],
               ),
@@ -608,29 +627,36 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
   }
 
   Widget _buildDateRangeChip() {
+    final theme = AdaptiveTheme.of(context).theme;
     final hasDateFilter = _startDate != null && _endDate != null;
+
     return ActionChip(
       avatar: Icon(
         Icons.date_range,
         size: 18,
-        color: hasDateFilter ? Colors.white : Colors.grey[600],
+        color: hasDateFilter
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.shadow,
       ),
       label: Text(
         hasDateFilter
             ? '${DateFormat('MM/dd').format(_startDate!)} - ${DateFormat('MM/dd').format(_endDate!)}'
             : 'Date Range',
         style: TextStyle(
-          color: hasDateFilter ? Colors.white : Colors.grey[700],
+          color: hasDateFilter
+              ? theme.colorScheme.onPrimary
+              : theme.colorScheme.shadow,
           fontSize: 12,
         ),
       ),
       backgroundColor:
-          hasDateFilter ? Theme.of(context).primaryColor : Colors.grey[200],
+          hasDateFilter ? theme.colorScheme.primary : theme.colorScheme.surface,
       onPressed: _selectDateRange,
     );
   }
 
   Widget _buildRotationDropdown() {
+    final theme = AdaptiveTheme.of(context).theme;
     final rotations = _rotationAttendingMap.keys.toList();
 
     return Container(
@@ -638,8 +664,8 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: _selectedRotation != null
-            ? Theme.of(context).primaryColor
-            : Colors.grey[200],
+            ? theme.colorScheme.primary
+            : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButtonHideUnderline(
@@ -648,30 +674,38 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
           hint: Text(
             'Rotation',
             style: TextStyle(
-              color: Colors.grey[700],
+              color: theme.colorScheme.shadow,
               fontSize: 12,
             ),
           ),
           style: TextStyle(
-            color: _selectedRotation != null ? Colors.white : Colors.grey[700],
+            color: _selectedRotation != null
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.shadow,
             fontSize: 12,
           ),
-          dropdownColor: Colors.white,
+          dropdownColor: theme.colorScheme.secondary,
           icon: Icon(
             Icons.arrow_drop_down,
-            color: _selectedRotation != null ? Colors.white : Colors.grey[600],
+            color: _selectedRotation != null
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.shadow,
             size: 18,
           ),
           items: [
-            const DropdownMenuItem<String>(
+            DropdownMenuItem<String>(
               value: null,
-              child:
-                  Text('All Rotations', style: TextStyle(color: Colors.black)),
+              child: Text(
+                'All Rotations',
+                style: TextStyle(color: theme.colorScheme.onSecondary),
+              ),
             ),
             ...rotations.map((rotation) => DropdownMenuItem<String>(
                   value: rotation,
-                  child: Text(rotation,
-                      style: const TextStyle(color: Colors.black)),
+                  child: Text(
+                    rotation,
+                    style: TextStyle(color: theme.colorScheme.onSecondary),
+                  ),
                 )),
           ],
           onChanged: _onRotationChanged,
@@ -681,6 +715,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
   }
 
   Widget _buildAttendingDropdown() {
+    final theme = AdaptiveTheme.of(context).theme;
     final attendingOptions = _rotationAttendingMap[_selectedRotation!] ?? [];
 
     return Container(
@@ -688,8 +723,8 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: _selectedAttending != null
-            ? Theme.of(context).primaryColor
-            : Colors.grey[200],
+            ? theme.colorScheme.primary
+            : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButtonHideUnderline(
@@ -698,30 +733,38 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
           hint: Text(
             'Attending',
             style: TextStyle(
-              color: Colors.grey[700],
+              color: theme.colorScheme.shadow,
               fontSize: 12,
             ),
           ),
           style: TextStyle(
-            color: _selectedAttending != null ? Colors.white : Colors.grey[700],
+            color: _selectedAttending != null
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.shadow,
             fontSize: 12,
           ),
-          dropdownColor: Colors.white,
+          dropdownColor: theme.colorScheme.secondary,
           icon: Icon(
             Icons.arrow_drop_down,
-            color: _selectedAttending != null ? Colors.white : Colors.grey[600],
+            color: _selectedAttending != null
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.shadow,
             size: 18,
           ),
           items: [
-            const DropdownMenuItem<String>(
+            DropdownMenuItem<String>(
               value: null,
-              child:
-                  Text('All Attending', style: TextStyle(color: Colors.black)),
+              child: Text(
+                'All Attending',
+                style: TextStyle(color: theme.colorScheme.onSecondary),
+              ),
             ),
             ...attendingOptions.map((attending) => DropdownMenuItem<String>(
                   value: attending,
-                  child: Text(attending,
-                      style: const TextStyle(color: Colors.black)),
+                  child: Text(
+                    attending,
+                    style: TextStyle(color: theme.colorScheme.onSecondary),
+                  ),
                 )),
           ],
           onChanged: _onAttendingChanged,

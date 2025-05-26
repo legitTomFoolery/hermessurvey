@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/models/survey_response.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
@@ -148,14 +149,20 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    final theme = AdaptiveTheme.of(context).theme;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
       child: Column(
         children: [
           // Collapsed view
           ListTile(
             leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: theme.colorScheme.primary,
               child: const Icon(
                 Icons.assignment,
                 color: Colors.white,
@@ -163,14 +170,27 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
             ),
             title: Text(
               widget.response.formattedDate,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.onSecondary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            subtitle: Text(widget.response.subtitle),
+            subtitle: Text(
+              widget.response.subtitle,
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.shadow,
+                fontSize: 14,
+              ),
+            ),
             trailing: IconButton(
               icon: AnimatedRotation(
                 turns: widget.isExpanded ? 0.5 : 0,
                 duration: const Duration(milliseconds: 300),
-                child: const Icon(Icons.expand_more),
+                child: Icon(
+                  Icons.expand_more,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               onPressed: _toggleExpanded,
             ),
@@ -189,17 +209,20 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
   }
 
   Widget _buildExpandedContent() {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(),
-          const Text(
+          Divider(color: theme.colorScheme.surface),
+          Text(
             'Response Details',
-            style: TextStyle(
+            style: theme.textTheme.displayLarge?.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSecondary,
             ),
           ),
           const SizedBox(height: 12),
@@ -208,11 +231,12 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
           _buildDetailRow('Attending', widget.response.attending),
 
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Survey Responses',
-            style: TextStyle(
+            style: theme.textTheme.displayLarge?.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSecondary,
             ),
           ),
           const SizedBox(height: 12),
@@ -240,7 +264,11 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
 
           // Delete button
           if (_isLoading)
-            const Center(child: CircularProgressIndicator())
+            Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            )
           else
             Align(
               alignment: Alignment.centerLeft,
@@ -249,8 +277,8 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
                 icon: const Icon(Icons.delete),
                 label: const Text('Delete Response'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                 ),
               ),
             ),
@@ -260,6 +288,8 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
   }
 
   Widget _buildDetailRow(String label, String value) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -269,16 +299,21 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
             width: 80,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: theme.textTheme.displayLarge?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey,
+                color: theme.colorScheme.shadow,
+                fontSize: 14,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value.isEmpty ? 'Not specified' : value,
-              style: const TextStyle(fontWeight: FontWeight.w400),
+              style: theme.textTheme.displayLarge?.copyWith(
+                fontWeight: FontWeight.w400,
+                color: theme.colorScheme.onSecondary,
+                fontSize: 14,
+              ),
             ),
           ),
         ],
@@ -287,9 +322,14 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
   }
 
   Widget _buildQuestionResponseCard(String questionText, String responseValue) {
-    return Card(
+    final theme = AdaptiveTheme.of(context).theme;
+
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
-      color: Colors.grey[50],
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -297,9 +337,10 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
           children: [
             Text(
               questionText,
-              style: const TextStyle(
+              style: theme.textTheme.displayLarge?.copyWith(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
+                color: theme.colorScheme.onSecondary,
               ),
             ),
             const SizedBox(height: 8),
@@ -307,17 +348,21 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
               width: double.infinity,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey[300]!),
+                color: theme.colorScheme.tertiary,
+                border: Border.all(
+                    color: theme.colorScheme.shadow.withOpacity(0.3)),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 responseValue.isEmpty ? 'No response' : responseValue,
-                style: TextStyle(
-                  color: responseValue.isEmpty ? Colors.grey : Colors.black,
+                style: theme.textTheme.displayLarge?.copyWith(
+                  color: responseValue.isEmpty
+                      ? theme.colorScheme.shadow
+                      : theme.colorScheme.onSecondary,
                   fontStyle: responseValue.isEmpty
                       ? FontStyle.italic
                       : FontStyle.normal,
+                  fontSize: 14,
                 ),
               ),
             ),

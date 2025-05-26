@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/enhanced_admin_user.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/services/enhanced_admin_service.dart';
@@ -254,27 +255,59 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    final theme = AdaptiveTheme.of(context).theme;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
       child: Column(
         children: [
           // Collapsed view
           ListTile(
             leading: CircleAvatar(
-              backgroundColor: widget.user.isAdmin ? Colors.green : Colors.grey,
+              backgroundColor: widget.user.isAdmin
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.shadow,
               child: Icon(
                 widget.user.isAdmin ? Icons.admin_panel_settings : Icons.person,
                 color: Colors.white,
               ),
             ),
-            title: Text(widget.user.email ?? 'No email'),
+            title: Text(
+              widget.user.email ?? 'No email',
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.onSecondary,
+                fontSize: 16,
+              ),
+            ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.user.displayName != null)
-                  Text('Name: ${widget.user.displayName}'),
-                Text('Status: ${widget.user.statusText}'),
-                Text('UID: ${widget.user.uid}'),
+                  Text(
+                    'Name: ${widget.user.displayName}',
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      color: theme.colorScheme.shadow,
+                      fontSize: 14,
+                    ),
+                  ),
+                Text(
+                  'Status: ${widget.user.statusText}',
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.colorScheme.shadow,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  'UID: ${widget.user.uid}',
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.colorScheme.shadow,
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
             trailing: Row(
@@ -284,7 +317,9 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: widget.user.isAdmin ? Colors.green : Colors.grey,
+                    color: widget.user.isAdmin
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.shadow,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -301,7 +336,10 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                   icon: AnimatedRotation(
                     turns: widget.isExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 300),
-                    child: const Icon(Icons.expand_more),
+                    child: Icon(
+                      Icons.expand_more,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                   onPressed: _toggleExpanded,
                 ),
@@ -322,17 +360,20 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
   }
 
   Widget _buildExpandedContent() {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(),
-          const Text(
+          Divider(color: theme.colorScheme.surface),
+          Text(
             'User Details',
-            style: TextStyle(
+            style: theme.textTheme.displayLarge?.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSecondary,
             ),
           ),
           const SizedBox(height: 12),
@@ -348,16 +389,21 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                 'Last Sign In', widget.user.lastSignInTime!.toString()),
           _buildDetailRow('Data Sources', _getDataSourcesText()),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Admin Actions',
-            style: TextStyle(
+            style: theme.textTheme.displayLarge?.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSecondary,
             ),
           ),
           const SizedBox(height: 12),
           if (_isLoading)
-            const Center(child: CircularProgressIndicator())
+            Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            )
           else
             Wrap(
               spacing: 8,
@@ -371,9 +417,10 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                   label:
                       Text(widget.user.isAdmin ? 'Remove Admin' : 'Make Admin'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        widget.user.isAdmin ? Colors.orange : Colors.green,
-                    foregroundColor: Colors.white,
+                    backgroundColor: widget.user.isAdmin
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                   ),
                 ),
                 if (widget.user.email != null && widget.user.email!.isNotEmpty)
@@ -382,8 +429,8 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                     icon: const Icon(Icons.lock_reset),
                     label: const Text('Reset Password'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ElevatedButton.icon(
@@ -391,8 +438,8 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
                   icon: const Icon(Icons.delete),
                   label: const Text('Delete User'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                   ),
                 ),
               ],
@@ -403,6 +450,8 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
   }
 
   Widget _buildDetailRow(String label, String value) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -412,16 +461,21 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
             width: 120,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: theme.textTheme.displayLarge?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey,
+                color: theme.colorScheme.shadow,
+                fontSize: 14,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w400),
+              style: theme.textTheme.displayLarge?.copyWith(
+                fontWeight: FontWeight.w400,
+                color: theme.colorScheme.onSecondary,
+                fontSize: 14,
+              ),
             ),
           ),
         ],

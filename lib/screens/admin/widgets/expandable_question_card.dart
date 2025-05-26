@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/index.dart';
@@ -303,20 +304,40 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    final theme = AdaptiveTheme.of(context).theme;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
       child: Column(
         children: [
           // Collapsed view
           ListTile(
-            title: Text(widget.question.name),
+            title: Text(
+              widget.question.name,
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.onSecondary,
+                fontSize: 16,
+              ),
+            ),
             subtitle: Text(
-                'Order: ${widget.question.id.split('-').first}\nID: ${widget.question.id.split('-').sublist(1).join('-')}'),
+              'Order: ${widget.question.id.split('-').first}\nID: ${widget.question.id.split('-').sublist(1).join('-')}',
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: theme.colorScheme.shadow,
+                fontSize: 14,
+              ),
+            ),
             trailing: IconButton(
               icon: AnimatedRotation(
                 turns: widget.isExpanded ? 0.5 : 0,
                 duration: const Duration(milliseconds: 300),
-                child: const Icon(Icons.edit),
+                child: Icon(
+                  Icons.edit,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               onPressed: _toggleExpanded,
             ),
@@ -335,6 +356,8 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
   }
 
   Widget _buildExpandedContent() {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -361,12 +384,21 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
             children: [
               TextButton(
                 onPressed: _toggleExpanded,
-                child: const Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: theme.colorScheme.shadow),
+                ),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _saveQuestion,
-                child: const Text('Save'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                ),
+                child: Text(
+                  'Save',
+                  style: TextStyle(color: theme.colorScheme.onPrimary),
+                ),
               ),
             ],
           ),

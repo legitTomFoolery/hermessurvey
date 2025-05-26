@@ -34,11 +34,26 @@ class AdminLayout extends StatelessWidget {
       child: Scaffold(
         backgroundColor: theme.colorScheme.tertiary,
         appBar: AppBar(
-          title: Text(title),
+          backgroundColor: theme.colorScheme.primary,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: Text(
+            title,
+            style: theme.textTheme.displayLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+              fontSize: 22,
+            ),
+          ),
+          iconTheme: IconThemeData(
+            color: theme.colorScheme.onPrimary,
+          ),
           actions: [
             if (actions != null) ...actions!,
             IconButton(
-              icon: const Icon(Icons.logout),
+              icon: Icon(
+                Icons.logout,
+                color: theme.colorScheme.onPrimary,
+              ),
               onPressed: () {
                 context.read<AuthCubit>().signOut();
               },
