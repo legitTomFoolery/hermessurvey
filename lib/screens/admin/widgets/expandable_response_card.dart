@@ -242,7 +242,14 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
           const SizedBox(height: 12),
 
           // Display each question and its response (excluding standard fields)
-          ...widget.response.questionResponses.entries.map((entry) {
+          ...(widget.response.questionResponses.entries.toList()
+                ..sort((a, b) {
+                  // Custom sort for question IDs like "3-", "400-", "5-"
+                  final aNum = int.tryParse(a.key.split('-').first) ?? 0;
+                  final bNum = int.tryParse(b.key.split('-').first) ?? 0;
+                  return aNum.compareTo(bNum);
+                }))
+              .map((entry) {
             final questionId = entry.key;
             final responseValue = entry.value;
 

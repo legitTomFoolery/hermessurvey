@@ -176,12 +176,8 @@ class _AdminScreenState extends State<AdminScreen> {
               if (_expandedQuestionId != null) {
                 return false;
               }
-              return await AdminUtils.showConfirmationDialog(
-                context: context,
-                title: 'Confirm Deletion',
-                content:
-                    'Are you sure you want to delete this question? This action cannot be undone.',
-              );
+              // Return true to allow dismissal - AdminUtils.deleteQuestion will handle confirmation
+              return true;
             },
             onDismissed: (direction) async {
               await AdminUtils.deleteQuestion(context, question);

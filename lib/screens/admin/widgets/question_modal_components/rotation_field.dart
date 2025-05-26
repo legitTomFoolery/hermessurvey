@@ -60,6 +60,8 @@ class _RotationFieldState extends State<RotationField> {
                     .toList()
                     .cast<String>();
 
+                // Sort attendings alphabetically
+                items.sort();
                 _rotations[key] = items;
               }
             }
@@ -69,6 +71,10 @@ class _RotationFieldState extends State<RotationField> {
           widget.rotationDetailsFromQuestion != null) {
         _rotations =
             Map<String, List<String>>.from(widget.rotationDetailsFromQuestion);
+        // Sort attendings for each rotation
+        _rotations.forEach((key, value) {
+          value.sort();
+        });
       }
     } catch (e) {
       // If parsing fails, start with empty map
@@ -141,6 +147,8 @@ class _RotationFieldState extends State<RotationField> {
 
   void _updateAttendingsList(String rotationName, List<String> attendings) {
     setState(() {
+      // Sort attendings alphabetically
+      attendings.sort();
       _rotations[rotationName] = attendings;
       _updateRotationDetails();
     });
@@ -148,6 +156,10 @@ class _RotationFieldState extends State<RotationField> {
 
   @override
   Widget build(BuildContext context) {
+    // Get sorted rotation entries
+    final sortedRotations = _rotations.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -162,8 +174,8 @@ class _RotationFieldState extends State<RotationField> {
           ),
         ),
 
-        // List of rotation cards
-        ..._rotations.entries.map((entry) {
+        // List of rotation cards (sorted alphabetically)
+        ...sortedRotations.map((entry) {
           final rotationName = entry.key;
           final attendings = entry.value;
 

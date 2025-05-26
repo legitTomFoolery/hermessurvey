@@ -94,6 +94,8 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
       setState(() {
         _responses = responses;
+        // Sort responses by most recent timestamp first
+        _responses.sort((a, b) => b.timestamp.compareTo(a.timestamp));
         _questions = questions;
         _extractRotationAttendingMap();
         _applyFilters();
@@ -782,7 +784,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
   Widget _buildRotationDropdown() {
     final theme = AdaptiveTheme.of(context).theme;
-    final rotations = _rotationAttendingMap.keys.toList();
+    final rotations = _rotationAttendingMap.keys.toList()..sort();
 
     return Container(
       height: 32,
@@ -841,7 +843,8 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
   Widget _buildAttendingDropdown() {
     final theme = AdaptiveTheme.of(context).theme;
-    final attendingOptions = _rotationAttendingMap[_selectedRotation!] ?? [];
+    final attendingOptions = (_rotationAttendingMap[_selectedRotation!] ?? [])
+      ..sort();
 
     return Container(
       height: 32,

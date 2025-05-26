@@ -44,7 +44,7 @@ class SurveyResponse {
   }
 
   String get formattedDate {
-    return '${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}';
+    return '${timestamp.month.toString().padLeft(2, '0')}/${timestamp.day.toString().padLeft(2, '0')}/${timestamp.year}';
   }
 
   String get formattedDateTime {
