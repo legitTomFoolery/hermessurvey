@@ -3,7 +3,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 
 /// A simple loading view with a centered circular progress indicator
 class LoadingView extends StatelessWidget {
-  const LoadingView({Key? key}) : super(key: key);
+  const LoadingView({super.key});
 
   @override
   Widget build(BuildContext context) {

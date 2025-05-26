@@ -72,25 +72,29 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
                 Builder(
                   builder: (context) {
                     try {
-                      return ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: 200.h,
-                        ),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Rive(
-                            artboard: riveHelper.riveArtboard!,
-                            fit: BoxFit.cover,
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: 200.h,
+                            maxWidth: MediaQuery.of(context).size.width *
+                                0.28, // 28% of screen width (75% of 37.5%)
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Rive(
+                              artboard: riveHelper.riveArtboard!,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       );
                     } catch (e) {
                       // If there's an error with the Rive animation, return an empty container
-                      print('Error rendering Rive animation: $e');
+                      // Error rendering Rive animation: $e
                       return Container(
                         height: 100.h,
                         alignment: Alignment.center,
-                        child: Text('Animation not available'),
+                        child: const Text('Animation not available'),
                       );
                     }
                   },

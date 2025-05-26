@@ -7,10 +7,10 @@ class QuestionModal extends StatefulWidget {
   final VoidCallback onSave;
 
   const QuestionModal({
-    Key? key,
+    super.key,
     this.question,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   State<QuestionModal> createState() => _QuestionModalState();

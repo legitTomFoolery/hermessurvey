@@ -12,13 +12,13 @@ class ExpandableUserCard extends StatefulWidget {
   final VoidCallback onCollapsed;
 
   const ExpandableUserCard({
-    Key? key,
+    super.key,
     required this.user,
     required this.onUpdate,
     this.isExpanded = false,
     required this.onExpanded,
     required this.onCollapsed,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpandableUserCard> createState() => _ExpandableUserCardState();

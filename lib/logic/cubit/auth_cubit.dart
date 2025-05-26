@@ -177,7 +177,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
       rethrow;
     } catch (e) {
-      print('Error checking user account: $e');
+      // Error checking user account: $e
       return false;
     }
   }

@@ -117,13 +117,13 @@ class _HomeState extends State<Home> {
               (Route<dynamic> route) => false,
             );
           }).catchError((error) {
-            print("Failed to upload responses: $error");
+            // Failed to upload responses: $error
           });
         }).catchError((error) {
-          print("Failed to update submission count: $error");
+          // Failed to update submission count: $error
         });
       } else {
-        print("No user logged in or email not available");
+        // No user logged in or email not available
       }
     }
   }

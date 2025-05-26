@@ -5,7 +5,7 @@ import 'package:gsecsurvey/screens/admin/user_management_screen.dart';
 import 'package:gsecsurvey/screens/admin/widgets/admin_layout.dart';
 
 class MainAdminScreen extends StatefulWidget {
-  const MainAdminScreen({Key? key}) : super(key: key);
+  const MainAdminScreen({super.key});
 
   @override
   State<MainAdminScreen> createState() => _MainAdminScreenState();

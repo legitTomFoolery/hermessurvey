@@ -13,13 +13,13 @@ class AdminLayout extends StatelessWidget {
   final Widget? bottomNavigationBar;
 
   const AdminLayout({
-    Key? key,
+    super.key,
     required this.title,
     required this.body,
     this.actions,
     this.floatingActionButton,
     this.bottomNavigationBar,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

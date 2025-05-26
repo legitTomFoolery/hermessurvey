@@ -8,12 +8,12 @@ class RotationField extends StatefulWidget {
   final dynamic rotationDetailsFromQuestion;
 
   const RotationField({
-    Key? key,
+    super.key,
     required this.rotationDetailsController,
     required this.scrollController,
     required this.isNewQuestion,
     this.rotationDetailsFromQuestion,
-  }) : super(key: key);
+  });
 
   @override
   State<RotationField> createState() => _RotationFieldState();
@@ -193,7 +193,7 @@ class _RotationFieldState extends State<RotationField> {
             onDelete: () => _deleteRotation(rotationName),
             scrollController: widget.scrollController,
           );
-        }).toList(),
+        }),
 
         // Add rotation button
         const SizedBox(height: 8),

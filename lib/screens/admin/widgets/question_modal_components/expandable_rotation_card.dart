@@ -13,7 +13,7 @@ class ExpandableRotationCard extends StatefulWidget {
   final ScrollController? scrollController;
 
   const ExpandableRotationCard({
-    Key? key,
+    super.key,
     required this.rotation,
     required this.attendings,
     required this.isExpanded,
@@ -23,7 +23,7 @@ class ExpandableRotationCard extends StatefulWidget {
     required this.onAttendingsChanged,
     required this.onDelete,
     this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpandableRotationCard> createState() => _ExpandableRotationCardState();

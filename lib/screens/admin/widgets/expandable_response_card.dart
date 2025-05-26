@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/question.dart';
 import 'package:gsecsurvey/models/survey_response.dart';
-import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
-import 'package:gsecsurvey/services/response_admin_service.dart';
 
 class ExpandableResponseCard extends StatefulWidget {
   final SurveyResponse response;
@@ -14,14 +12,14 @@ class ExpandableResponseCard extends StatefulWidget {
   final VoidCallback onCollapsed;
 
   const ExpandableResponseCard({
-    Key? key,
+    super.key,
     required this.response,
     required this.questions,
     required this.onUpdate,
     this.isExpanded = false,
     required this.onExpanded,
     required this.onCollapsed,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpandableResponseCard> createState() => _ExpandableResponseCardState();
@@ -78,63 +76,6 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
     } else {
       widget.onExpanded();
       _animationController.forward();
-    }
-  }
-
-  Future<void> _deleteResponse() async {
-    // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Response'),
-        content: Text(
-          'Are you sure you want to delete the response from ${widget.response.formattedDate}? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    try {
-      final success =
-          await ResponseAdminService.deleteResponse(widget.response.id);
-
-      if (success) {
-        widget.onUpdate();
-        if (!mounted) return;
-        AdminUtils.showSnackBar(
-          context,
-          'Response deleted successfully',
-        );
-      } else {
-        if (!mounted) return;
-        AdminUtils.showSnackBar(
-          context,
-          'Failed to delete response',
-          isError: true,
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      AdminUtils.showSnackBar(
-        context,
-        'Error deleting response: $e',
-        isError: true,
-      );
     }
   }
 
@@ -233,30 +174,34 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
           const SizedBox(height: 12),
 
           // Display each question and its response (excluding standard fields)
-          ...(widget.response.questionResponses.entries.toList()
-                ..sort((a, b) {
-                  // Custom sort for question IDs like "3-", "400-", "5-"
-                  final aNum = int.tryParse(a.key.split('-').first) ?? 0;
-                  final bNum = int.tryParse(b.key.split('-').first) ?? 0;
-                  return aNum.compareTo(bNum);
-                }))
-              .map((entry) {
-            final questionId = entry.key;
-            final responseValue = entry.value;
+          ...() {
+            final sortedEntries =
+                widget.response.questionResponses.entries.toList()
+                  ..sort((a, b) {
+                    // Custom sort for question IDs like "3-", "400-", "5-"
+                    final aNum = int.tryParse(a.key.split('-').first) ?? 0;
+                    final bNum = int.tryParse(b.key.split('-').first) ?? 0;
+                    return aNum.compareTo(bNum);
+                  });
 
-            // Find the question text
-            final question = widget.questions.firstWhere(
-              (q) => q.id == questionId,
-              orElse: () => Question(
-                id: questionId,
-                name: 'Question not found',
-                type: 'text',
-                options: [],
-              ),
-            );
+            return sortedEntries.map((entry) {
+              final questionId = entry.key;
+              final responseValue = entry.value;
 
-            return _buildQuestionResponseCard(question.name, responseValue);
-          }).toList(),
+              // Find the question text
+              final question = widget.questions.firstWhere(
+                (q) => q.id == questionId,
+                orElse: () => Question(
+                  id: questionId,
+                  name: 'Question not found',
+                  type: 'text',
+                  options: [],
+                ),
+              );
+
+              return _buildQuestionResponseCard(question.name, responseValue);
+            });
+          }(),
         ],
       ),
     );

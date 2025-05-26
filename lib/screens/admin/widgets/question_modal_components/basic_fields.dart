@@ -9,13 +9,13 @@ class BasicFields extends StatelessWidget {
   final Function(String?) onTypeChanged;
 
   const BasicFields({
-    Key? key,
+    super.key,
     required this.orderController,
     required this.idController,
     required this.nameController,
     required this.typeController,
     required this.onTypeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

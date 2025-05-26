@@ -48,7 +48,7 @@ class SurveyResponse {
   }
 
   String get formattedDateTime {
-    return '${formattedDate} ${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
+    return '$formattedDate ${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
   }
 
   // Extract specific response values

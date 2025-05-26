@@ -7,11 +7,11 @@ class OptionsField extends StatefulWidget {
   final ScrollController scrollController;
 
   const OptionsField({
-    Key? key,
+    super.key,
     required this.optionsController,
     required this.newOptionController,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<OptionsField> createState() => _OptionsFieldState();

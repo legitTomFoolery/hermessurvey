@@ -9,15 +9,14 @@ import 'package:gsecsurvey/screens/admin/widgets/expandable_response_card.dart';
 import 'package:gsecsurvey/services/firestore_service.dart';
 import 'package:gsecsurvey/services/response_admin_service.dart';
 import 'package:intl/intl.dart';
-import 'package:excel/excel.dart' as ExcelLib;
+import 'package:excel/excel.dart' as excel_lib;
 import 'package:path_provider/path_provider.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
-import 'dart:typed_data';
 
 class ResponseManagementScreen extends StatefulWidget {
-  const ResponseManagementScreen({Key? key}) : super(key: key);
+  const ResponseManagementScreen({super.key});
 
   @override
   State<ResponseManagementScreen> createState() =>
@@ -281,7 +280,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
       );
 
       // Create Excel workbook
-      final excel = ExcelLib.Excel.createExcel();
+      final excel = excel_lib.Excel.createExcel();
       final sheet = excel['Survey Responses'];
 
       // Create headers
@@ -305,9 +304,9 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
       // Add headers to sheet
       for (int i = 0; i < headers.length; i++) {
         final cell = sheet.cell(
-            ExcelLib.CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0));
+            excel_lib.CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0));
         cell.value = headers[i];
-        cell.cellStyle = ExcelLib.CellStyle(bold: true);
+        cell.cellStyle = excel_lib.CellStyle(bold: true);
       }
 
       // Add data rows
@@ -317,23 +316,23 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
         // Basic response info
         sheet
-            .cell(ExcelLib.CellIndex.indexByColumnRow(
+            .cell(excel_lib.CellIndex.indexByColumnRow(
                 columnIndex: 0, rowIndex: dataRow))
             .value = response.id;
         sheet
-            .cell(ExcelLib.CellIndex.indexByColumnRow(
+            .cell(excel_lib.CellIndex.indexByColumnRow(
                 columnIndex: 1, rowIndex: dataRow))
             .value = response.formattedDateTime;
         sheet
-            .cell(ExcelLib.CellIndex.indexByColumnRow(
+            .cell(excel_lib.CellIndex.indexByColumnRow(
                 columnIndex: 2, rowIndex: dataRow))
             .value = response.date;
         sheet
-            .cell(ExcelLib.CellIndex.indexByColumnRow(
+            .cell(excel_lib.CellIndex.indexByColumnRow(
                 columnIndex: 3, rowIndex: dataRow))
             .value = response.rotation;
         sheet
-            .cell(ExcelLib.CellIndex.indexByColumnRow(
+            .cell(excel_lib.CellIndex.indexByColumnRow(
                 columnIndex: 4, rowIndex: dataRow))
             .value = response.attending;
 
@@ -345,7 +344,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
               !question.id.startsWith('3-attending')) {
             final answerValue = response.responses[question.id] ?? '';
             sheet
-                .cell(ExcelLib.CellIndex.indexByColumnRow(
+                .cell(excel_lib.CellIndex.indexByColumnRow(
                     columnIndex: columnIndex, rowIndex: dataRow))
                 .value = answerValue;
             columnIndex++;
@@ -548,112 +547,116 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
 
         // Responses list
         Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: _filteredResponses.length,
-            itemBuilder: (context, index) {
-              final response = _filteredResponses[index];
-              return Dismissible(
-                key: Key(response.id),
-                // Disable swipe when any card is expanded
-                dismissThresholds: _expandedResponseId != null
-                    ? const {
-                        DismissDirection.startToEnd: 1.0,
-                        DismissDirection.endToStart: 1.0
-                      }
-                    : const {},
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                ),
-                secondaryBackground: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                ),
-                confirmDismiss: (direction) async {
-                  // Don't allow dismiss when any card is expanded
-                  if (_expandedResponseId != null) {
-                    return false;
-                  }
-                  return await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Delete Response'),
-                      content: Text(
-                        'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: const Text('Delete'),
-                        ),
-                      ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _filteredResponses.length,
+              itemBuilder: (context, index) {
+                final response = _filteredResponses[index];
+                return Dismissible(
+                  key: Key(response.id),
+                  // Disable swipe when any card is expanded
+                  dismissThresholds: _expandedResponseId != null
+                      ? const {
+                          DismissDirection.startToEnd: 1.0,
+                          DismissDirection.endToStart: 1.0
+                        }
+                      : const {},
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
-                  );
-                },
-                onDismissed: (direction) async {
-                  try {
-                    final success =
-                        await ResponseAdminService.deleteResponse(response.id);
-                    if (success) {
-                      _loadData();
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Response deleted successfully'),
-                            backgroundColor: Colors.green,
+                  ),
+                  secondaryBackground: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                  confirmDismiss: (direction) async {
+                    // Don't allow dismiss when any card is expanded
+                    if (_expandedResponseId != null) {
+                      return false;
+                    }
+                    return await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Delete Response'),
+                        content: Text(
+                          'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('Cancel'),
                           ),
-                        );
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  onDismissed: (direction) async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    try {
+                      final success = await ResponseAdminService.deleteResponse(
+                          response.id);
+                      if (success) {
+                        _loadData();
+                        if (mounted) {
+                          scaffoldMessenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Response deleted successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } else {
+                        if (mounted) {
+                          scaffoldMessenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to delete response'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       }
-                    } else {
+                    } catch (e) {
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to delete response'),
+                        scaffoldMessenger.showSnackBar(
+                          SnackBar(
+                            content: Text('Error deleting response: $e'),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
                     }
-                  } catch (e) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error deleting response: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: ExpandableResponseCard(
-                  response: response,
-                  questions: _questions,
-                  onUpdate: _loadData,
-                  isExpanded: _expandedResponseId == response.id,
-                  onExpanded: () => _onResponseExpanded(response.id),
-                  onCollapsed: _onResponseCollapsed,
-                ),
-              );
-            },
+                  },
+                  child: ExpandableResponseCard(
+                    response: response,
+                    questions: _questions,
+                    onUpdate: _loadData,
+                    isExpanded: _expandedResponseId == response.id,
+                    onExpanded: () => _onResponseExpanded(response.id),
+                    onCollapsed: _onResponseCollapsed,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],

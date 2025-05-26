@@ -36,10 +36,10 @@ class AdminUtils {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(confirmText),
                 style: TextButton.styleFrom(
                   foregroundColor: confirmColor,
                 ),
+                child: Text(confirmText),
               ),
             ],
           ),

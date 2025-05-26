@@ -8,13 +8,13 @@ class EditableListField extends StatefulWidget {
   final ScrollController? scrollController;
 
   const EditableListField({
-    Key? key,
+    super.key,
     required this.items,
     required this.title,
     required this.hintText,
     required this.onItemsChanged,
     this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<EditableListField> createState() => _EditableListFieldState();
@@ -126,7 +126,7 @@ class _EditableListFieldState extends State<EditableListField> {
               ],
             ),
           );
-        }).toList(),
+        }),
 
         // Add new item field
         _buildNewItemField(),

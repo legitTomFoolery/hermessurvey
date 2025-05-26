@@ -8,13 +8,13 @@ class RotationCard extends StatefulWidget {
   final ScrollController scrollController;
 
   const RotationCard({
-    Key? key,
+    super.key,
     required this.rotation,
     required this.attendings,
     required this.rotations,
     required this.updateRotationDetails,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<RotationCard> createState() => _RotationCardState();
@@ -167,7 +167,7 @@ class _RotationCardState extends State<RotationCard> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
 
                   // Add new attending field
                   _buildNewAttendingField(),

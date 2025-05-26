@@ -171,76 +171,79 @@ class _AdminScreenState extends State<AdminScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadQuestions,
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: _questions.length + (_showNewQuestionCard ? 1 : 0),
-        itemBuilder: (context, index) {
-          // Show new question card at the end
-          if (index == _questions.length && _showNewQuestionCard) {
-            return ExpandableQuestionCard(
-              question: Question(
-                id: '',
-                name: '',
-                type: 'text',
-                options: [],
-              ),
-              onSave: _onNewQuestionSaved,
-              isExpanded: _expandedQuestionId == 'new-question',
-              onExpanded: () => _onQuestionExpanded('new-question'),
-              onCollapsed: _onNewQuestionCancelled,
-              isNewQuestion: true,
-            );
-          }
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: _questions.length + (_showNewQuestionCard ? 1 : 0),
+          itemBuilder: (context, index) {
+            // Show new question card at the end
+            if (index == _questions.length && _showNewQuestionCard) {
+              return ExpandableQuestionCard(
+                question: Question(
+                  id: '',
+                  name: '',
+                  type: 'text',
+                  options: [],
+                ),
+                onSave: _onNewQuestionSaved,
+                isExpanded: _expandedQuestionId == 'new-question',
+                onExpanded: () => _onQuestionExpanded('new-question'),
+                onCollapsed: _onNewQuestionCancelled,
+                isNewQuestion: true,
+              );
+            }
 
-          final question = _questions[index];
-          return Dismissible(
-            key: Key(question.id),
-            // Disable swipe when any card is expanded
-            dismissThresholds: _expandedQuestionId != null
-                ? const {
-                    DismissDirection.startToEnd: 1.0,
-                    DismissDirection.endToStart: 1.0
-                  }
-                : const {},
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20.0),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
+            final question = _questions[index];
+            return Dismissible(
+              key: Key(question.id),
+              // Disable swipe when any card is expanded
+              dismissThresholds: _expandedQuestionId != null
+                  ? const {
+                      DismissDirection.startToEnd: 1.0,
+                      DismissDirection.endToStart: 1.0
+                    }
+                  : const {},
+              background: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20.0),
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            secondaryBackground: Container(
-              color: Colors.red,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.only(left: 20.0),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
+              secondaryBackground: Container(
+                color: Colors.red,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 20.0),
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            confirmDismiss: (direction) async {
-              // Don't allow dismiss when any card is expanded
-              if (_expandedQuestionId != null) {
-                return false;
-              }
-              // Return true to allow dismissal - AdminUtils.deleteQuestion will handle confirmation
-              return true;
-            },
-            onDismissed: (direction) async {
-              await AdminUtils.deleteQuestion(context, question);
-              _loadQuestions();
-            },
-            child: ExpandableQuestionCard(
-              question: question,
-              onSave: _loadQuestions,
-              isExpanded: _expandedQuestionId == question.id,
-              onExpanded: () => _onQuestionExpanded(question.id),
-              onCollapsed: _onQuestionCollapsed,
-            ),
-          );
-        },
+              confirmDismiss: (direction) async {
+                // Don't allow dismiss when any card is expanded
+                if (_expandedQuestionId != null) {
+                  return false;
+                }
+                // Return true to allow dismissal - AdminUtils.deleteQuestion will handle confirmation
+                return true;
+              },
+              onDismissed: (direction) async {
+                await AdminUtils.deleteQuestion(context, question);
+                _loadQuestions();
+              },
+              child: ExpandableQuestionCard(
+                question: question,
+                onSave: _loadQuestions,
+                isExpanded: _expandedQuestionId == question.id,
+                onExpanded: () => _onQuestionExpanded(question.id),
+                onCollapsed: _onQuestionCollapsed,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

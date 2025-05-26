@@ -15,14 +15,14 @@ class ExpandableQuestionCard extends StatefulWidget {
   final bool isNewQuestion;
 
   const ExpandableQuestionCard({
-    Key? key,
+    super.key,
     required this.question,
     required this.onSave,
     this.isExpanded = false,
     required this.onExpanded,
     required this.onCollapsed,
     this.isNewQuestion = false,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpandableQuestionCard> createState() => _ExpandableQuestionCardState();

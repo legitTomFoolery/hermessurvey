@@ -36,8 +36,12 @@ class QuestionStore extends ChangeNotifier {
           newQuestions.add(doc.data());
         }
 
-        // Sort questions by document ID
-        newQuestions.sort((a, b) => a.id.compareTo(b.id));
+        // Sort questions numerically by the number before the first hyphen
+        newQuestions.sort((a, b) {
+          final aNum = int.tryParse(a.id.split('-').first) ?? 0;
+          final bNum = int.tryParse(b.id.split('-').first) ?? 0;
+          return aNum.compareTo(bNum);
+        });
 
         // Update questions list
         _questions

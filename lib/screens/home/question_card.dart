@@ -136,7 +136,7 @@ class _QuestionCardState extends State<QuestionCard> {
       children: widget.question.options.map((option) {
         return Theme(
           data: Theme.of(context).copyWith(
-            listTileTheme: ListTileThemeData(
+            listTileTheme: const ListTileThemeData(
               horizontalTitleGap: 8,
             ),
           ),

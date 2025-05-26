@@ -5,8 +5,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 class AccountNotExistsPopup extends StatelessWidget {
   final VoidCallback onLogout;
 
-  const AccountNotExistsPopup({Key? key, required this.onLogout})
-      : super(key: key);
+  const AccountNotExistsPopup({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {

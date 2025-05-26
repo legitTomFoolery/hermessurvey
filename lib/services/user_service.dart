@@ -17,7 +17,7 @@ class UserService {
       DocumentSnapshot doc = await _usersCollection.doc(uid).get();
       return doc.exists;
     } catch (e) {
-      print('Error checking if user exists: $e');
+      // Error checking if user exists: $e
       return false;
     }
   }
@@ -30,8 +30,8 @@ class UserService {
         'createdAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error creating user: $e');
-      throw e;
+      // Error creating user: $e
+      rethrow;
     }
   }
 
@@ -51,7 +51,7 @@ class UserService {
 
       return doc.get('isAdmin') == true;
     } catch (e) {
-      print('Error checking if user is admin: $e');
+      // Error checking if user is admin: $e
       return false;
     }
   }
@@ -69,7 +69,7 @@ class UserService {
 
       return doc.get('isAdmin') == true;
     } catch (e) {
-      print('Error checking if user is admin: $e');
+      // Error checking if user is admin: $e
       return false;
     }
   }
