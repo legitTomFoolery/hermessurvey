@@ -543,13 +543,105 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
             itemCount: _filteredResponses.length,
             itemBuilder: (context, index) {
               final response = _filteredResponses[index];
-              return ExpandableResponseCard(
-                response: response,
-                questions: _questions,
-                onUpdate: _loadData,
-                isExpanded: _expandedResponseId == response.id,
-                onExpanded: () => _onResponseExpanded(response.id),
-                onCollapsed: _onResponseCollapsed,
+              return Dismissible(
+                key: Key(response.id),
+                // Disable swipe when any card is expanded
+                dismissThresholds: _expandedResponseId != null
+                    ? const {
+                        DismissDirection.startToEnd: 1.0,
+                        DismissDirection.endToStart: 1.0
+                      }
+                    : const {},
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                ),
+                secondaryBackground: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                ),
+                confirmDismiss: (direction) async {
+                  // Don't allow dismiss when any card is expanded
+                  if (_expandedResponseId != null) {
+                    return false;
+                  }
+                  return await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Delete Response'),
+                      content: Text(
+                        'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                onDismissed: (direction) async {
+                  try {
+                    final success =
+                        await ResponseAdminService.deleteResponse(response.id);
+                    if (success) {
+                      _loadData();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Response deleted successfully'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    } else {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to delete response'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error deleting response: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: ExpandableResponseCard(
+                  response: response,
+                  questions: _questions,
+                  onUpdate: _loadData,
+                  isExpanded: _expandedResponseId == response.id,
+                  onExpanded: () => _onResponseExpanded(response.id),
+                  onCollapsed: _onResponseCollapsed,
+                ),
               );
             },
           ),
