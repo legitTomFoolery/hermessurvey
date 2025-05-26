@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/models/admin_user.dart';
+import 'package:gsecsurvey/models/enhanced_admin_user.dart';
 import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
 import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
+import 'package:gsecsurvey/screens/admin/widgets/expandable_user_card.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
-import 'package:gsecsurvey/services/admin_service.dart';
+import 'package:gsecsurvey/services/enhanced_admin_service.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -13,9 +14,10 @@ class UserManagementScreen extends StatefulWidget {
 }
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
-  List<AdminUser> _users = [];
+  List<EnhancedAdminUser> _users = [];
   bool _isLoading = false;
   String? _errorMessage;
+  int? _expandedIndex;
 
   @override
   void initState() {
@@ -30,7 +32,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     });
 
     try {
-      final users = await AdminService.getAllUsers();
+      final users = await EnhancedAdminService.getAllEnhancedUsers();
       setState(() {
         _users = users;
       });
@@ -45,37 +47,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     }
   }
 
-  Future<void> _toggleAdminStatus(AdminUser user) async {
+  void _onUserExpanded(int index) {
     setState(() {
-      _isLoading = true;
-      _errorMessage = null;
+      _expandedIndex = _expandedIndex == index ? null : index;
     });
+  }
 
-    try {
-      final success =
-          await AdminService.toggleAdminStatus(user.uid, !user.isAdmin);
-
-      if (success) {
-        // Refresh the user list
-        await _loadUsers();
-
-        if (!mounted) return;
-        AdminUtils.showSnackBar(
-          context,
-          'Admin status updated successfully',
-        );
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to update admin status';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error updating admin status: $e';
-        _isLoading = false;
-      });
-    }
+  void _onUserCollapsed() {
+    setState(() {
+      _expandedIndex = null;
+    });
   }
 
   @override
@@ -108,36 +89,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       onRefresh: _loadUsers,
       child: ListView.builder(
         itemCount: _users.length,
-        itemBuilder: (context, index) => _buildUserCard(_users[index]),
-      ),
-    );
-  }
-
-  Widget _buildUserCard(AdminUser user) {
-    return Card(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-      child: ListTile(
-        title: Text(user.email ?? 'No email'),
-        subtitle: Text('UID: ${user.uid}'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Switch(
-              value: user.isAdmin,
-              onChanged: (value) => _toggleAdminStatus(user),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              user.isAdmin ? 'Admin' : 'User',
-              style: TextStyle(
-                color: user.isAdmin ? Colors.green : Colors.grey,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        itemBuilder: (context, index) => ExpandableUserCard(
+          user: _users[index],
+          onUpdate: _loadUsers,
+          isExpanded: _expandedIndex == index,
+          onExpanded: () => _onUserExpanded(index),
+          onCollapsed: _onUserCollapsed,
         ),
       ),
     );
