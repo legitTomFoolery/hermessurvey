@@ -15,6 +15,7 @@ import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/account_not_exists_popup.dart';
 import 'package:gsecsurvey/features/home/presentation/widgets/question_card.dart';
+import 'package:gsecsurvey/shared/data/services/user_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -28,12 +29,23 @@ class _HomeState extends State<Home> {
   bool isOnline = false;
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   bool _isInitialized = false;
+  bool _isAdmin = false;
   final _envConfig = EnvironmentConfig();
 
   @override
   void initState() {
     super.initState();
     _checkConnectivity();
+    _checkAdminStatus();
+  }
+
+  void _checkAdminStatus() async {
+    final isAdmin = await UserService.isCurrentUserAdmin();
+    if (mounted) {
+      setState(() {
+        _isAdmin = isAdmin;
+      });
+    }
   }
 
   @override
@@ -154,7 +166,13 @@ class _HomeState extends State<Home> {
           appBar: CommonWidgets.buildAppBar(
             context: context,
             title: AppConstants.appBarTitle,
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: _isAdmin,
+            leading: _isAdmin
+                ? IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                : null,
             actions: [
               CommonWidgets.buildLogoutButton(
                 context: context,
@@ -251,6 +269,9 @@ class _HomeState extends State<Home> {
     if (allAnswered && !isOnline) {
       buttonText = AppConstants.noInternet;
     }
+    if (_isAdmin) {
+      buttonText = 'Preview Mode - Cannot Submit';
+    }
 
     return Padding(
       padding:
@@ -258,7 +279,9 @@ class _HomeState extends State<Home> {
       child: CommonWidgets.buildElevatedButton(
         context: context,
         text: buttonText,
-        onPressed: allAnswered && isOnline ? _checkAccountAndProceed : null,
+        onPressed: allAnswered && isOnline && !_isAdmin
+            ? _checkAccountAndProceed
+            : null,
       ),
     );
   }

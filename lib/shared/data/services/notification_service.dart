@@ -8,12 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/app/config/environment_config.dart';
 
 class NotificationService {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
+  static final _envConfig = EnvironmentConfig();
 
   // Your Firebase project ID
   static const String _projectId = 'gsecsurveyapp-backend';
@@ -193,7 +195,9 @@ class NotificationService {
   // Store notification in Firestore for tracking
   static Future<void> _storeNotificationInFirestore(
       String title, String body) async {
-    await FirebaseFirestore.instance.collection('notifications').add({
+    await FirebaseFirestore.instance
+        .collection(_envConfig.getCollectionName('notifications'))
+        .add({
       'title': title,
       'body': body,
       'timestamp': FieldValue.serverTimestamp(),
@@ -206,7 +210,7 @@ class NotificationService {
   static Future<void> _updateNotificationStatus(String status) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('notifications')
+          .collection(_envConfig.getCollectionName('notifications'))
           .orderBy('timestamp', descending: true)
           .limit(1)
           .get();
@@ -386,7 +390,7 @@ class NotificationService {
   static Future<DateTime?> getLastNotificationTime() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('notifications')
+          .collection(_envConfig.getCollectionName('notifications'))
           .orderBy('timestamp', descending: true)
           .limit(1)
           .get();
@@ -415,7 +419,7 @@ class NotificationService {
       {int limit = 10}) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('notifications')
+          .collection(_envConfig.getCollectionName('notifications'))
           .orderBy('timestamp', descending: true)
           .limit(limit)
           .get();

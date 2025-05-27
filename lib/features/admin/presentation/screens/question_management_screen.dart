@@ -6,6 +6,7 @@ import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_
 import 'package:gsecsurvey/features/admin/presentation/widgets/modals/question_modal.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
 
 class QuestionManagementScreen extends StatefulWidget {
   const QuestionManagementScreen({super.key});
@@ -175,20 +176,39 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
   }
 
   Widget _buildQuestionsList() {
+    final theme = AdaptiveTheme.of(context).theme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: ListView.builder(
         controller: _scrollController,
-        itemCount: _questions.length,
+        itemCount: _questions.length + 1, // +1 for the preview button
         itemBuilder: (context, index) {
-          final question = _questions[index];
-          return ExpandableQuestionCard(
-            question: question,
-            onSave: _loadQuestions,
-            isExpanded: _expandedQuestionId == question.id,
-            onExpanded: () => _onQuestionExpanded(question.id),
-            onCollapsed: _onQuestionCollapsed,
-          );
+          if (index == 0) {
+            // Preview Survey Button as first item
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: CommonWidgets.buildElevatedButton(
+                context: context,
+                text: 'Preview Survey',
+                onPressed: () {
+                  Navigator.of(context).pushNamed(Routes.homeScreen);
+                },
+                backgroundColor: theme.colorScheme.secondary,
+                textColor: theme.colorScheme.onSecondary,
+              ),
+            );
+          } else {
+            // Questions (index - 1 because button takes index 0)
+            final question = _questions[index - 1];
+            return ExpandableQuestionCard(
+              question: question,
+              onSave: _loadQuestions,
+              isExpanded: _expandedQuestionId == question.id,
+              onExpanded: () => _onQuestionExpanded(question.id),
+              onCollapsed: _onQuestionCollapsed,
+            );
+          }
         },
       ),
     );
