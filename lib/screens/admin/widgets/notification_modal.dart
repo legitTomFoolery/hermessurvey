@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/services/notification_service.dart';
-import 'package:intl/intl.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
@@ -38,7 +37,9 @@ class _NotificationModalState extends State<NotificationModal> {
         _lastNotificationTime = lastTime;
       });
     } catch (e) {
-      print('Error loading last notification time: $e');
+      if (kDebugMode) {
+        debugPrint('Error loading last notification time: $e');
+      }
     }
   }
 
@@ -157,7 +158,8 @@ class _NotificationModalState extends State<NotificationModal> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: theme.colorScheme.surfaceContainerHighest
+                      .withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: theme.colorScheme.outline.withOpacity(0.2),

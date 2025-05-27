@@ -33,12 +33,18 @@ class NotificationService {
         );
 
         if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-          print('User granted permission');
+          if (kDebugMode) {
+            debugPrint('User granted permission');
+          }
         } else if (settings.authorizationStatus ==
             AuthorizationStatus.provisional) {
-          print('User granted provisional permission');
+          if (kDebugMode) {
+            debugPrint('User granted provisional permission');
+          }
         } else {
-          print('User declined or has not accepted permission');
+          if (kDebugMode) {
+            debugPrint('User declined or has not accepted permission');
+          }
         }
       }
 
@@ -68,7 +74,9 @@ class NotificationService {
         try {
           await _firebaseMessaging.subscribeToTopic('all_users');
         } catch (e) {
-          print('Failed to subscribe to topic (expected on web): $e');
+          if (kDebugMode) {
+            debugPrint('Failed to subscribe to topic (expected on web): $e');
+          }
         }
       }
 
@@ -83,13 +91,17 @@ class NotificationService {
       // Handle notification taps when app is terminated
       FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
     } catch (e) {
-      print('Failed to initialize notification service: $e');
+      if (kDebugMode) {
+        debugPrint('Failed to initialize notification service: $e');
+      }
     }
   }
 
   // Handle foreground messages
   static Future<void> _handleForegroundMessage(RemoteMessage message) async {
-    print('Handling a foreground message: ${message.messageId}');
+    if (kDebugMode) {
+      debugPrint('Handling a foreground message: ${message.messageId}');
+    }
 
     // Show local notification when app is in foreground
     await _showLocalNotification(message);
@@ -97,12 +109,16 @@ class NotificationService {
 
   // Handle background messages
   static Future<void> _handleBackgroundMessage(RemoteMessage message) async {
-    print('Handling a background message: ${message.messageId}');
+    if (kDebugMode) {
+      debugPrint('Handling a background message: ${message.messageId}');
+    }
   }
 
   // Handle notification tap when app is opened from terminated state
   static Future<void> _handleMessageOpenedApp(RemoteMessage message) async {
-    print('Message clicked: ${message.messageId}');
+    if (kDebugMode) {
+      debugPrint('Message clicked: ${message.messageId}');
+    }
     // Handle navigation or other actions when notification is tapped
   }
 
@@ -151,16 +167,22 @@ class NotificationService {
       bool success = await _sendPushNotification(title, body);
 
       if (success) {
-        print('Push notification sent successfully');
+        if (kDebugMode) {
+          debugPrint('Push notification sent successfully');
+        }
         await _updateNotificationStatus('sent');
       } else {
-        print('Failed to send push notification');
+        if (kDebugMode) {
+          debugPrint('Failed to send push notification');
+        }
         await _updateNotificationStatus('failed');
       }
 
       return success;
     } catch (e) {
-      print('Error sending notification: $e');
+      if (kDebugMode) {
+        debugPrint('Error sending notification: $e');
+      }
       await _updateNotificationStatus('error: $e');
       return false;
     }
@@ -191,7 +213,9 @@ class NotificationService {
         await querySnapshot.docs.first.reference.update({'status': status});
       }
     } catch (e) {
-      print('Error updating notification status: $e');
+      if (kDebugMode) {
+        debugPrint('Error updating notification status: $e');
+      }
     }
   }
 
@@ -201,8 +225,10 @@ class NotificationService {
       // On web, we can't use JWT signing, so we'll store the notification
       // and show a message that notifications work on mobile devices
       if (kIsWeb) {
-        print(
-            'Web platform: Notifications are stored but push notifications require mobile devices');
+        if (kDebugMode) {
+          debugPrint(
+              'Web platform: Notifications are stored but push notifications require mobile devices');
+        }
         // For web, we just return true to indicate the notification was "sent"
         // In reality, web push notifications require a different setup
         return true;
@@ -211,7 +237,9 @@ class NotificationService {
       // Get access token (mobile only)
       String? accessToken = await _getAccessToken();
       if (accessToken == null) {
-        print('Failed to get access token');
+        if (kDebugMode) {
+          debugPrint('Failed to get access token');
+        }
         return false;
       }
 
@@ -260,14 +288,20 @@ class NotificationService {
       );
 
       if (response.statusCode == 200) {
-        print('FCM message sent successfully');
+        if (kDebugMode) {
+          debugPrint('FCM message sent successfully');
+        }
         return true;
       } else {
-        print('FCM error: ${response.statusCode} - ${response.body}');
+        if (kDebugMode) {
+          debugPrint('FCM error: ${response.statusCode} - ${response.body}');
+        }
         return false;
       }
     } catch (e) {
-      print('Error sending FCM message: $e');
+      if (kDebugMode) {
+        debugPrint('Error sending FCM message: $e');
+      }
       return false;
     }
   }
@@ -278,7 +312,10 @@ class NotificationService {
       // On web, JWT signing with RSA private keys is not supported
       // Return null so web notifications are handled differently
       if (kIsWeb) {
-        print('Web platform detected - JWT signing not supported in browsers');
+        if (kDebugMode) {
+          debugPrint(
+              'Web platform detected - JWT signing not supported in browsers');
+        }
         return null;
       }
 
@@ -292,7 +329,9 @@ class NotificationService {
           serviceAccount['private_key']
               .toString()
               .contains('YOUR_PRIVATE_KEY_HERE')) {
-        print('Service account key not configured properly');
+        if (kDebugMode) {
+          debugPrint('Service account key not configured properly');
+        }
         return null;
       }
 
@@ -301,7 +340,9 @@ class NotificationService {
         'iss': serviceAccount['client_email'],
         'scope': 'https://www.googleapis.com/auth/firebase.messaging',
         'aud': 'https://oauth2.googleapis.com/token',
-        'exp': DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch ~/
+        'exp': DateTime.now()
+                .add(const Duration(hours: 1))
+                .millisecondsSinceEpoch ~/
             1000,
         'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       });
@@ -325,12 +366,16 @@ class NotificationService {
         final data = jsonDecode(response.body);
         return data['access_token'];
       } else {
-        print(
-            'Token exchange error: ${response.statusCode} - ${response.body}');
+        if (kDebugMode) {
+          debugPrint(
+              'Token exchange error: ${response.statusCode} - ${response.body}');
+        }
         return null;
       }
     } catch (e) {
-      print('Error getting access token: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting access token: $e');
+      }
       return null;
     }
   }
@@ -351,7 +396,9 @@ class NotificationService {
       }
       return null;
     } catch (e) {
-      print('Error getting last notification time: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting last notification time: $e');
+      }
       return null;
     }
   }
@@ -383,7 +430,9 @@ class NotificationService {
         };
       }).toList();
     } catch (e) {
-      print('Error getting notification history: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting notification history: $e');
+      }
       return [];
     }
   }

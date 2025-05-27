@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,7 +29,10 @@ Future<void> main() async {
   try {
     await NotificationService.initialize();
   } catch (e) {
-    print('Failed to initialize notification service: $e');
+    // Log error silently in production - consider using a proper logging service
+    if (kDebugMode) {
+      debugPrint('Failed to initialize notification service: $e');
+    }
   }
 
   // Get the current user and check admin status for app lifecycle behavior
