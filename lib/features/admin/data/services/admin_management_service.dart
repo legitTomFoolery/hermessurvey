@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gsecsurvey/app/config/environment_config.dart';
-import 'package:gsecsurvey/features/admin/data/models/admin_user_extended.dart';
+import 'package:gsecsurvey/features/admin/data/models/admin_user_extended_model.dart';
 
 class EnhancedAdminService {
   static final _envConfig = EnvironmentConfig();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 
 /// A simple loading view with a centered circular progress indicator
 class LoadingView extends StatelessWidget {

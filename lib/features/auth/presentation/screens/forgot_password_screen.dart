@@ -5,10 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import '../widgets/already_have_account_text.dart';
-import '../widgets/password_reset.dart';
-import '../../logic/auth_cubit.dart';
-import '../../../../app/config/routes.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/already_have_account_text.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/password_reset.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
 
 class ForgetScreen extends StatefulWidget {
   const ForgetScreen({super.key});

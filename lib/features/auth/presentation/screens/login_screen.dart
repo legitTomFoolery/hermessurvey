@@ -7,15 +7,15 @@ import 'package:gap/gap.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../shared/presentation/widgets/common_widgets.dart';
-import '../widgets/login_and_signup_animated_form.dart';
-import '../../../../shared/presentation/widgets/no_internet.dart';
-import '../../../../shared/presentation/widgets/progress_indicator.dart';
-import '../widgets/do_not_have_account.dart';
-import '../../../../shared/utils/helpers/extensions.dart';
-import '../../../../shared/utils/helpers/rive_controller.dart';
-import '../../logic/auth_cubit.dart';
-import '../../../../app/config/routes.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/login_and_signup_animated_form.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/no_internet.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/progress_indicator.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/do_not_have_account.dart';
+import 'package:gsecsurvey/shared/utils/helpers/app_extensions.dart';
+import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

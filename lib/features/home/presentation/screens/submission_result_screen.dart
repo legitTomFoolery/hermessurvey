@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../app/config/app_constants.dart';
-import '../../../../shared/presentation/widgets/common_widgets.dart';
-import '../../../auth/logic/auth_cubit.dart';
-import '../../../../app/config/routes.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
 
 class SubmissionResultScreen extends StatelessWidget {
   const SubmissionResultScreen({super.key});

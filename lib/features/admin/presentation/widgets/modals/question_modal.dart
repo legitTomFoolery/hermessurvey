@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/features/home/data/models/question.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/question_modal_components/index.dart';
 
 class QuestionModal extends StatefulWidget {

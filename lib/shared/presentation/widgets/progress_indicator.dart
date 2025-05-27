@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../theme/colors.dart';
+import 'package:gsecsurvey/theme/colors.dart';
 
 class ProgressIndicaror {
   static showProgressIndicator(BuildContext context) {

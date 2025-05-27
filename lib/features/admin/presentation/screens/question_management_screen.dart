@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import '../../../home/data/models/question.dart';
-import '../../../../shared/data/services/firestore_service.dart';
-import '../../../../shared/presentation/widgets/common_widgets.dart';
-import '../../../../app/config/app_constants.dart';
-import 'package:gsecsurvey/features/admin/data/services/admin_utils.dart';
-import '../widgets/common/loading_view.dart';
-import '../widgets/modals/question_modal.dart';
-import '../widgets/cards/expandable_question_card.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
+import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/common/loading_view.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_question_card.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -237,18 +236,6 @@ class _AdminScreenState extends State<AdminScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  void showQuestionModal(BuildContext context, Question? question) {
-    showDialog(
-      context: context,
-      builder: (context) => QuestionModal(
-        question: question,
-        onSave: () {
-          _loadQuestions();
-        },
       ),
     );
   }

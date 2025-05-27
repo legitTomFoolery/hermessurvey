@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../shared/presentation/widgets/common_widgets.dart';
-import '../../../../../app/config/app_constants.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 /// A reusable error view widget that displays an error message and a retry button
 class ErrorView extends StatelessWidget {

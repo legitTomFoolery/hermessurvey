@@ -3,13 +3,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import '../../../../app/config/app_constants.dart';
-import '../../data/models/admin_user_extended.dart';
-import '../../data/services/admin_management_service.dart';
-import '../widgets/common/error_view.dart';
-import '../widgets/cards/expandable_user_card.dart';
-import '../widgets/common/loading_view.dart';
-import '../widgets/modals/notification_modal.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/features/admin/data/models/admin_user_extended_model.dart';
+import 'package:gsecsurvey/features/admin/data/services/admin_management_service.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/common/error_view.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_user_card.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/common/loading_view.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/modals/notification_modal.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});

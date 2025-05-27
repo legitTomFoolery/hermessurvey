@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gsecsurvey/app/config/environment_config.dart';
-import 'package:gsecsurvey/features/home/data/models/survey_response.dart';
+import 'package:gsecsurvey/features/home/data/models/survey_response_model.dart';
 
 class ResponseAdminService {
   static final _envConfig = EnvironmentConfig();

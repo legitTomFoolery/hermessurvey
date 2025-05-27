@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gsecsurvey/app/config/environment_config.dart';
-import 'package:gsecsurvey/features/home/data/models/question.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 
 class FirestoreService {
   static final _envConfig = EnvironmentConfig();

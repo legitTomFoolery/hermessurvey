@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../app/config/app_constants.dart';
-import '../../../../shared/presentation/widgets/common_widgets.dart';
-import '../../data/models/question.dart';
-import '../../../../shared/data/services/response_provider.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
+import 'package:gsecsurvey/shared/data/services/response_provider.dart';
 
 class QuestionCard extends StatefulWidget {
   final Question question;

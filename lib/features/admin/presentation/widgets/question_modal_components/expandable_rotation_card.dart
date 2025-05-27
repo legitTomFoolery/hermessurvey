@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../app/config/app_constants.dart';
-import '../../../../../shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'editable_list_field.dart';
 
 class ExpandableRotationCard extends StatefulWidget {

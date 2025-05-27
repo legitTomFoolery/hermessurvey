@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import '../../../../shared/utils/helpers/extensions.dart';
-import '../../../../app/config/routes.dart';
+import 'package:gsecsurvey/shared/utils/helpers/app_extensions.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
 
 class AlreadyHaveAccountText extends StatelessWidget {
   const AlreadyHaveAccountText({super.key});

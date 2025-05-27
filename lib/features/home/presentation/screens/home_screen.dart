@@ -7,14 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../../app/config/environment_config.dart';
-import '../../../../shared/presentation/widgets/common_widgets.dart';
-import '../../../../app/config/app_constants.dart';
-import '../../data/services/question_store.dart';
-import '../../../auth/logic/auth_cubit.dart';
-import '../../../../app/config/routes.dart';
-import '../../../../shared/presentation/widgets/account_not_exists_popup.dart';
-import '../widgets/question_card.dart';
+import 'package:gsecsurvey/app/config/environment_config.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/features/home/data/services/question_store.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/account_not_exists_popup.dart';
+import 'package:gsecsurvey/features/home/presentation/widgets/question_card.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

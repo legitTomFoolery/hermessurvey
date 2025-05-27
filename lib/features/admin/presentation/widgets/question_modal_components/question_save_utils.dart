@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/features/home/data/models/question.dart';
-import 'package:gsecsurvey/features/admin/data/services/admin_utils.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
+import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 
 class QuestionSaveUtils {

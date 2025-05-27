@@ -7,13 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../widgets/login_and_signup_animated_form.dart';
-import '../../../../shared/presentation/widgets/progress_indicator.dart';
-import '../../../../shared/utils/helpers/extensions.dart';
-import '../../../../shared/utils/helpers/rive_controller.dart';
-import '../../logic/auth_cubit.dart';
-import '../../../../app/config/routes.dart';
-import '../../../../theme/styles.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/login_and_signup_animated_form.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/progress_indicator.dart';
+import 'package:gsecsurvey/shared/utils/helpers/app_extensions.dart';
+import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
+import 'package:gsecsurvey/theme/styles.dart';
 
 class CreatePassword extends StatelessWidget {
   late GoogleSignInAccount googleUser;

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
 import 'package:gsecsurvey/app/config/app_constants.dart';
-import 'package:gsecsurvey/features/admin/data/models/admin_user_extended.dart';
+import 'package:gsecsurvey/features/admin/data/models/admin_user_extended_model.dart';
 import 'package:gsecsurvey/features/admin/data/services/admin_management_service.dart';
-import 'package:gsecsurvey/features/admin/data/services/admin_utils.dart';
+import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
 
 class ExpandableUserCard extends StatefulWidget {
   final EnhancedAdminUser user;

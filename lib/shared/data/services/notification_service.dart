@@ -7,7 +7,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../../app/config/app_constants.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 class NotificationService {
   static final FirebaseMessaging _firebaseMessaging =

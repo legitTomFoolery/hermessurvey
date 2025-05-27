@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../app/config/app_constants.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 class EditableListField extends StatefulWidget {
   final List<String> items;

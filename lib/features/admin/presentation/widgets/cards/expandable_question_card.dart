@@ -4,9 +4,9 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 
 import 'package:gsecsurvey/app/config/app_constants.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
-import 'package:gsecsurvey/features/home/data/models/question.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
-import 'package:gsecsurvey/features/admin/data/services/admin_utils.dart';
+import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/question_modal_components/index.dart';
 
 class ExpandableQuestionCard extends StatefulWidget {

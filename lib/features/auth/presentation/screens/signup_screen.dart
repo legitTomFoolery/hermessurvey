@@ -5,11 +5,11 @@ import 'package:gap/gap.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
-import '../widgets/already_have_account_text.dart';
-import '../widgets/login_and_signup_animated_form.dart';
-import '../../../../shared/utils/helpers/rive_controller.dart';
-import '../../logic/auth_cubit.dart';
-import '../../../../app/config/routes.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/already_have_account_text.dart';
+import 'package:gsecsurvey/features/auth/presentation/widgets/login_and_signup_animated_form.dart';
+import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/app/config/routes.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

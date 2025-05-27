@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import '../../features/auth/logic/auth_cubit.dart';
-import '../../features/admin/presentation/screens/main_admin_screen_with_bottom_nav.dart';
-import '../../features/auth/presentation/screens/create_password_screen.dart';
-import '../../features/auth/presentation/screens/forget_screen.dart';
-import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/sign_up_screen.dart';
-import '../../features/home/data/services/question_store.dart';
-import '../../features/home/presentation/screens/submission_result_screen.dart';
+import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
+import 'package:gsecsurvey/features/admin/presentation/screens/main_admin_screen_with_bottom_nav.dart';
+import 'package:gsecsurvey/features/auth/presentation/screens/create_password_screen.dart';
+import 'package:gsecsurvey/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:gsecsurvey/features/home/presentation/screens/home_screen.dart';
+import 'package:gsecsurvey/features/auth/presentation/screens/login_screen.dart';
+import 'package:gsecsurvey/features/auth/presentation/screens/signup_screen.dart';
+import 'package:gsecsurvey/features/home/data/services/question_store.dart';
+import 'package:gsecsurvey/features/home/presentation/screens/submission_result_screen.dart';
 import 'routes.dart';
 
 class AppRouter {

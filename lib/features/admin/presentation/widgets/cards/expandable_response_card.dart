@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
 import 'package:gsecsurvey/app/config/app_constants.dart';
-import 'package:gsecsurvey/features/home/data/models/question.dart';
-import 'package:gsecsurvey/features/home/data/models/survey_response.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
+import 'package:gsecsurvey/features/home/data/models/survey_response_model.dart';
 
 class ExpandableResponseCard extends StatefulWidget {
   final SurveyResponse response;

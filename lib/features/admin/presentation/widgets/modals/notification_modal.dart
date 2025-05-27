@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import '../../../../../app/config/app_constants.dart';
-import '../../../../../shared/data/services/notification_service.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
+import 'package:gsecsurvey/shared/data/services/notification_service.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});

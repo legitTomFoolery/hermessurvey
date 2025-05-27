@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/features/home/data/models/question.dart';
+import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 
 /// Utility functions for admin screens

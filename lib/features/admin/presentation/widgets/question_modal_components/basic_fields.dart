@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../../app/config/app_constants.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 class BasicFields extends StatelessWidget {
   final TextEditingController orderController;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import 'admin_screen.dart';
+import 'question_management_screen.dart';
 import 'response_management_screen.dart';
 import 'submission_summary_screen.dart';
 import 'user_management_screen.dart';
-import '../widgets/layout/admin_layout.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/layout/admin_layout.dart';
 
 class MainAdminScreenWithBottomNav extends StatefulWidget {
   const MainAdminScreenWithBottomNav({super.key});

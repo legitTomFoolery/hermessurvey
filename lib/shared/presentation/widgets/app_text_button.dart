@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import '../../../app/config/app_constants.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 /// Reusable text button widget with consistent styling
 class AppTextButton extends StatelessWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'colors.dart';
 import 'styles.dart';
-import '../app/config/app_constants.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 /// Centralized theme configuration for the application
 class AppTheme {
