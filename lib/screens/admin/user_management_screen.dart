@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/models/enhanced_admin_user.dart';
 import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
 import 'package:gsecsurvey/screens/admin/widgets/expandable_user_card.dart';
 import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
+import 'package:gsecsurvey/screens/admin/widgets/notification_modal.dart';
 import 'package:gsecsurvey/services/enhanced_admin_service.dart';
 
 class UserManagementScreen extends StatefulWidget {
@@ -18,11 +21,41 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   int? _expandedIndex;
+  bool _showFloatingButton = true;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadUsers();
+    _setupScrollListener();
+  }
+
+  void _setupScrollListener() {
+    _scrollController.addListener(() {
+      // Hide floating button when scrolling down (user swipes up)
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_showFloatingButton) {
+          setState(() {
+            _showFloatingButton = false;
+          });
+        }
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_showFloatingButton) {
+          setState(() {
+            _showFloatingButton = true;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUsers() async {
@@ -59,13 +92,31 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     });
   }
 
+  void _showNotificationModal() {
+    showDialog(
+      context: context,
+      builder: (context) => const NotificationModal(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
 
-    return Container(
-      color: theme.colorScheme.tertiary,
-      child: _buildContent(context),
+    return Scaffold(
+      backgroundColor: theme.colorScheme.tertiary,
+      body: _buildContent(context),
+      floatingActionButton: (!kIsWeb && _showFloatingButton)
+          ? FloatingActionButton(
+              onPressed: _showNotificationModal,
+              backgroundColor: theme.colorScheme.primary,
+              shape: const CircleBorder(),
+              child: Icon(
+                Icons.notifications,
+                color: theme.colorScheme.onPrimary,
+              ),
+            )
+          : null,
     );
   }
 
@@ -98,6 +149,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     return RefreshIndicator(
       onRefresh: _loadUsers,
       child: ListView.builder(
+        controller: _scrollController,
         itemCount: _users.length,
         itemBuilder: (context, index) => ExpandableUserCard(
           user: _users[index],

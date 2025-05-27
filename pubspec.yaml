@@ -25,6 +25,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   firebase_auth: ^5.0.0
   firebase_core: ^3.0.0
+  firebase_messaging: ^15.0.0
+  flutter_local_notifications: ^17.0.0
   flutter_bloc: ^8.1.5
   flutter_offline: ^3.0.1
   flutter_screenutil: ^5.9.1
@@ -43,6 +45,7 @@ dependencies:
   share_plus: ^7.2.1
   data_table_2: ^2.5.10
   http: ^1.2.0
+  dart_jsonwebtoken: ^2.14.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +74,7 @@ flutter:
     - assets/images/
     - assets/svgs/
     - assets/icons/
+    - assets/service-account-key.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:gsecsurvey/services/question_store.dart';
 import 'package:gsecsurvey/services/response_provider.dart';
 import 'package:gsecsurvey/services/user_service.dart';
+import 'package:gsecsurvey/services/notification_service.dart';
 import 'package:gsecsurvey/firebase_options.dart';
 import 'package:gsecsurvey/routing/app_router.dart';
 import 'package:gsecsurvey/routing/routes.dart';
@@ -22,6 +23,13 @@ Future<void> main() async {
     ScreenUtil.ensureScreenSize(),
     preloadSVGs(['assets/svgs/google_logo.svg'])
   ]);
+
+  // Initialize notification service
+  try {
+    await NotificationService.initialize();
+  } catch (e) {
+    print('Failed to initialize notification service: $e');
+  }
 
   // Get the current user and check admin status for app lifecycle behavior
   final user = FirebaseAuth.instance.currentUser;
