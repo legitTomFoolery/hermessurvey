@@ -6,8 +6,8 @@ import 'package:gap/gap.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
 import '../../../core/widgets/already_have_account_text.dart';
-import '../../../logic/cubit/auth_cubit.dart';
 import '../../../core/widgets/password_reset.dart';
+import '../../../logic/cubit/auth_cubit.dart';
 import '../../../routing/routes.dart';
 
 class ForgetScreen extends StatefulWidget {

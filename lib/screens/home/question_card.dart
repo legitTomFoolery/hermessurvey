@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/models/question.dart';
-import 'package:gsecsurvey/services/response_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:intl/intl.dart';
+
+import '../../core/constants/app_constants.dart';
+import '../../core/widgets/common_widgets.dart';
+import '../../models/question.dart';
+import '../../services/response_provider.dart';
 
 class QuestionCard extends StatefulWidget {
   final Question question;
@@ -67,30 +70,25 @@ class _QuestionCardState extends State<QuestionCard> {
         // Unfocus any active text fields when tapping on this question
         FocusScope.of(context).unfocus();
       },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4.0),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.secondary,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            children: [
-              Center(
-                child: Text(
-                  widget.question.name,
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    color: theme.colorScheme.onSecondary,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
+      child: CommonWidgets.buildCard(
+        context: context,
+        margin: const EdgeInsets.symmetric(
+            vertical: AppConstants.defaultSpacing / 2),
+        child: Column(
+          children: [
+            Center(
+              child: Text(
+                widget.question.name,
+                style: theme.textTheme.displayLarge?.copyWith(
+                  color: theme.colorScheme.onSecondary,
+                  fontSize: 16,
                 ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 4),
-              _buildResponseWidget(responseProvider, theme),
-            ],
-          ),
+            ),
+            const SizedBox(height: AppConstants.defaultSpacing / 2),
+            _buildResponseWidget(responseProvider, theme),
+          ],
         ),
       ),
     );

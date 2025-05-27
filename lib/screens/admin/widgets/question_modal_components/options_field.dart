@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/editable_list_field.dart';
+
+import 'editable_list_field.dart';
 
 class OptionsField extends StatefulWidget {
   final TextEditingController optionsController;

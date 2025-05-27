@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../core/constants/app_constants.dart';
+import '../../core/widgets/common_widgets.dart';
 import '../../logic/cubit/auth_cubit.dart';
 import '../../routing/routes.dart';
 
@@ -29,44 +32,19 @@ class SubmissionResultScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: theme.colorScheme.secondary,
-        appBar: AppBar(
-          backgroundColor: theme.colorScheme.primary,
-          leading: Container(),
-          title: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.center,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minWidth: 200,
-              ),
-              child: Text(
-                'Feedback Evaluation Tool',
-                style: theme.textTheme.displayLarge?.copyWith(
-                  color: theme.colorScheme.onPrimary,
-                  fontSize: 22,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
+        appBar: CommonWidgets.buildAppBar(
+          context: context,
+          title: AppConstants.appBarTitle,
           automaticallyImplyLeading: false,
-          centerTitle: true,
           actions: [
-            SizedBox(
-              width: 48,
-              child: IconButton(
-                icon: Icon(
-                  Icons.logout,
-                  color: theme.colorScheme.onPrimary,
-                  size: 20,
-                ),
-                onPressed: () => context.read<AuthCubit>().signOut(),
-              ),
+            CommonWidgets.buildLogoutButton(
+              context: context,
+              onPressed: () => context.read<AuthCubit>().signOut(),
             ),
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppConstants.defaultPadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -78,17 +56,13 @@ class SubmissionResultScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(
+                  height: AppConstants.defaultPadding +
+                      AppConstants.defaultSpacing / 2),
+              CommonWidgets.buildElevatedButton(
+                context: context,
+                text: 'Submit New Response',
                 onPressed: () => _submitNewResponse(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  disabledBackgroundColor: theme.colorScheme.tertiary,
-                ),
-                child: Text(
-                  'Submit New Response',
-                  style: TextStyle(color: theme.colorScheme.onPrimary),
-                ),
               ),
             ],
           ),

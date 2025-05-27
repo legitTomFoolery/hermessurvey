@@ -5,14 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:gsecsurvey/services/question_store.dart';
-import 'package:gsecsurvey/services/response_provider.dart';
-import 'package:gsecsurvey/services/user_service.dart';
-import 'package:gsecsurvey/services/notification_service.dart';
-import 'package:gsecsurvey/firebase_options.dart';
-import 'package:gsecsurvey/routing/app_router.dart';
-import 'package:gsecsurvey/routing/routes.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+
+import 'services/question_store.dart';
+import 'services/response_provider.dart';
+import 'services/user_service.dart';
+import 'services/notification_service.dart';
+import 'firebase_options.dart';
+import 'routing/app_router.dart';
+import 'routing/routes.dart';
+import 'theming/app_theme.dart';
+import 'core/constants/app_constants.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +25,7 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     ),
     ScreenUtil.ensureScreenSize(),
-    preloadSVGs(['assets/svgs/google_logo.svg'])
+    preloadSVGs([AppConstants.googleLogoSvg])
   ]);
 
   // Initialize notification service
@@ -77,7 +80,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 690),
+      designSize: const Size(
+        AppConstants.designWidth,
+        AppConstants.designHeight,
+      ),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) => MultiProvider(
@@ -90,41 +96,17 @@ class MyApp extends StatelessWidget {
             create: (_) => ResponseProvider(),
           ),
         ],
-        child: Builder(
-          builder: (context) => AdaptiveTheme(
-            light: ThemeData.light(useMaterial3: true).copyWith(
-              colorScheme:
-                  ThemeData.light(useMaterial3: true).colorScheme.copyWith(
-                        primary: const Color.fromARGB(255, 141, 27, 27),
-                        secondary: Colors.white,
-                        tertiary: const Color.fromARGB(255, 188, 188, 188),
-                        onPrimary: Colors.white,
-                        onSecondary: Colors.black,
-                        surface: const Color.fromARGB(255, 236, 230, 240),
-                        shadow: const Color.fromARGB(255, 24, 24, 24),
-                      ),
-            ),
-            dark: ThemeData.dark(useMaterial3: true).copyWith(
-              colorScheme:
-                  ThemeData.dark(useMaterial3: true).colorScheme.copyWith(
-                        primary: const Color.fromARGB(255, 141, 27, 27),
-                        secondary: Colors.black,
-                        tertiary: const Color.fromARGB(255, 10, 10, 10),
-                        onPrimary: Colors.white,
-                        onSecondary: Colors.white,
-                        surface: const Color.fromARGB(255, 42, 41, 47),
-                        shadow: const Color.fromARGB(255, 171, 171, 171),
-                      ),
-            ),
-            initial: AdaptiveThemeMode.system,
-            builder: (theme, darkTheme) => MaterialApp(
-              title: 'GSEC Survey App',
-              theme: theme,
-              darkTheme: darkTheme,
-              onGenerateRoute: router.generateRoute,
-              debugShowCheckedModeBanner: false,
-              initialRoute: initialRoute,
-            ),
+        child: AdaptiveTheme(
+          light: AppTheme.lightTheme,
+          dark: AppTheme.darkTheme,
+          initial: AdaptiveThemeMode.system,
+          builder: (theme, darkTheme) => MaterialApp(
+            title: AppConstants.appTitle,
+            theme: theme,
+            darkTheme: darkTheme,
+            onGenerateRoute: router.generateRoute,
+            debugShowCheckedModeBanner: false,
+            initialRoute: initialRoute,
           ),
         ),
       ),

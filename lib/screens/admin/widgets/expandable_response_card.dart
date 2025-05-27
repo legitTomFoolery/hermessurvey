@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:gsecsurvey/models/question.dart';
-import 'package:gsecsurvey/models/survey_response.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../models/question.dart';
+import '../../../models/survey_response.dart';
 
 class ExpandableResponseCard extends StatefulWidget {
   final SurveyResponse response;
@@ -35,7 +37,7 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: AppConstants.defaultAnimationDuration,
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
@@ -84,10 +86,11 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      margin:
+          const EdgeInsets.symmetric(vertical: AppConstants.defaultSpacing / 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
       ),
       child: Column(
         children: [
@@ -144,7 +147,7 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(AppConstants.defaultPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -157,12 +160,14 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
               color: theme.colorScheme.onSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(
+              height: AppConstants.defaultSpacing +
+                  AppConstants.defaultSpacing / 2),
           _buildDetailRow('Date', widget.response.date),
           _buildDetailRow('Rotation', widget.response.rotation),
           _buildDetailRow('Attending', widget.response.attending),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppConstants.defaultPadding),
           Text(
             'Survey Responses',
             style: theme.textTheme.displayLarge?.copyWith(
@@ -171,7 +176,9 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
               color: theme.colorScheme.onSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(
+              height: AppConstants.defaultSpacing +
+                  AppConstants.defaultSpacing / 2),
 
           // Display each question and its response (excluding standard fields)
           ...() {
@@ -245,17 +252,21 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      margin: const EdgeInsets.symmetric(
+        vertical: AppConstants.defaultSpacing / 2,
+        horizontal: AppConstants.defaultSpacing,
+      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppConstants.defaultSpacing),
         border: Border.all(
           color: theme.colorScheme.primary.withOpacity(0.2),
           width: 1,
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(
+            AppConstants.defaultSpacing + AppConstants.defaultSpacing / 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -267,7 +278,7 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
                 color: theme.colorScheme.onSecondary,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppConstants.defaultSpacing),
             Text(
               responseValue.isEmpty ? 'No response provided' : responseValue,
               style: theme.textTheme.displayLarge?.copyWith(

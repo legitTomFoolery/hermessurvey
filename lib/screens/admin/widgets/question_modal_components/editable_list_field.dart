@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_constants.dart';
+
 class EditableListField extends StatefulWidget {
   final List<String> items;
   final String title;
@@ -44,7 +46,7 @@ class _EditableListFieldState extends State<EditableListField> {
           if (widget.scrollController!.hasClients) {
             widget.scrollController!.animateTo(
               widget.scrollController!.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
+              duration: AppConstants.defaultAnimationDuration,
               curve: Curves.easeOut,
             );
           }
@@ -74,7 +76,9 @@ class _EditableListFieldState extends State<EditableListField> {
       children: [
         if (widget.title.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+            padding: const EdgeInsets.only(
+                top: AppConstants.defaultPadding,
+                bottom: AppConstants.defaultSpacing),
             child: Text(
               widget.title,
               style: const TextStyle(
@@ -96,7 +100,7 @@ class _EditableListFieldState extends State<EditableListField> {
           );
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.only(bottom: AppConstants.defaultSpacing),
             child: Row(
               children: [
                 Expanded(

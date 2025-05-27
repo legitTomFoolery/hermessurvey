@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import '../constants/app_constants.dart';
 
+/// Reusable text button widget with consistent styling
 class AppTextButton extends StatelessWidget {
   final double? borderRadius;
   final Color? backgroundColor;
@@ -13,22 +15,22 @@ class AppTextButton extends StatelessWidget {
   final TextStyle textStyle;
   final VoidCallback onPressed;
 
-  const AppTextButton(
-      {super.key,
-      this.borderRadius,
-      this.backgroundColor,
-      this.horizontalPadding,
-      this.verticalPadding,
-      this.buttonWidth,
-      this.buttonHeight,
-      required this.buttonText,
-      required this.textStyle,
-      required this.onPressed});
+  const AppTextButton({
+    super.key,
+    this.borderRadius,
+    this.backgroundColor,
+    this.horizontalPadding,
+    this.verticalPadding,
+    this.buttonWidth,
+    this.buttonHeight,
+    required this.buttonText,
+    required this.textStyle,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme =
-        AdaptiveTheme.of(context).theme; // Accessing the adaptive theme
+    final theme = AdaptiveTheme.of(context).theme;
 
     return TextButton(
       onPressed: onPressed,
@@ -36,7 +38,7 @@ class AppTextButton extends StatelessWidget {
         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
-              borderRadius ?? 16,
+              borderRadius ?? AppConstants.defaultBorderRadius,
             ),
           ),
         ),
@@ -45,12 +47,17 @@ class AppTextButton extends StatelessWidget {
         ),
         padding: WidgetStateProperty.all<EdgeInsets>(
           EdgeInsets.symmetric(
-            horizontal: horizontalPadding?.w ?? 12.w,
-            vertical: verticalPadding?.h ?? 14.h,
+            horizontal:
+                horizontalPadding?.w ?? AppConstants.buttonHorizontalPadding.w,
+            vertical:
+                verticalPadding?.h ?? AppConstants.buttonVerticalPadding.h,
           ),
         ),
         fixedSize: WidgetStateProperty.all(
-          Size(buttonWidth?.w ?? double.maxFinite, buttonHeight?.h ?? 52.h),
+          Size(
+            buttonWidth?.w ?? double.maxFinite,
+            buttonHeight?.h ?? AppConstants.defaultButtonHeight.h,
+          ),
         ),
       ),
       child: Text(

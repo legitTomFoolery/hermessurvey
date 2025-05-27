@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:gsecsurvey/models/question.dart';
-import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
-import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/index.dart';
-import 'package:gsecsurvey/services/firestore_service.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../core/widgets/common_widgets.dart';
+import '../../../models/question.dart';
+import '../../../services/firestore_service.dart';
+import '../utils/admin_utils.dart';
+import 'question_modal_components/index.dart';
 
 class ExpandableQuestionCard extends StatefulWidget {
   final Question question;
@@ -47,7 +50,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: AppConstants.defaultAnimationDuration,
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
@@ -314,10 +317,11 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      margin:
+          const EdgeInsets.symmetric(vertical: AppConstants.defaultSpacing / 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         border: widget.isNewQuestion
             ? Border.all(color: theme.colorScheme.primary, width: 2)
             : null,
@@ -383,7 +387,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(AppConstants.defaultPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -400,28 +404,26 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
               }
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppConstants.defaultPadding),
           _buildTypeSpecificFields(),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppConstants.defaultPadding),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
-                onPressed: _toggleExpanded,
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: theme.colorScheme.shadow),
+              Flexible(
+                child: CommonWidgets.buildTextButton(
+                  context: context,
+                  text: 'Cancel',
+                  onPressed: _toggleExpanded,
+                  textStyle: TextStyle(color: theme.colorScheme.shadow),
                 ),
               ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: _saveQuestion,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                ),
-                child: Text(
-                  widget.isNewQuestion ? 'Create' : 'Save',
-                  style: TextStyle(color: theme.colorScheme.onPrimary),
+              const SizedBox(width: AppConstants.defaultSpacing),
+              Flexible(
+                child: CommonWidgets.buildElevatedButton(
+                  context: context,
+                  text: widget.isNewQuestion ? 'Create' : 'Save',
+                  onPressed: _saveQuestion,
                 ),
               ),
             ],

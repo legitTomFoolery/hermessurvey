@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_constants.dart';
+
 class RotationCard extends StatefulWidget {
   final String rotation;
   final List<String> attendings;
@@ -231,7 +233,7 @@ class _RotationCardState extends State<RotationCard> {
                       if (widget.scrollController.hasClients) {
                         widget.scrollController.animateTo(
                           widget.scrollController.position.maxScrollExtent,
-                          duration: const Duration(milliseconds: 300),
+                          duration: AppConstants.defaultAnimationDuration,
                           curve: Curves.easeOut,
                         );
                       }
@@ -259,7 +261,7 @@ class _RotationCardState extends State<RotationCard> {
                       if (widget.scrollController.hasClients) {
                         widget.scrollController.animateTo(
                           widget.scrollController.position.maxScrollExtent,
-                          duration: const Duration(milliseconds: 300),
+                          duration: AppConstants.defaultAnimationDuration,
                           curve: Curves.easeOut,
                         );
                       }

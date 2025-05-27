@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import '../constants/app_constants.dart';
 
+/// Reusable text form field widget with consistent styling
 class AppTextFormField extends StatelessWidget {
   final String hint;
   final Widget? suffixIcon;
@@ -11,6 +13,7 @@ class AppTextFormField extends StatelessWidget {
   final bool? isDense;
   final TextEditingController? controller;
   final Function(String?) validator;
+
   const AppTextFormField({
     super.key,
     required this.hint,
@@ -22,16 +25,14 @@ class AppTextFormField extends StatelessWidget {
     this.focusNode,
     required this.validator,
   });
+
   @override
   Widget build(BuildContext context) {
-    final theme =
-        AdaptiveTheme.of(context).theme; // Accessing the adaptive theme
+    final theme = AdaptiveTheme.of(context).theme;
 
     return TextFormField(
       focusNode: focusNode,
-      validator: (value) {
-        return validator(value);
-      },
+      validator: (value) => validator(value),
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
@@ -40,34 +41,37 @@ class AppTextFormField extends StatelessWidget {
         isDense: isDense ?? true,
         filled: true,
         fillColor: theme.colorScheme.secondary,
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 17.h),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: AppConstants.textFieldHorizontalPadding.w,
+          vertical: AppConstants.textFieldVerticalPadding.h,
+        ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.surface,
-            width: 1.3.w,
+            width: AppConstants.textFieldBorderWidth.w,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.primary,
-            width: 1.3.w,
+            width: AppConstants.textFieldBorderWidth.w,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.shadow,
-            width: 1.3.w,
+            width: AppConstants.textFieldBorderWidth.w,
           ),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.primary,
-            width: 1.3.w,
+            width: AppConstants.textFieldBorderWidth.w,
           ),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         suffixIcon: suffixIcon,
       ),

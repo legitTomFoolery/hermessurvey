@@ -7,6 +7,8 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
+import '../core/constants/app_constants.dart';
+
 class NotificationService {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
@@ -148,8 +150,8 @@ class NotificationService {
 
     await _localNotifications.show(
       message.hashCode,
-      message.notification?.title ?? 'GSEC Survey',
-      message.notification?.body ?? 'You have a new notification',
+      message.notification?.title ?? AppConstants.appName,
+      message.notification?.body ?? AppConstants.defaultNotificationMessage,
       platformChannelSpecifics,
     );
   }

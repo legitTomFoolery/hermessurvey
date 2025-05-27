@@ -1,8 +1,10 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gsecsurvey/logic/cubit/auth_cubit.dart';
-import 'package:gsecsurvey/routing/routes.dart';
+
+import '../../../core/widgets/common_widgets.dart';
+import '../../../logic/cubit/auth_cubit.dart';
+import '../../../routing/routes.dart';
 
 /// A common layout for admin screens with consistent styling and behavior
 class AdminLayout extends StatelessWidget {
@@ -33,31 +35,14 @@ class AdminLayout extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: theme.colorScheme.tertiary,
-        appBar: AppBar(
-          backgroundColor: theme.colorScheme.primary,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Text(
-            title,
-            style: theme.textTheme.displayLarge?.copyWith(
-              color: theme.colorScheme.onPrimary,
-              fontSize: 18,
-            ),
-          ),
-          centerTitle: true,
-          iconTheme: IconThemeData(
-            color: theme.colorScheme.onPrimary,
-          ),
+        appBar: CommonWidgets.buildAppBar(
+          context: context,
+          title: title,
           actions: [
             if (actions != null) ...actions!,
-            IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: theme.colorScheme.onPrimary,
-              ),
-              onPressed: () {
-                context.read<AuthCubit>().signOut();
-              },
+            CommonWidgets.buildLogoutButton(
+              context: context,
+              onPressed: () => context.read<AuthCubit>().signOut(),
             ),
           ],
         ),

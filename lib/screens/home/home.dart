@@ -4,14 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gsecsurvey/core/environment_config.dart';
-import 'package:gsecsurvey/screens/home/question_card.dart';
-import 'package:gsecsurvey/services/question_store.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../core/environment_config.dart';
+import '../../core/widgets/common_widgets.dart';
+import '../../core/constants/app_constants.dart';
+import '../../services/question_store.dart';
 import '../../logic/cubit/auth_cubit.dart';
 import '../../routing/routes.dart';
 import '../../widgets/account_not_exists_popup.dart';
+import 'question_card.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -148,40 +151,14 @@ class _HomeState extends State<Home> {
         },
         child: Scaffold(
           backgroundColor: theme.colorScheme.tertiary,
-          appBar: AppBar(
-            backgroundColor: theme.colorScheme.primary,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            leading: Container(),
-            title: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.center,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minWidth: 200,
-                ),
-                child: Text(
-                  'Feedback Evaluation Tool',
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    color: theme.colorScheme.onPrimary,
-                    fontSize: 22,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            centerTitle: true,
+          appBar: CommonWidgets.buildAppBar(
+            context: context,
+            title: AppConstants.appBarTitle,
+            automaticallyImplyLeading: false,
             actions: [
-              SizedBox(
-                width: 48,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.logout,
-                    color: theme.colorScheme.onPrimary,
-                    size: 20,
-                  ),
-                  onPressed: () => context.read<AuthCubit>().signOut(),
-                ),
+              CommonWidgets.buildLogoutButton(
+                context: context,
+                onPressed: () => context.read<AuthCubit>().signOut(),
               ),
             ],
           ),
@@ -241,11 +218,9 @@ class _HomeState extends State<Home> {
     final progress =
         totalQuestions > 0 ? answeredQuestions / totalQuestions : 0.0;
 
-    return LinearProgressIndicator(
-      value: progress,
-      backgroundColor: theme.colorScheme.tertiary,
-      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-      minHeight: 5.0,
+    return CommonWidgets.buildProgressBar(
+      context: context,
+      progress: progress,
     );
   }
 
@@ -265,26 +240,19 @@ class _HomeState extends State<Home> {
         totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
 
     String buttonText = allAnswered
-        ? 'Submit Responses'
-        : '${progress.toStringAsFixed(0)}% Completed';
+        ? AppConstants.submitResponses
+        : '${progress.toStringAsFixed(0)}${AppConstants.completedSuffix}';
     if (allAnswered && !isOnline) {
-      buttonText = 'No Internet';
+      buttonText = AppConstants.noInternet;
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ElevatedButton(
+      padding:
+          const EdgeInsets.symmetric(vertical: AppConstants.defaultSpacing),
+      child: CommonWidgets.buildElevatedButton(
+        context: context,
+        text: buttonText,
         onPressed: allAnswered && isOnline ? _checkAccountAndProceed : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: allAnswered && isOnline
-              ? theme.colorScheme.primary
-              : theme.colorScheme.tertiary,
-          disabledBackgroundColor: theme.colorScheme.tertiary,
-        ),
-        child: Text(
-          buttonText,
-          style: TextStyle(color: theme.colorScheme.onPrimary),
-        ),
       ),
     );
   }

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:adaptive_theme/adaptive_theme.dart';
+import '../../../core/widgets/common_widgets.dart';
 
 /// A simple loading view with a centered circular progress indicator
 class LoadingView extends StatelessWidget {
-  const LoadingView({super.key});
+  final String? message;
+
+  const LoadingView({
+    super.key,
+    this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme = AdaptiveTheme.of(context).theme;
-
-    return Center(
-      child: CircularProgressIndicator(
-        color: theme.colorScheme.primary,
-      ),
+    return CommonWidgets.buildLoadingIndicator(
+      context: context,
+      message: message,
     );
   }
 }

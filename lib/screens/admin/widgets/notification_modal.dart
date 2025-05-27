@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:gsecsurvey/services/notification_service.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../services/notification_service.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
@@ -152,7 +154,7 @@ class _NotificationModalState extends State<NotificationModal> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppConstants.defaultPadding),
 
               // Last notification info
               Container(

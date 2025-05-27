@@ -6,14 +6,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/login_and_signup_animated_form.dart';
 import '../../../core/widgets/no_internet.dart';
 import '../../../core/widgets/progress_indicator.dart';
+import '../../../core/widgets/do_not_have_account.dart';
 import '../../../helpers/extensions.dart';
 import '../../../helpers/rive_controller.dart';
 import '../../../logic/cubit/auth_cubit.dart';
 import '../../../routing/routes.dart';
-import '../../../core/widgets/do_not_have_account.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -73,10 +75,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ? _loginPage(context, theme)
               : const BuildNoInternet();
         },
-        child: Center(
-          child: CircularProgressIndicator(
-            color: theme.colorScheme.primary,
-          ),
+        child: CommonWidgets.buildLoadingIndicator(
+          context: context,
+          message: 'Checking connection...',
         ),
       ),
     );

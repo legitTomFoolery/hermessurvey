@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/screens/admin/admin_screen.dart';
-import 'package:gsecsurvey/screens/admin/submission_summary_screen.dart';
-import 'package:gsecsurvey/screens/admin/user_management_screen.dart';
-import 'package:gsecsurvey/screens/admin/widgets/admin_layout.dart';
+
+import 'admin_screen.dart';
+import 'submission_summary_screen.dart';
+import 'user_management_screen.dart';
+import 'widgets/admin_layout.dart';
 
 class MainAdminScreen extends StatefulWidget {
   const MainAdminScreen({super.key});

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/constants/app_constants.dart';
+
 class BasicFields extends StatelessWidget {
   final TextEditingController orderController;
   final TextEditingController idController;
@@ -29,6 +31,7 @@ class BasicFields extends StatelessWidget {
           ),
           keyboardType: TextInputType.number,
         ),
+        const SizedBox(height: AppConstants.defaultSpacing),
         TextFormField(
           controller: idController,
           decoration: const InputDecoration(
@@ -39,6 +42,7 @@ class BasicFields extends StatelessWidget {
             FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\-]')),
           ],
         ),
+        const SizedBox(height: AppConstants.defaultSpacing),
         TextFormField(
           controller: nameController,
           decoration: const InputDecoration(
@@ -46,6 +50,7 @@ class BasicFields extends StatelessWidget {
             hintText: 'Enter the question text',
           ),
         ),
+        const SizedBox(height: AppConstants.defaultSpacing),
         DropdownButtonFormField<String>(
           value: typeController.text.isEmpty ? null : typeController.text,
           decoration: const InputDecoration(

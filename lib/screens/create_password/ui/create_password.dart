@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:gsecsurvey/helpers/extensions.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/widgets/login_and_signup_animated_form.dart';
 import '../../../core/widgets/progress_indicator.dart';
+import '../../../helpers/extensions.dart';
 import '../../../helpers/rive_controller.dart';
 import '../../../logic/cubit/auth_cubit.dart';
 import '../../../routing/routes.dart';

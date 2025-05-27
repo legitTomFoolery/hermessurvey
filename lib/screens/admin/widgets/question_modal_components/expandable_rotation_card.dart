@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gsecsurvey/screens/admin/widgets/question_modal_components/editable_list_field.dart';
+
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/widgets/common_widgets.dart';
+import 'editable_list_field.dart';
 
 class ExpandableRotationCard extends StatefulWidget {
   final String rotation;
@@ -41,7 +44,7 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
     _rotationController = TextEditingController(text: widget.rotation);
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: AppConstants.defaultAnimationDuration,
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
@@ -143,7 +146,7 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
                 IconButton(
                   icon: AnimatedRotation(
                     turns: widget.isExpanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 300),
+                    duration: AppConstants.defaultAnimationDuration,
                     child: Icon(
                       Icons.edit,
                       color: theme.colorScheme.primary,
@@ -197,16 +200,10 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              ElevatedButton(
+              CommonWidgets.buildElevatedButton(
+                context: context,
+                text: 'Done',
                 onPressed: _toggleExpanded,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-                child: const Text('Done'),
               ),
             ],
           ),

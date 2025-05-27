@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:gsecsurvey/models/question.dart';
-import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
-import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
-import 'package:gsecsurvey/screens/admin/widgets/question_modal.dart';
-import 'package:gsecsurvey/screens/admin/widgets/expandable_question_card.dart';
-import 'package:gsecsurvey/services/firestore_service.dart';
+
+import '../../models/question.dart';
+import '../../services/firestore_service.dart';
+import '../../core/widgets/common_widgets.dart';
+import '../../core/constants/app_constants.dart';
+import 'utils/admin_utils.dart';
+import 'widgets/loading_view.dart';
+import 'widgets/question_modal.dart';
+import 'widgets/expandable_question_card.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -80,7 +83,7 @@ class _AdminScreenState extends State<AdminScreen> {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 500),
+          duration: AppConstants.scrollAnimationDuration,
           curve: Curves.easeInOut,
         );
       }
@@ -137,42 +140,32 @@ class _AdminScreenState extends State<AdminScreen> {
       backgroundColor: theme.colorScheme.tertiary,
       body: _buildContent(context),
       floatingActionButton: _showFloatingButton
-          ? FloatingActionButton(
+          ? CommonWidgets.buildFloatingActionButton(
+              context: context,
               onPressed: _addNewQuestion,
-              backgroundColor: theme.colorScheme.primary,
-              shape: const CircleBorder(),
-              child: Icon(
-                Icons.add,
-                color: theme.colorScheme.onPrimary,
-              ),
             )
           : null,
     );
   }
 
   Widget _buildContent(BuildContext context) {
-    final theme = AdaptiveTheme.of(context).theme;
-
     if (_isLoading) {
       return const LoadingView();
     }
 
     if (_questions.isEmpty && !_showNewQuestionCard) {
-      return Center(
-        child: Text(
-          'No questions found',
-          style: theme.textTheme.displayLarge?.copyWith(
-            fontSize: 18,
-            color: theme.colorScheme.shadow,
-          ),
-        ),
+      return CommonWidgets.buildEmptyState(
+        context: context,
+        message: AppConstants.noQuestionsFound,
+        icon: Icons.quiz_outlined,
       );
     }
 
     return RefreshIndicator(
       onRefresh: _loadQuestions,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
         child: ListView.builder(
           controller: _scrollController,
           itemCount: _questions.length + (_showNewQuestionCard ? 1 : 0),

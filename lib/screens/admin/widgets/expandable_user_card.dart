@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:gsecsurvey/models/enhanced_admin_user.dart';
-import 'package:gsecsurvey/screens/admin/utils/admin_utils.dart';
-import 'package:gsecsurvey/services/enhanced_admin_service.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../models/enhanced_admin_user.dart';
+import '../../../services/enhanced_admin_service.dart';
+import '../utils/admin_utils.dart';
 
 class ExpandableUserCard extends StatefulWidget {
   final EnhancedAdminUser user;
@@ -35,7 +37,7 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: AppConstants.defaultAnimationDuration,
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
@@ -258,10 +260,11 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      margin:
+          const EdgeInsets.symmetric(vertical: AppConstants.defaultSpacing / 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
       ),
       child: Column(
         children: [
@@ -336,7 +339,7 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
     final theme = AdaptiveTheme.of(context).theme;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(AppConstants.defaultPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -349,7 +352,9 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
               color: theme.colorScheme.onSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(
+              height: AppConstants.defaultSpacing +
+                  AppConstants.defaultSpacing / 2),
           _buildDetailRow('Email', widget.user.email ?? 'Not available'),
           _buildDetailRow('Display Name', widget.user.displayName ?? 'Not set'),
           _buildDetailRow('UID', widget.user.uid),
@@ -360,7 +365,7 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
           if (widget.user.lastSignInTime != null)
             _buildDetailRow(
                 'Last Sign In', widget.user.lastSignInTime!.toString()),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppConstants.defaultPadding),
           Text(
             'Admin Actions',
             style: theme.textTheme.displayLarge?.copyWith(
@@ -369,7 +374,9 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
               color: theme.colorScheme.onSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(
+              height: AppConstants.defaultSpacing +
+                  AppConstants.defaultSpacing / 2),
           if (_isLoading)
             Center(
               child: CircularProgressIndicator(

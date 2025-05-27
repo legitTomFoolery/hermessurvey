@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:gsecsurvey/models/enhanced_admin_user.dart';
-import 'package:gsecsurvey/screens/admin/widgets/error_view.dart';
-import 'package:gsecsurvey/screens/admin/widgets/expandable_user_card.dart';
-import 'package:gsecsurvey/screens/admin/widgets/loading_view.dart';
-import 'package:gsecsurvey/screens/admin/widgets/notification_modal.dart';
-import 'package:gsecsurvey/services/enhanced_admin_service.dart';
+
+import '../../core/constants/app_constants.dart';
+import '../../models/enhanced_admin_user.dart';
+import '../../services/enhanced_admin_service.dart';
+import 'widgets/error_view.dart';
+import 'widgets/expandable_user_card.dart';
+import 'widgets/loading_view.dart';
+import 'widgets/notification_modal.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -148,15 +150,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadUsers,
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: _users.length,
-        itemBuilder: (context, index) => ExpandableUserCard(
-          user: _users[index],
-          onUpdate: _loadUsers,
-          isExpanded: _expandedIndex == index,
-          onExpanded: () => _onUserExpanded(index),
-          onCollapsed: _onUserCollapsed,
+      child: Padding(
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: _users.length,
+          itemBuilder: (context, index) => ExpandableUserCard(
+            user: _users[index],
+            onUpdate: _loadUsers,
+            isExpanded: _expandedIndex == index,
+            onExpanded: () => _onUserExpanded(index),
+            onCollapsed: _onUserCollapsed,
+          ),
         ),
       ),
     );
