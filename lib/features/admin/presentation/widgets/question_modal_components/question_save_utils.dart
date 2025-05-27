@@ -159,7 +159,11 @@ class QuestionSaveUtils {
       await FirestoreService.addQuestion(updatedQuestion);
 
       if (!context.mounted) return;
+
+      // Close the modal first
       Navigator.of(context).pop();
+
+      // Then call the success callback and show snackbar
       onSaveSuccess();
       AdminUtils.showSnackBar(
         context,

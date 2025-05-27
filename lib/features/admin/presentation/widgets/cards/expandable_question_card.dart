@@ -163,17 +163,11 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
 
   void _toggleExpanded() {
     if (widget.isExpanded) {
-      // If currently expanded, collapse
+      // If currently expanded, collapse and close the question
       widget.onCollapsed();
-      _animationController.reverse();
-      // Reset controllers to original values when collapsing (except for new questions)
-      if (!widget.isNewQuestion) {
-        _resetControllers();
-      }
     } else {
       // If currently collapsed, expand
       widget.onExpanded();
-      _animationController.forward();
     }
   }
 
@@ -265,9 +259,51 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
     // Handle rotation details for rotation type questions
     Map<String, List<String>>? rotationDetails;
     if (_typeController.text == 'rotation') {
-      // For rotation questions, keep the existing rotation details
-      // The RotationField component handles the editing internally
-      rotationDetails = widget.question.rotationDetails;
+      // Parse rotation details from the controller that gets updated by RotationField
+      if (_rotationDetailsController.text.isNotEmpty) {
+        try {
+          final text = _rotationDetailsController.text.trim();
+          if (text.startsWith('{') && text.endsWith('}')) {
+            final content = text.substring(1, text.length - 1);
+            final pairs = content.split('",').map((s) => s.trim());
+
+            rotationDetails = {};
+            for (var pair in pairs) {
+              // Clean up the pair string
+              pair = pair
+                  .replaceAll('"', '')
+                  .replaceAll('{', '')
+                  .replaceAll('}', '');
+
+              // Split into key and value
+              final parts = pair.split(':');
+              if (parts.length == 2) {
+                final key = parts[0].trim();
+                final valueStr = parts[1].trim();
+
+                // Parse the array value
+                if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
+                  final listContent =
+                      valueStr.substring(1, valueStr.length - 1);
+                  final items = listContent
+                      .split(',')
+                      .map((item) => item.trim().replaceAll('"', ''))
+                      .where((item) => item.isNotEmpty)
+                      .toList();
+
+                  rotationDetails[key] = items.cast<String>();
+                }
+              }
+            }
+          }
+        } catch (e) {
+          // If parsing fails, keep existing rotation details
+          rotationDetails = widget.question.rotationDetails;
+        }
+      } else {
+        // Keep existing rotation details if controller is empty
+        rotationDetails = widget.question.rotationDetails;
+      }
     }
 
     // For yesNo type, set options to Yes and No
@@ -295,6 +331,11 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       await FirestoreService.addQuestion(updatedQuestion);
 
       if (!mounted) return;
+
+      // Close the question card after successful save
+      widget.onCollapsed();
+
+      // Call the save callback and show success message
       widget.onSave();
       AdminUtils.showSnackBar(
         context,

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 /// A common layout for admin screens with consistent styling and behavior
 class AdminLayout extends StatelessWidget {
@@ -46,7 +47,13 @@ class AdminLayout extends StatelessWidget {
             ),
           ],
         ),
-        body: body,
+        body: Center(
+          child: ConstrainedBox(
+            constraints:
+                const BoxConstraints(maxWidth: AppConstants.maxContentWidth),
+            child: body,
+          ),
+        ),
         floatingActionButton: floatingActionButton,
         bottomNavigationBar: bottomNavigationBar,
       ),

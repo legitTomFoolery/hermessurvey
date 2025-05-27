@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 
@@ -22,27 +23,34 @@ class AdminUtils {
     required String content,
     String confirmText = 'Delete',
     String cancelText = 'Cancel',
-    Color? confirmColor = Colors.red,
+    Color? confirmColor,
   }) async {
     return await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(cancelText),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: TextButton.styleFrom(
-                  foregroundColor: confirmColor,
+          builder: (dialogContext) {
+            final theme = AdaptiveTheme.of(dialogContext).theme;
+            return AlertDialog(
+              title: Text(title),
+              content: Text(content),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: confirmColor ?? theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
+                  ),
+                  child: Text(confirmText),
                 ),
-                child: Text(confirmText),
-              ),
-            ],
-          ),
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.outline,
+                  ),
+                  child: Text(cancelText),
+                ),
+              ],
+            );
+          },
         ) ??
         false;
   }

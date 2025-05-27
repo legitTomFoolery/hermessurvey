@@ -162,42 +162,48 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          body: Consumer<QuestionStore>(
-            builder: (context, questionStore, child) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ListView.builder(
-                        key: const PageStorageKey('question_list'),
-                        itemCount: questionStore.questions.length,
-                        itemBuilder: (context, index) {
-                          final question = questionStore.questions[index];
-                          return QuestionCard(
-                            key: ValueKey(question.id),
-                            question: question,
-                            onResponse: _updateResponse,
-                            initialResponse: responses[question.id],
-                          );
-                        },
+          body: Center(
+            child: ConstrainedBox(
+              constraints:
+                  const BoxConstraints(maxWidth: AppConstants.maxContentWidth),
+              child: Consumer<QuestionStore>(
+                builder: (context, questionStore, child) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ListView.builder(
+                            key: const PageStorageKey('question_list'),
+                            itemCount: questionStore.questions.length,
+                            itemBuilder: (context, index) {
+                              final question = questionStore.questions[index];
+                              return QuestionCard(
+                                key: ValueKey(question.id),
+                                question: question,
+                                onResponse: _updateResponse,
+                                initialResponse: responses[question.id],
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    color: theme.colorScheme.secondary,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildProgressBar(theme),
-                        _buildSubmitButton(theme),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
+                      Container(
+                        width: double.infinity,
+                        color: theme.colorScheme.secondary,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildProgressBar(theme),
+                            _buildSubmitButton(theme),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
           ),
         ),
       ),

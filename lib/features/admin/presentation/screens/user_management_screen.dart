@@ -10,6 +10,7 @@ import 'package:gsecsurvey/features/admin/presentation/widgets/common/error_view
 import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_user_card.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/common/loading_view.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/modals/notification_modal.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -109,14 +110,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       backgroundColor: theme.colorScheme.tertiary,
       body: _buildContent(context),
       floatingActionButton: (!kIsWeb && _showFloatingButton)
-          ? FloatingActionButton(
+          ? CommonWidgets.buildFloatingActionButton(
+              context: context,
               onPressed: _showNotificationModal,
-              backgroundColor: theme.colorScheme.primary,
-              shape: const CircleBorder(),
-              child: Icon(
-                Icons.notifications,
-                color: theme.colorScheme.onPrimary,
-              ),
+              icon: Icons.notifications,
             )
           : null,
     );

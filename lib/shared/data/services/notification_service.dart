@@ -349,7 +349,7 @@ class NotificationService {
         'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       });
 
-      // Sign JWT with private key - using RSAPrivateKey for dart_jsonwebtoken 2.14.0
+      // Sign JWT with private key - using RSAPrivateKey for proper JWT signing
       final privateKeyString = serviceAccount['private_key'] as String;
       final rsaPrivateKey = RSAPrivateKey(privateKeyString);
       final token = jwt.sign(rsaPrivateKey, algorithm: JWTAlgorithm.RS256);

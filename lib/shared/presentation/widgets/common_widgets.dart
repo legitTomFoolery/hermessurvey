@@ -24,22 +24,20 @@ class CommonWidgets {
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: leading ?? (automaticallyImplyLeading ? null : Container()),
-      title: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 300),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.center,
-            child: Text(
-              title,
-              style: theme.textTheme.displayLarge?.copyWith(
-                color: theme.colorScheme.onPrimary,
-                fontSize: 18.sp,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+      title: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 300),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: Text(
+            title,
+            style: theme.textTheme.displayLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+              fontSize: 18.sp,
             ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),
@@ -68,11 +66,12 @@ class CommonWidgets {
     );
   }
 
-  /// Standard floating action button
+  /// Standard floating action button with no animation (user feedback: elastic animation looks terrible)
   static Widget buildFloatingActionButton({
     required BuildContext context,
     required VoidCallback onPressed,
     IconData icon = Icons.add,
+    bool animate = false, // Changed default to false based on user feedback
   }) {
     final theme = AdaptiveTheme.of(context).theme;
 
@@ -114,30 +113,56 @@ class CommonWidgets {
   }) {
     final theme = AdaptiveTheme.of(context).theme;
 
-    return SizedBox(
-      width: width,
-      height: height ?? AppConstants.defaultButtonHeight.h,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ??
-              (onPressed != null
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.tertiary),
-          disabledBackgroundColor: theme.colorScheme.tertiary,
-          shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(AppConstants.defaultBorderRadius),
+    if (width != null) {
+      return SizedBox(
+        width: width,
+        height: height ?? AppConstants.defaultButtonHeight.h,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor ??
+                (onPressed != null
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.tertiary),
+            disabledBackgroundColor: theme.colorScheme.tertiary,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(AppConstants.defaultBorderRadius),
+            ),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor ?? theme.colorScheme.onPrimary,
+            ),
           ),
         ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: textColor ?? theme.colorScheme.onPrimary,
+      );
+    } else {
+      return SizedBox(
+        height: height ?? AppConstants.defaultButtonHeight.h,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor ??
+                (onPressed != null
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.tertiary),
+            disabledBackgroundColor: theme.colorScheme.tertiary,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(AppConstants.defaultBorderRadius),
+            ),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor ?? theme.colorScheme.onPrimary,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   /// Standard text button with consistent styling
@@ -353,7 +378,7 @@ class CommonWidgets {
             vertical: AppConstants.defaultSpacing / 2,
           ),
       decoration: BoxDecoration(
-        color: backgroundColor ?? theme.colorScheme.surface,
+        color: backgroundColor ?? theme.colorScheme.secondary,
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         boxShadow: [
           BoxShadow(

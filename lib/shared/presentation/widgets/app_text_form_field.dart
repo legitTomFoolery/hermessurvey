@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/app/config/app_constants.dart';
 
@@ -41,35 +40,35 @@ class AppTextFormField extends StatelessWidget {
         isDense: isDense ?? true,
         filled: true,
         fillColor: theme.colorScheme.secondary,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: AppConstants.textFieldHorizontalPadding.w,
-          vertical: AppConstants.textFieldVerticalPadding.h,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.textFieldHorizontalPadding,
+          vertical: AppConstants.textFieldVerticalPadding,
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.surface,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.primary,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.shadow,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.primary,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),

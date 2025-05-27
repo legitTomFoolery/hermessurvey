@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,33 +9,27 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'features/home/data/services/question_store.dart';
 import 'shared/data/services/response_provider.dart';
 import 'shared/data/services/user_service.dart';
-import 'shared/data/services/notification_service.dart';
 import 'firebase_options.dart';
 import 'app/config/app_router.dart';
 import 'app/config/routes.dart';
 import 'theme/app_theme.dart';
 import 'app/config/app_constants.dart';
+import 'app/config/dependency_injection.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Future.wait([
-    Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ),
-    ScreenUtil.ensureScreenSize(),
-    preloadSVGs([AppConstants.googleLogoSvg])
-  ]);
+  // Initialize Firebase first
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  // Initialize notification service
-  try {
-    await NotificationService.initialize();
-  } catch (e) {
-    // Log error silently in production - consider using a proper logging service
-    if (kDebugMode) {
-      debugPrint('Failed to initialize notification service: $e');
-    }
-  }
+  // Then initialize other services that may depend on Firebase
+  await Future.wait([
+    ScreenUtil.ensureScreenSize(),
+    preloadSVGs([AppConstants.googleLogoSvg]),
+    setupDependencies(),
+  ]);
 
   // Get the current user and check admin status for app lifecycle behavior
   final user = FirebaseAuth.instance.currentUser;
@@ -89,11 +82,11 @@ class MyApp extends StatelessWidget {
       builder: (_, child) => MultiProvider(
         providers: [
           ChangeNotifierProvider<QuestionStore>(
-            create: (_) => QuestionStore(),
+            create: (_) => getIt<QuestionStore>(),
             lazy: false,
           ),
           ChangeNotifierProvider<ResponseProvider>(
-            create: (_) => ResponseProvider(),
+            create: (_) => getIt<ResponseProvider>(),
           ),
         ],
         child: AdaptiveTheme(

@@ -16,6 +16,11 @@ class LightColors {
   static const Color background = Colors.white;
   static const Color text = Colors.black;
   static const Color secondaryText = ColorsManager.gray;
+  static const Color fieldOutline = Colors.black;
+  static const Color fieldFill = Colors.white;
+  static const Color success = Colors.green;
+  static const Color warning = Colors.orange;
+  static const Color danger = Colors.red;
 }
 
 class DarkColors {
@@ -23,4 +28,9 @@ class DarkColors {
   static const Color background = ColorsManager.darkBlue;
   static const Color text = Colors.white;
   static const Color secondaryText = ColorsManager.gray76;
+  static const Color fieldOutline = Colors.white;
+  static const Color fieldFill = ColorsManager.darkBlue;
+  static const Color success = Colors.green;
+  static const Color warning = Colors.orange;
+  static const Color danger = Colors.red;
 }

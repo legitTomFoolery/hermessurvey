@@ -1,29 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-
 import 'package:gsecsurvey/features/home/data/models/question_model.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_question_card.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/modals/question_modal.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
-import 'package:gsecsurvey/app/config/app_constants.dart';
-import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
-import 'package:gsecsurvey/features/admin/presentation/widgets/common/loading_view.dart';
-import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_question_card.dart';
 
-class AdminScreen extends StatefulWidget {
-  const AdminScreen({super.key});
+class QuestionManagementScreen extends StatefulWidget {
+  const QuestionManagementScreen({super.key});
 
   @override
-  State<AdminScreen> createState() => _AdminScreenState();
+  State<QuestionManagementScreen> createState() =>
+      _QuestionManagementScreenState();
 }
 
-class _AdminScreenState extends State<AdminScreen> {
-  bool _isLoading = false;
+class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
   List<Question> _questions = [];
-  bool _showFloatingButton = true;
+  bool _isLoading = true;
   String? _expandedQuestionId;
+  bool _showFloatingButton = true;
   final ScrollController _scrollController = ScrollController();
-  bool _showNewQuestionCard = false;
 
   @override
   void initState() {
@@ -34,7 +31,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
   void _setupScrollListener() {
     _scrollController.addListener(() {
-      // Hide floating button when scrolling down (user swipes up)
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (_showFloatingButton) {
@@ -59,6 +55,51 @@ class _AdminScreenState extends State<AdminScreen> {
     super.dispose();
   }
 
+  Future<void> _loadQuestions() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final questionsSnapshot = await FirestoreService.getQuestionsOnce();
+      final questions =
+          questionsSnapshot.docs.map((doc) => doc.data()).toList();
+
+      // Sort questions by order (extracted from ID)
+      questions.sort((a, b) {
+        final aOrder = int.tryParse(a.id.split('-').first) ?? 0;
+        final bOrder = int.tryParse(b.id.split('-').first) ?? 0;
+        return aOrder.compareTo(bOrder);
+      });
+
+      setState(() {
+        _questions = questions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading questions: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _addNewQuestion() {
+    showDialog(
+      context: context,
+      builder: (context) => QuestionModal(
+        onSave: _loadQuestions,
+      ),
+    );
+  }
+
   void _onQuestionExpanded(String questionId) {
     setState(() {
       _expandedQuestionId = questionId;
@@ -71,171 +112,84 @@ class _AdminScreenState extends State<AdminScreen> {
     });
   }
 
-  void _addNewQuestion() {
-    setState(() {
-      _showNewQuestionCard = true;
-      _expandedQuestionId = 'new-question';
-    });
-
-    // Scroll to bottom after the widget is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: AppConstants.scrollAnimationDuration,
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
-  void _onNewQuestionSaved() {
-    setState(() {
-      _showNewQuestionCard = false;
-      _expandedQuestionId = null;
-    });
-    _loadQuestions();
-  }
-
-  void _onNewQuestionCancelled() {
-    setState(() {
-      _showNewQuestionCard = false;
-      _expandedQuestionId = null;
-    });
-  }
-
-  Future<void> _loadQuestions() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final snapshot = await FirestoreService.getQuestionsOnce();
-      setState(() {
-        _questions = snapshot.docs.map((doc) => doc.data()).toList();
-        // Sort questions by order
-        _questions = AdminUtils.sortQuestionsByOrder(_questions);
-      });
-    } catch (e) {
-      if (mounted) {
-        AdminUtils.showSnackBar(
-          context,
-          'Error loading questions: $e',
-          isError: true,
-        );
-      }
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = AdaptiveTheme.of(context).theme;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.tertiary,
-      body: _buildContent(context),
+      body: RefreshIndicator(
+        onRefresh: _loadQuestions,
+        child: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: theme.colorScheme.primary,
+                ),
+              )
+            : _questions.isEmpty
+                ? _buildEmptyState()
+                : _buildQuestionsList(),
+      ),
       floatingActionButton: _showFloatingButton
           ? CommonWidgets.buildFloatingActionButton(
               context: context,
               onPressed: _addNewQuestion,
+              icon: Icons.add,
             )
           : null,
     );
   }
 
-  Widget _buildContent(BuildContext context) {
-    if (_isLoading) {
-      return const LoadingView();
-    }
+  Widget _buildEmptyState() {
+    final theme = AdaptiveTheme.of(context).theme;
 
-    if (_questions.isEmpty && !_showNewQuestionCard) {
-      return CommonWidgets.buildEmptyState(
-        context: context,
-        message: AppConstants.noQuestionsFound,
-        icon: Icons.quiz_outlined,
-      );
-    }
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.quiz_outlined,
+            size: 64,
+            color: theme.colorScheme.shadow,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No questions found',
+            style: theme.textTheme.displayLarge?.copyWith(
+              fontSize: 18,
+              color: theme.colorScheme.shadow,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap the + button to create your first question',
+            style: theme.textTheme.displayLarge?.copyWith(
+              fontSize: 14,
+              color: theme.colorScheme.shadow,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
 
-    return RefreshIndicator(
-      onRefresh: _loadQuestions,
-      child: Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: _questions.length + (_showNewQuestionCard ? 1 : 0),
-          itemBuilder: (context, index) {
-            // Show new question card at the end
-            if (index == _questions.length && _showNewQuestionCard) {
-              return ExpandableQuestionCard(
-                question: Question(
-                  id: '',
-                  name: '',
-                  type: 'text',
-                  options: [],
-                ),
-                onSave: _onNewQuestionSaved,
-                isExpanded: _expandedQuestionId == 'new-question',
-                onExpanded: () => _onQuestionExpanded('new-question'),
-                onCollapsed: _onNewQuestionCancelled,
-                isNewQuestion: true,
-              );
-            }
-
-            final question = _questions[index];
-            return Dismissible(
-              key: Key(question.id),
-              // Disable swipe when any card is expanded
-              dismissThresholds: _expandedQuestionId != null
-                  ? const {
-                      DismissDirection.startToEnd: 1.0,
-                      DismissDirection.endToStart: 1.0
-                    }
-                  : const {},
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20.0),
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                ),
-              ),
-              secondaryBackground: Container(
-                color: Colors.red,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(left: 20.0),
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                ),
-              ),
-              confirmDismiss: (direction) async {
-                // Don't allow dismiss when any card is expanded
-                if (_expandedQuestionId != null) {
-                  return false;
-                }
-                // Return true to allow dismissal - AdminUtils.deleteQuestion will handle confirmation
-                return true;
-              },
-              onDismissed: (direction) async {
-                await AdminUtils.deleteQuestion(context, question);
-                _loadQuestions();
-              },
-              child: ExpandableQuestionCard(
-                question: question,
-                onSave: _loadQuestions,
-                isExpanded: _expandedQuestionId == question.id,
-                onExpanded: () => _onQuestionExpanded(question.id),
-                onCollapsed: _onQuestionCollapsed,
-              ),
-            );
-          },
-        ),
+  Widget _buildQuestionsList() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: _questions.length,
+        itemBuilder: (context, index) {
+          final question = _questions[index];
+          return ExpandableQuestionCard(
+            question: question,
+            onSave: _loadQuestions,
+            isExpanded: _expandedQuestionId == question.id,
+            onExpanded: () => _onQuestionExpanded(question.id),
+            onCollapsed: _onQuestionCollapsed,
+          );
+        },
       ),
     );
   }

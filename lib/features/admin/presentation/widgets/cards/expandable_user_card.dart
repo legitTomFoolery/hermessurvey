@@ -5,6 +5,7 @@ import 'package:gsecsurvey/app/config/app_constants.dart';
 import 'package:gsecsurvey/features/admin/data/models/admin_user_extended_model.dart';
 import 'package:gsecsurvey/features/admin/data/services/admin_management_service.dart';
 import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/common_dialogs.dart';
 
 class ExpandableUserCard extends StatefulWidget {
   final EnhancedAdminUser user;
@@ -123,28 +124,11 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
 
   Future<void> _deleteUser() async {
     // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
+    final confirmed = await CommonDialogs.showDeleteConfirmationDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete User'),
-        content: Text(
+      title: 'Delete User',
+      content:
           'Are you sure you want to delete ${widget.user.email ?? 'this user'}? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
 
     if (confirmed != true) return;
@@ -197,24 +181,11 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
     }
 
     // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
+    final confirmed = await CommonDialogs.showConfirmationDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reset Password'),
-        content: Text(
-          'Send a password reset email to ${widget.user.email}?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Send Reset Email'),
-          ),
-        ],
-      ),
+      title: 'Reset Password',
+      content: 'Send a password reset email to ${widget.user.email}?',
+      confirmText: 'Send Reset Email',
     );
 
     if (confirmed != true) return;
@@ -384,46 +355,152 @@ class _ExpandableUserCardState extends State<ExpandableUserCard>
               ),
             )
           else
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            Column(
               children: [
-                ElevatedButton.icon(
-                  onPressed: _toggleAdminStatus,
-                  icon: Icon(widget.user.isAdmin
-                      ? Icons.remove_moderator
-                      : Icons.admin_panel_settings),
-                  label:
-                      Text(widget.user.isAdmin ? 'Remove Admin' : 'Make Admin'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.user.isAdmin
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                  ),
-                ),
-                if (widget.user.email != null && widget.user.email!.isNotEmpty)
-                  ElevatedButton.icon(
-                    onPressed: _resetPassword,
-                    icon: const Icon(Icons.lock_reset),
-                    label: const Text('Reset Password'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
+                // First row: Admin toggle and Reset Password buttons (50% width each)
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildOutlineActionButton(
+                        onPressed: _toggleAdminStatus,
+                        icon: widget.user.isAdmin
+                            ? Icons.remove_moderator
+                            : Icons.admin_panel_settings,
+                        label:
+                            widget.user.isAdmin ? 'Remove Admin' : 'Make Admin',
+                        primaryColor: theme.colorScheme.primary,
+                      ),
                     ),
-                  ),
-                ElevatedButton.icon(
-                  onPressed: _deleteUser,
-                  icon: const Icon(Icons.delete),
-                  label: const Text('Delete User'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: widget.user.email != null &&
+                              widget.user.email!.isNotEmpty
+                          ? _buildOutlineActionButton(
+                              onPressed: _resetPassword,
+                              icon: Icons.lock_reset,
+                              label: 'Reset Password',
+                              primaryColor: theme.colorScheme.primary,
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Second row: Delete User button (100% width)
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildFilledActionButton(
+                    onPressed: _deleteUser,
+                    icon: Icons.delete,
+                    label: 'Delete User',
+                    primaryColor: theme.colorScheme.primary,
                   ),
                 ),
               ],
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOutlineActionButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required Color primaryColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: primaryColor, width: 1.5),
+        borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.defaultPadding,
+              vertical: AppConstants.defaultSpacing + 4,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  icon,
+                  color: primaryColor,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilledActionButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required Color primaryColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: primaryColor,
+        borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withOpacity(0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.defaultPadding,
+              vertical: AppConstants.defaultSpacing + 4,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

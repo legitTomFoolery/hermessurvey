@@ -123,9 +123,10 @@ class _NotificationModalState extends State<NotificationModal> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+      backgroundColor: theme.colorScheme.surface,
       child: Container(
         padding: const EdgeInsets.all(24),
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -232,60 +233,26 @@ class _NotificationModalState extends State<NotificationModal> {
                 controller: _messageController,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText:
-                      'Enter custom message or leave blank for default message',
+                  hintText: defaultMessage,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: theme.colorScheme.outline),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: theme.colorScheme.outline),
                   ),
                   filled: true,
-                  fillColor: theme.colorScheme.surface,
+                  fillColor: theme.colorScheme.surfaceContainerHighest,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-              // Default message preview
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Default Message:',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      defaultMessage,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Action buttons
+              // Action buttons with proper order and styling
               Wrap(
                 alignment: WrapAlignment.end,
                 spacing: 12,
                 children: [
-                  TextButton(
-                    onPressed:
-                        _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
                   ElevatedButton.icon(
                     onPressed: _isLoading ? null : _sendNotification,
                     icon: _isLoading
@@ -295,16 +262,24 @@ class _NotificationModalState extends State<NotificationModal> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                theme.colorScheme.onPrimary,
+                                theme.colorScheme.onTertiary,
                               ),
                             ),
                           )
                         : const Icon(Icons.send),
                     label: Text(_isLoading ? 'Sending...' : 'Send'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
+                      backgroundColor: theme.colorScheme.tertiary,
+                      foregroundColor: theme.colorScheme.onTertiary,
                     ),
+                  ),
+                  TextButton(
+                    onPressed:
+                        _isLoading ? null : () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      foregroundColor: theme.colorScheme.outline,
+                    ),
+                    child: const Text('Cancel'),
                   ),
                 ],
               ),

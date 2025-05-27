@@ -42,6 +42,7 @@ class _OptionsFieldState extends State<OptionsField> {
         });
       },
       scrollController: widget.scrollController,
+      useHyphenBullet: true,
     );
   }
 }

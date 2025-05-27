@@ -32,6 +32,9 @@ class AppConstants {
   static const double designWidth = 360.0;
   static const double designHeight = 690.0;
 
+  // Layout Constraints
+  static const double maxContentWidth = 1200.0;
+
   // Asset Paths
   static const String googleLogoSvg = 'assets/svgs/google_logo.svg';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/question_modal_components/expandable_rotation_card.dart';
 
 class RotationField extends StatefulWidget {
@@ -113,10 +114,14 @@ class _RotationFieldState extends State<RotationField> {
 
   void _addRotation() {
     setState(() {
-      final newRotationName = 'New Rotation ${_rotations.length + 1}';
+      // Use ~ character which comes after letters alphabetically to ensure new rotations appear last
+      final newRotationName = '~ New Rotation ${_rotations.length + 1}';
       _rotations[newRotationName] = [];
-      _updateRotationDetails();
+      _expandedRotationId =
+          newRotationName; // Auto-expand new rotation for editing
     });
+    // Update the controller after setState to ensure persistence
+    _updateRotationDetails();
   }
 
   void _deleteRotation(String rotationName) {
@@ -137,6 +142,7 @@ class _RotationFieldState extends State<RotationField> {
         final attendings = _rotations[oldName]!;
         _rotations.remove(oldName);
         _rotations[newName] = attendings;
+        // Update expanded rotation ID to the new name
         if (_expandedRotationId == oldName) {
           _expandedRotationId = newName;
         }
@@ -160,62 +166,69 @@ class _RotationFieldState extends State<RotationField> {
     final sortedRotations = _rotations.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-          child: Text(
-            'Rotations',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+            child: Text(
+              'Rotations',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
 
-        // List of rotation cards (sorted alphabetically)
-        ...sortedRotations.map((entry) {
-          final rotationName = entry.key;
-          final attendings = entry.value;
+          // List of rotation cards (sorted alphabetically)
+          ...sortedRotations.asMap().entries.map((mapEntry) {
+            final index = mapEntry.key;
+            final entry = mapEntry.value;
+            final rotationName = entry.key;
+            final attendings = entry.value;
 
-          return ExpandableRotationCard(
-            key: Key(rotationName),
-            rotation: rotationName,
-            attendings: attendings,
-            isExpanded: _expandedRotationId == rotationName,
-            onExpanded: () => _onRotationExpanded(rotationName),
-            onCollapsed: _onRotationCollapsed,
-            onRotationNameChanged: (newName) =>
-                _updateRotationName(rotationName, newName),
-            onAttendingsChanged: (newAttendingsList) =>
-                _updateAttendingsList(rotationName, newAttendingsList),
-            onDelete: () => _deleteRotation(rotationName),
-            scrollController: widget.scrollController,
-          );
-        }),
-
-        // Add rotation button
-        const SizedBox(height: 8),
-        Builder(
-          builder: (context) {
-            final theme = Theme.of(context);
-            return ElevatedButton.icon(
-              onPressed: _addRotation,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Rotation'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+            return ExpandableRotationCard(
+              key: ValueKey(
+                  '$rotationName-$index'), // Use ValueKey with index for better tracking
+              rotation: rotationName,
+              attendings: attendings,
+              isExpanded: _expandedRotationId == rotationName,
+              onExpanded: () => _onRotationExpanded(rotationName),
+              onCollapsed: _onRotationCollapsed,
+              onRotationNameChanged: (newName) =>
+                  _updateRotationName(rotationName, newName),
+              onAttendingsChanged: (newAttendingsList) =>
+                  _updateAttendingsList(rotationName, newAttendingsList),
+              onDelete: () => _deleteRotation(rotationName),
+              scrollController: widget.scrollController,
             );
-          },
-        ),
-      ],
+          }),
+
+          // Add rotation button
+          const SizedBox(height: 8),
+          Builder(
+            builder: (context) {
+              final theme = Theme.of(context);
+              return ElevatedButton.icon(
+                onPressed: _addRotation,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Rotation'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

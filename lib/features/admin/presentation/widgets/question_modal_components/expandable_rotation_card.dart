@@ -100,6 +100,11 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
     }
   }
 
+  void _updateRotationName() {
+    // Only update when user finishes editing to avoid losing focus
+    widget.onRotationNameChanged(_rotationController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -144,13 +149,9 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
                   iconSize: 20,
                 ),
                 IconButton(
-                  icon: AnimatedRotation(
-                    turns: widget.isExpanded ? 0.5 : 0,
-                    duration: AppConstants.defaultAnimationDuration,
-                    child: Icon(
-                      Icons.edit,
-                      color: theme.colorScheme.primary,
-                    ),
+                  icon: Icon(
+                    widget.isExpanded ? Icons.keyboard_arrow_up : Icons.edit,
+                    color: theme.colorScheme.primary,
                   ),
                   onPressed: _toggleExpanded,
                 ),
@@ -176,14 +177,44 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Rotation name field
-          TextFormField(
+          // Rotation name field - using same style as editable list fields
+          TextField(
             controller: _rotationController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Rotation Name',
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultBorderRadius),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultBorderRadius),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultBorderRadius),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              fillColor: Theme.of(context).colorScheme.secondary,
+              filled: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              isDense: true,
             ),
-            onChanged: widget.onRotationNameChanged,
+            // Fixed: Only update parent when user finishes editing, not on every keystroke
+            onSubmitted: (value) => _updateRotationName(),
+            onEditingComplete: () => _updateRotationName(),
+            // Remove onChanged to prevent focus loss on every keystroke
           ),
           const SizedBox(height: 16),
 
@@ -194,16 +225,24 @@ class _ExpandableRotationCardState extends State<ExpandableRotationCard>
             hintText: 'New Attending',
             onItemsChanged: widget.onAttendingsChanged,
             scrollController: widget.scrollController,
+            isAttendingsList: true,
           ),
 
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              CommonWidgets.buildElevatedButton(
-                context: context,
-                text: 'Done',
-                onPressed: _toggleExpanded,
+              SizedBox(
+                width: 100,
+                child: CommonWidgets.buildElevatedButton(
+                  context: context,
+                  text: 'Done',
+                  onPressed: () {
+                    // Update rotation name when Done is pressed
+                    _updateRotationName();
+                    _toggleExpanded();
+                  },
+                ),
               ),
             ],
           ),

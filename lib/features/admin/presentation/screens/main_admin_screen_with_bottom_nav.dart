@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import 'question_management_screen.dart';
+import 'package:gsecsurvey/features/admin/presentation/screens/question_management_screen.dart';
 import 'response_management_screen.dart';
 import 'submission_summary_screen.dart';
 import 'user_management_screen.dart';
@@ -20,7 +20,7 @@ class _MainAdminScreenWithBottomNavState
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const AdminScreen(),
+    const QuestionManagementScreen(),
     const UserManagementScreen(),
     const ResponseManagementScreen(),
     const SubmissionSummaryScreen(),

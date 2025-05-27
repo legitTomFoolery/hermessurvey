@@ -23,6 +23,9 @@ class AppTheme {
           onSecondary: Colors.black,
           surface: const Color.fromARGB(255, 236, 230, 240),
           shadow: const Color.fromARGB(255, 24, 24, 24),
+          outline: LightColors.fieldOutline,
+          surfaceContainerHighest: LightColors.fieldFill,
+          error: LightColors.danger,
         ),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: ColorsManager.mainBlue,
@@ -56,6 +59,9 @@ class AppTheme {
           onSecondary: Colors.white,
           surface: const Color.fromARGB(255, 42, 41, 47),
           shadow: const Color.fromARGB(255, 171, 171, 171),
+          outline: DarkColors.fieldOutline,
+          surfaceContainerHighest: DarkColors.fieldFill,
+          error: DarkColors.danger,
         ),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: ColorsManager.mainBlue,

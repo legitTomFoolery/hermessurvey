@@ -46,6 +46,7 @@ dependencies:
   data_table_2: ^2.5.10
   http: ^1.2.0
   dart_jsonwebtoken: ^2.14.0
+  get_it: ^7.6.4
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,9 @@ dev_dependencies:
   # The lint set provided is activated in '[PACKAGE_NAME]/analysis_options.yaml'
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.1
+  bloc_test: ^9.1.5
+  mockito: ^5.4.4
+  build_runner: ^2.4.7
 
 flutter_icons:
   android: true 

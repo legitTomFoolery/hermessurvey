@@ -8,6 +8,8 @@ class EditableListField extends StatefulWidget {
   final String hintText;
   final Function(List<String>) onItemsChanged;
   final ScrollController? scrollController;
+  final bool useHyphenBullet;
+  final bool isAttendingsList;
 
   const EditableListField({
     super.key,
@@ -16,6 +18,8 @@ class EditableListField extends StatefulWidget {
     required this.hintText,
     required this.onItemsChanged,
     this.scrollController,
+    this.useHyphenBullet = false,
+    this.isAttendingsList = false,
   });
 
   @override
@@ -71,70 +75,127 @@ class _EditableListFieldState extends State<EditableListField> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.title.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(
-                top: AppConstants.defaultPadding,
-                bottom: AppConstants.defaultSpacing),
-            child: Text(
-              widget.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+    final horizontalPadding = widget.isAttendingsList
+        ? AppConstants.defaultPadding / 2
+        : AppConstants.defaultPadding;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.title.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: AppConstants.defaultPadding,
+                  bottom: AppConstants.defaultSpacing),
+              child: Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
 
-        // List of existing items
-        ...widget.items.asMap().entries.map((entry) {
-          final index = entry.key;
-          final item = entry.value;
-          final itemController = TextEditingController(text: item);
+          // List of existing items
+          ...widget.items.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            final itemController = TextEditingController(text: item);
 
-          // Fix cursor position
-          itemController.selection = TextSelection.fromPosition(
-            TextPosition(offset: itemController.text.length),
-          );
+            // Fix cursor position
+            itemController.selection = TextSelection.fromPosition(
+              TextPosition(offset: itemController.text.length),
+            );
 
-          return Padding(
-            padding: const EdgeInsets.only(bottom: AppConstants.defaultSpacing),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: itemController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+            return Padding(
+              padding:
+                  const EdgeInsets.only(bottom: AppConstants.defaultSpacing),
+              child: Row(
+                children: [
+                  // Bullet point for visual distinction (not for attendings)
+                  if (!widget.isAttendingsList)
+                    if (widget.useHyphenBullet)
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        child: Text(
+                          '-',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                      isDense: true,
+                  Expanded(
+                    child: TextField(
+                      controller: itemController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.defaultBorderRadius),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.defaultBorderRadius),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.defaultBorderRadius),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        fillColor: Theme.of(context).colorScheme.secondary,
+                        filled: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        // Update the item in the list
+                        _updateItem(index, value);
+                      },
                     ),
-                    onChanged: (value) {
-                      // Update the item in the list
-                      _updateItem(index, value);
-                    },
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _removeItem(index),
-                  iconSize: 20,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
-            ),
-          );
-        }),
+                  IconButton(
+                    icon: Icon(Icons.delete_outline,
+                        color: Theme.of(context).colorScheme.error),
+                    onPressed: () => _removeItem(index),
+                    iconSize: 20,
+                    padding: widget.isAttendingsList
+                        ? const EdgeInsets.all(4)
+                        : EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            );
+          }),
 
-        // Add new item field
-        _buildNewItemField(),
-      ],
+          // Add new item field
+          _buildNewItemField(),
+        ],
+      ),
     );
   }
 
@@ -161,7 +222,29 @@ class _EditableListFieldState extends State<EditableListField> {
                 controller: _newItemController,
                 decoration: InputDecoration(
                   hintText: widget.hintText,
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.defaultBorderRadius),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.defaultBorderRadius),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.defaultBorderRadius),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
