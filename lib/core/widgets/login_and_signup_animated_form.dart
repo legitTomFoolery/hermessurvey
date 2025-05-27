@@ -71,10 +71,15 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               if (riveHelper.riveArtboard != null)
                 Center(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width > 800
-                        ? 800
-                        : MediaQuery.of(context).size.width,
-                    height: 200.h, // Reduced height to minimize unused space
+                    width: MediaQuery.of(context).size.width > 600
+                        ? MediaQuery.of(context).size.width *
+                            0.8 // 80% of screen width for wider screens
+                        : MediaQuery.of(context)
+                            .size
+                            .width, // 100% for small screens
+                    height: MediaQuery.of(context).size.width > 600
+                        ? 300.h // Larger height for wider screens
+                        : 200.h, // Smaller height for small screens
                     child: Rive(
                       artboard: riveHelper.riveArtboard!,
                       fit: BoxFit.contain,
