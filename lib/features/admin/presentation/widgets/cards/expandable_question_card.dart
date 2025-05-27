@@ -193,13 +193,6 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
   }
 
   void _saveQuestion() async {
-    print('🎯 DEBUG: ExpandableQuestionCard._saveQuestion() called');
-    print(
-        '🎯 DEBUG: _rotationDetailsController.text: "${_rotationDetailsController.text}"');
-    print(
-        '🎯 DEBUG: _rotationDetailsController.hashCode: ${_rotationDetailsController.hashCode}');
-    print('🎯 DEBUG: _typeController.text: "${_typeController.text}"');
-
     // Custom save logic to avoid Navigator.pop() issue
     // Validate required fields
     if (_orderController.text.isEmpty ||
@@ -265,27 +258,15 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
 
     // Handle rotation details for rotation type questions
     Map<String, List<String>>? rotationDetails;
-    print('🎯 DEBUG: Processing rotation details');
-    print('🎯 DEBUG: Type: ${_typeController.text}');
-    print(
-        '🎯 DEBUG: Rotation details controller text: "${_rotationDetailsController.text}"');
-    print('🎯 DEBUG: isNewQuestion: ${widget.isNewQuestion}');
-    if (!widget.isNewQuestion) {
-      print(
-          '🎯 DEBUG: Original question rotation details: ${widget.question.rotationDetails}');
-    }
 
     if (_typeController.text == 'rotation') {
       // Parse rotation details from the controller that gets updated by RotationField
       if (_rotationDetailsController.text.isNotEmpty) {
         try {
-          print('🎯 DEBUG: Parsing rotation details from controller text');
           // FIXED: Use robust parsing logic that handles multiple rotations correctly
           final text = _rotationDetailsController.text.trim();
-          print('🎯 DEBUG: Trimmed text: "$text"');
 
           if (text.startsWith('{') && text.endsWith('}')) {
-            print('🎯 DEBUG: Text has valid JSON structure');
             final content = text.substring(1, text.length - 1);
 
             rotationDetails = {};
@@ -324,10 +305,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
               pairs.add(currentPair);
             }
 
-            print('🎯 DEBUG: Split pairs: $pairs');
-
             for (var pair in pairs) {
-              print('🎯 DEBUG: Processing pair: "$pair"');
               // Find the first colon that's not inside quotes
               var colonIndex = -1;
               var inQuotes = false;
@@ -344,7 +322,6 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
                 var key =
                     pair.substring(0, colonIndex).trim().replaceAll('"', '');
                 var valueStr = pair.substring(colonIndex + 1).trim();
-                print('🎯 DEBUG: Parsed key: "$key", valueStr: "$valueStr"');
 
                 // Parse the array value
                 if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
@@ -379,26 +356,20 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
                     }
                   }
 
-                  print('🎯 DEBUG: Parsed items for key "$key": $items');
                   rotationDetails[key] = items;
                 }
               }
             }
           }
         } catch (e) {
-          print('🎯 DEBUG: Parsing failed with error: $e');
           // If parsing fails, keep existing rotation details
           rotationDetails = widget.question.rotationDetails;
         }
       } else {
-        print(
-            '🎯 DEBUG: Controller text is empty, using existing rotation details');
         // Keep existing rotation details if controller is empty
         rotationDetails = widget.question.rotationDetails;
       }
     }
-
-    print('🎯 DEBUG: Final rotation details to save: $rotationDetails');
 
     // For yesNo type, set options to Yes and No
     if (_typeController.text == 'yesNo') {
@@ -414,9 +385,6 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       options: options,
       rotationDetails: rotationDetails,
     );
-
-    print(
-        '🎯 DEBUG: Created question object with rotation details: ${updatedQuestion.rotationDetails}');
 
     try {
       // If editing and ID changed, delete old document (but not for new questions)

@@ -31,48 +31,32 @@ class _RotationFieldState extends State<RotationField> {
   }
 
   void _parseRotationDetails() {
-    print('🔍 DEBUG: _parseRotationDetails called');
-    print(
-        '🔍 DEBUG: Controller text: "${widget.rotationDetailsController.text}"');
-    print('🔍 DEBUG: isNewQuestion: ${widget.isNewQuestion}');
-    print(
-        '🔍 DEBUG: rotationDetailsFromQuestion: ${widget.rotationDetailsFromQuestion}');
-
     try {
       if (widget.rotationDetailsController.text.isNotEmpty) {
         final text = widget.rotationDetailsController.text.trim();
-        print('🔍 DEBUG: Trimmed text: "$text"');
 
         if (text.startsWith('{') && text.endsWith('}')) {
           final content = text.substring(1, text.length - 1);
-          print('🔍 DEBUG: Content after removing braces: "$content"');
 
           final pairs = content.split('",').map((s) => s.trim());
-          print('🔍 DEBUG: Split pairs: ${pairs.toList()}');
 
           for (var pair in pairs) {
-            print('🔍 DEBUG: Processing pair: "$pair"');
-
             // Clean up the pair string
             pair = pair
                 .replaceAll('"', '')
                 .replaceAll('{', '')
                 .replaceAll('}', '');
-            print('🔍 DEBUG: Cleaned pair: "$pair"');
 
             // Split into key and value
             final parts = pair.split(':');
-            print('🔍 DEBUG: Split parts: $parts');
 
             if (parts.length == 2) {
               final key = parts[0].trim();
               final valueStr = parts[1].trim();
-              print('🔍 DEBUG: Key: "$key", ValueStr: "$valueStr"');
 
               // Parse the array value
               if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
                 final listContent = valueStr.substring(1, valueStr.length - 1);
-                print('🔍 DEBUG: List content: "$listContent"');
 
                 final items = listContent
                     .split(',')
@@ -80,42 +64,24 @@ class _RotationFieldState extends State<RotationField> {
                     .where((item) => item.isNotEmpty)
                     .toList()
                     .cast<String>();
-                print('🔍 DEBUG: Parsed items: $items');
 
                 // Sort attendings alphabetically
                 items.sort();
                 _rotations[key] = items;
-                print(
-                    '🔍 DEBUG: Added to rotations - Key: "$key", Items: $items');
-              } else {
-                print(
-                    '🔍 DEBUG: ValueStr does not start/end with brackets: "$valueStr"');
               }
-            } else {
-              print('🔍 DEBUG: Parts length is not 2: ${parts.length}');
             }
           }
-        } else {
-          print('🔍 DEBUG: Text does not start with { or end with }');
         }
       } else if (!widget.isNewQuestion &&
           widget.rotationDetailsFromQuestion != null) {
-        print('🔍 DEBUG: Using rotationDetailsFromQuestion');
         _rotations =
             Map<String, List<String>>.from(widget.rotationDetailsFromQuestion);
         // Sort attendings for each rotation
         _rotations.forEach((key, value) {
           value.sort();
         });
-        print('🔍 DEBUG: Loaded from question: $_rotations');
-      } else {
-        print('🔍 DEBUG: No rotation details to parse');
       }
-
-      print('🔍 DEBUG: Final _rotations: $_rotations');
     } catch (e) {
-      print('🔍 DEBUG: Error parsing rotation details: $e');
-      print('🔍 DEBUG: Stack trace: ${StackTrace.current}');
       // If parsing fails, start with empty map
       _rotations = {};
     }
@@ -125,16 +91,9 @@ class _RotationFieldState extends State<RotationField> {
   }
 
   void _updateRotationDetails() {
-    print('🔧 DEBUG: _updateRotationDetails called');
-    print('🔧 DEBUG: Current _rotations: $_rotations');
-    print(
-        '🔧 DEBUG: Controller before update: "${widget.rotationDetailsController.text}"');
-
     final buffer = StringBuffer('{');
     int i = 0;
     _rotations.forEach((rotation, attendings) {
-      print(
-          '🔧 DEBUG: Processing rotation "$rotation" with attendings: $attendings');
       buffer.write('"$rotation": [');
       for (int j = 0; j < attendings.length; j++) {
         buffer.write('"${attendings[j]}"');
@@ -147,13 +106,7 @@ class _RotationFieldState extends State<RotationField> {
     buffer.write('}');
 
     final generatedJson = buffer.toString();
-    print('🔧 DEBUG: Generated JSON: "$generatedJson"');
-
     widget.rotationDetailsController.text = generatedJson;
-    print(
-        '🔧 DEBUG: Controller text set to: "${widget.rotationDetailsController.text}"');
-    print(
-        '🔧 DEBUG: Controller hashCode: ${widget.rotationDetailsController.hashCode}');
   }
 
   void _onRotationExpanded(String rotationId) {

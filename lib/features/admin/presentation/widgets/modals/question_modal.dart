@@ -219,13 +219,6 @@ class _QuestionModalState extends State<QuestionModal> {
   }
 
   void _saveQuestion() {
-    print('🚀 DEBUG: _saveQuestion called');
-    print(
-        '🚀 DEBUG: _rotationDetailsController.text: "${_rotationDetailsController.text}"');
-    print('🚀 DEBUG: _typeController.text: "${_typeController.text}"');
-    print(
-        '🚀 DEBUG: _rotationDetailsController.hashCode: ${_rotationDetailsController.hashCode}');
-
     QuestionSaveUtils.saveQuestion(
       context: context,
       isNewQuestion: _isNewQuestion,

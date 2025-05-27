@@ -13,17 +13,9 @@ class FirestoreService {
 
   // add a new question
   static Future<void> addQuestion(Question question) async {
-    print('🔥 DEBUG: FirestoreService.addQuestion() called');
-    print('🔥 DEBUG: Question ID: ${question.id}');
-    print('🔥 DEBUG: Question: $question');
-    print('🔥 DEBUG: Question rotationDetails: ${question.rotationDetails}');
-
     try {
       await ref.doc(question.id).set(question);
-      print('🔥 DEBUG: Question successfully saved to Firestore');
     } catch (e) {
-      print('🔥 DEBUG: Error saving question to Firestore: $e');
-      print('🔥 DEBUG: Stack trace: ${StackTrace.current}');
       rethrow;
     }
   }

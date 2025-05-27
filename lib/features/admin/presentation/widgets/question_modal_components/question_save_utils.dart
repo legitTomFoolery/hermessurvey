@@ -17,13 +17,6 @@ class QuestionSaveUtils {
     required TextEditingController rotationDetailsController,
     required VoidCallback onSaveSuccess,
   }) async {
-    print('🚨 DEBUG: QuestionSaveUtils.saveQuestion() called');
-    print(
-        '🚨 DEBUG: rotationDetailsController.text: "${rotationDetailsController.text}"');
-    print(
-        '🚨 DEBUG: rotationDetailsController.hashCode: ${rotationDetailsController.hashCode}');
-    print('🚨 DEBUG: typeController.text: "${typeController.text}"');
-
     // Validate required fields
     if (orderController.text.isEmpty ||
         idController.text.isEmpty ||
@@ -88,27 +81,15 @@ class QuestionSaveUtils {
 
     // Handle rotation details for rotation type questions
     Map<String, List<String>>? rotationDetails;
-    print('💾 DEBUG: Processing rotation details');
-    print('💾 DEBUG: Type: ${typeController.text}');
-    print(
-        '💾 DEBUG: Rotation details controller text: "${rotationDetailsController.text}"');
-    print('💾 DEBUG: isNewQuestion: $isNewQuestion');
-    if (!isNewQuestion) {
-      print(
-          '💾 DEBUG: Original question rotation details: ${originalQuestion?.rotationDetails}');
-    }
 
     if (typeController.text == 'rotation' &&
         rotationDetailsController.text.isNotEmpty) {
       try {
-        print('💾 DEBUG: Parsing rotation details from controller text');
         // FIXED: Better parsing logic that handles multiple rotations correctly
         final text = rotationDetailsController.text.trim();
-        print('💾 DEBUG: Trimmed text: "$text"');
 
         if (text.startsWith('{') && text.endsWith('}')) {
           final content = text.substring(1, text.length - 1);
-          print('💾 DEBUG: Content after removing braces: "$content"');
 
           rotationDetails = {};
 
@@ -148,11 +129,7 @@ class QuestionSaveUtils {
             pairs.add(currentPair);
           }
 
-          print('💾 DEBUG: Split pairs: $pairs');
-
           for (var pair in pairs) {
-            print('💾 DEBUG: Processing pair: "$pair"');
-
             // Find the first colon that's not inside quotes
             var colonIndex = -1;
             var inQuotes = false;
@@ -170,12 +147,9 @@ class QuestionSaveUtils {
                   pair.substring(0, colonIndex).trim().replaceAll('"', '');
               var valueStr = pair.substring(colonIndex + 1).trim();
 
-              print('💾 DEBUG: Key: "$key", ValueStr: "$valueStr"');
-
               // Parse the array value
               if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
                 final listContent = valueStr.substring(1, valueStr.length - 1);
-                print('💾 DEBUG: List content: "$listContent"');
 
                 final items = <String>[];
                 if (listContent.isNotEmpty) {
@@ -204,27 +178,12 @@ class QuestionSaveUtils {
                   }
                 }
 
-                print('💾 DEBUG: Parsed items: $items');
                 rotationDetails[key] = items;
-                print(
-                    '💾 DEBUG: Added to rotationDetails - Key: "$key", Items: $items');
-              } else {
-                print(
-                    '💾 DEBUG: ValueStr does not start/end with brackets: "$valueStr"');
               }
-            } else {
-              print(
-                  '💾 DEBUG: Could not find colon separator in pair: "$pair"');
             }
           }
-
-          print('💾 DEBUG: Final parsed rotationDetails: $rotationDetails');
-        } else {
-          print('💾 DEBUG: Text does not start with { or end with }');
         }
       } catch (e) {
-        print('💾 DEBUG: Error parsing rotation details: $e');
-        print('💾 DEBUG: Stack trace: ${StackTrace.current}');
         if (!context.mounted) return;
         AdminUtils.showSnackBar(
           context,
@@ -236,12 +195,8 @@ class QuestionSaveUtils {
     } else if (!isNewQuestion &&
         originalQuestion!.rotationDetails != null &&
         typeController.text == 'rotation') {
-      print('💾 DEBUG: Using existing rotation details from original question');
       // Keep existing rotation details if not changed
       rotationDetails = originalQuestion.rotationDetails;
-      print('💾 DEBUG: Existing rotation details: $rotationDetails');
-    } else {
-      print('💾 DEBUG: No rotation details to process');
     }
 
     // For yesNo type, set options to Yes and No

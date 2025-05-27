@@ -20,13 +20,6 @@ class Question {
 
   // Convert question details to a map for Firestore
   Map<String, dynamic> toFirestore() {
-    print('📄 DEBUG: Question.toFirestore() called');
-    print('📄 DEBUG: Question ID: $id');
-    print('📄 DEBUG: Question name: $name');
-    print('📄 DEBUG: Question type: $type');
-    print('📄 DEBUG: Question options: $options');
-    print('📄 DEBUG: Question rotationDetails: $rotationDetails');
-
     final firestoreData = {
       'name': name,
       'type': type,
@@ -35,7 +28,6 @@ class Question {
           rotationDetails, // Save as 'map' to match the field name in Firestore
     };
 
-    print('📄 DEBUG: Final Firestore data: $firestoreData');
     return firestoreData;
   }
 

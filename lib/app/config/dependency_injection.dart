@@ -1,6 +1,7 @@
 /// Dependency injection configuration using get_it
 library dependency_injection;
 
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/features/home/data/services/question_store.dart';
@@ -35,7 +36,8 @@ Future<void> _initializeServices() async {
     await NotificationService.initialize();
   } catch (e) {
     // Log error but don't throw to prevent app crash
-    print('Failed to initialize some services: $e');
+    // In production, consider using a proper logging service like firebase_crashlytics
+    debugPrint('Failed to initialize some services: $e');
   }
 }
 
