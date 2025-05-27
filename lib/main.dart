@@ -7,15 +7,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
-import 'services/question_store.dart';
-import 'services/response_provider.dart';
-import 'services/user_service.dart';
-import 'services/notification_service.dart';
+import 'features/home/data/services/question_store.dart';
+import 'shared/data/services/response_provider.dart';
+import 'shared/data/services/user_service.dart';
+import 'shared/data/services/notification_service.dart';
 import 'firebase_options.dart';
-import 'routing/app_router.dart';
-import 'routing/routes.dart';
-import 'theming/app_theme.dart';
-import 'core/constants/app_constants.dart';
+import 'app/config/app_router.dart';
+import 'app/config/routes.dart';
+import 'theme/app_theme.dart';
+import 'app/config/app_constants.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
