@@ -6,6 +6,7 @@ import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/features/home/data/models/survey_response_model.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_response_card.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/common/response_filter_section.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/common/response_filter_widgets.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/common/date_range_picker.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 import 'package:gsecsurvey/features/admin/data/services/response_admin_service.dart';
@@ -113,7 +114,7 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
   void _extractRotationAttendingMap() {
     _rotationAttendingMap.clear();
     final rotationQuestion = _questions.firstWhere(
-      (q) => q.id == '2-rotation',
+      (q) => q.id == '200-rotation',
       orElse: () => Question(id: '', name: '', type: '', options: []),
     );
 
@@ -329,21 +330,21 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              DateRangeChip(
+              CompactDateRangeWidget(
                 startDate: _startDate,
                 endDate: _endDate,
                 onPressed: _selectDateRange,
               ),
-              FilterDropdown(
-                value: _selectedRotation,
+              CompactDropdownWidget(
+                selectedOption: _selectedRotation,
                 hint: 'Rotation',
                 options: _rotationAttendingMap.keys.toList()..sort(),
                 onChanged: _onRotationChanged,
               ),
               if (_selectedRotation != null &&
                   _rotationAttendingMap[_selectedRotation] != null)
-                FilterDropdown(
-                  value: _selectedAttending,
+                CompactDropdownWidget(
+                  selectedOption: _selectedAttending,
                   hint: 'Attending',
                   options: (_rotationAttendingMap[_selectedRotation!] ?? [])
                     ..sort(),

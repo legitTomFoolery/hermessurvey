@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_question_card.dart';
-import 'package:gsecsurvey/features/admin/presentation/widgets/modals/question_modal.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
@@ -21,6 +20,8 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
   bool _isLoading = true;
   String? _expandedQuestionId;
   bool _showFloatingButton = true;
+  bool _isAddingNewQuestion = false;
+  Question? _newQuestion;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -76,6 +77,10 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
       setState(() {
         _questions = questions;
         _isLoading = false;
+        // Reset new question state when reloading
+        _isAddingNewQuestion = false;
+        _newQuestion = null;
+        _expandedQuestionId = null;
       });
     } catch (e) {
       setState(() {
@@ -93,12 +98,39 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
   }
 
   void _addNewQuestion() {
-    showDialog(
-      context: context,
-      builder: (context) => QuestionModal(
-        onSave: _loadQuestions,
-      ),
+    // Create a new empty question
+    final newQuestion = Question(
+      id: '', // Will be filled in by the user
+      name: '',
+      type: '', // No default type - user must select
+      options: [],
+      rotationDetails: null,
     );
+
+    setState(() {
+      _isAddingNewQuestion = true;
+      _newQuestion = newQuestion;
+      _expandedQuestionId = 'new_question';
+    });
+
+    // Wait for the card to be added and expanded before scrolling
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Wait longer for the expansion animation to complete
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (_scrollController.hasClients) {
+          // Force a rebuild to get the updated scroll extent
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
+      });
+    });
   }
 
   void _onQuestionExpanded(String questionId) {
@@ -110,6 +142,11 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
   void _onQuestionCollapsed() {
     setState(() {
       _expandedQuestionId = null;
+      // If we were adding a new question, reset the state
+      if (_isAddingNewQuestion) {
+        _isAddingNewQuestion = false;
+        _newQuestion = null;
+      }
     });
   }
 
@@ -127,7 +164,7 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
                   color: theme.colorScheme.primary,
                 ),
               )
-            : _questions.isEmpty
+            : _questions.isEmpty && !_isAddingNewQuestion
                 ? _buildEmptyState()
                 : _buildQuestionsList(),
       ),
@@ -178,11 +215,14 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
   Widget _buildQuestionsList() {
     final theme = AdaptiveTheme.of(context).theme;
 
+    // Calculate total items: preview button + existing questions + new question (if adding)
+    final totalItems = 1 + _questions.length + (_isAddingNewQuestion ? 1 : 0);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: ListView.builder(
         controller: _scrollController,
-        itemCount: _questions.length + 1, // +1 for the preview button
+        itemCount: totalItems,
         itemBuilder: (context, index) {
           if (index == 0) {
             // Preview Survey Button as first item
@@ -198,8 +238,8 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
                 textColor: theme.colorScheme.onSecondary,
               ),
             );
-          } else {
-            // Questions (index - 1 because button takes index 0)
+          } else if (index <= _questions.length) {
+            // Existing questions (index - 1 because button takes index 0)
             final question = _questions[index - 1];
             return ExpandableQuestionCard(
               question: question,
@@ -207,6 +247,16 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
               isExpanded: _expandedQuestionId == question.id,
               onExpanded: () => _onQuestionExpanded(question.id),
               onCollapsed: _onQuestionCollapsed,
+            );
+          } else {
+            // New question card (last item when adding)
+            return ExpandableQuestionCard(
+              question: _newQuestion!,
+              onSave: _loadQuestions,
+              isExpanded: _expandedQuestionId == 'new_question',
+              onExpanded: () => _onQuestionExpanded('new_question'),
+              onCollapsed: _onQuestionCollapsed,
+              isNewQuestion: true,
             );
           }
         },

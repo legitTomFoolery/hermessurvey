@@ -76,11 +76,15 @@ class ResponseFilterSection extends StatelessWidget {
                   ),
                   const Spacer(),
                   if (activeFilterCount > 0)
-                    TextButton(
-                      onPressed: onClearFilters,
+                    GestureDetector(
+                      onTap: onClearFilters,
                       child: Text(
                         'Clear Filters',
-                        style: TextStyle(color: theme.colorScheme.primary),
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   Icon(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gsecsurvey/app/config/app_constants.dart';
-import 'package:gsecsurvey/features/admin/presentation/widgets/question_modal_components/expandable_rotation_card.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/question_card_components/expandable_rotation_card.dart';
 
 class RotationField extends StatefulWidget {
   final TextEditingController rotationDetailsController;

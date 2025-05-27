@@ -7,7 +7,7 @@ import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
-import 'package:gsecsurvey/features/admin/presentation/widgets/question_modal_components/index.dart';
+import 'package:gsecsurvey/features/admin/presentation/widgets/question_card_components/index.dart';
 
 class ExpandableQuestionCard extends StatefulWidget {
   final Question question;
