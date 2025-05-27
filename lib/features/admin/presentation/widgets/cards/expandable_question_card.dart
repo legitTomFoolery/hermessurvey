@@ -193,6 +193,13 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
   }
 
   void _saveQuestion() async {
+    print('🎯 DEBUG: ExpandableQuestionCard._saveQuestion() called');
+    print(
+        '🎯 DEBUG: _rotationDetailsController.text: "${_rotationDetailsController.text}"');
+    print(
+        '🎯 DEBUG: _rotationDetailsController.hashCode: ${_rotationDetailsController.hashCode}');
+    print('🎯 DEBUG: _typeController.text: "${_typeController.text}"');
+
     // Custom save logic to avoid Navigator.pop() issue
     // Validate required fields
     if (_orderController.text.isEmpty ||
@@ -258,53 +265,140 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
 
     // Handle rotation details for rotation type questions
     Map<String, List<String>>? rotationDetails;
+    print('🎯 DEBUG: Processing rotation details');
+    print('🎯 DEBUG: Type: ${_typeController.text}');
+    print(
+        '🎯 DEBUG: Rotation details controller text: "${_rotationDetailsController.text}"');
+    print('🎯 DEBUG: isNewQuestion: ${widget.isNewQuestion}');
+    if (!widget.isNewQuestion) {
+      print(
+          '🎯 DEBUG: Original question rotation details: ${widget.question.rotationDetails}');
+    }
+
     if (_typeController.text == 'rotation') {
       // Parse rotation details from the controller that gets updated by RotationField
       if (_rotationDetailsController.text.isNotEmpty) {
         try {
+          print('🎯 DEBUG: Parsing rotation details from controller text');
+          // FIXED: Use robust parsing logic that handles multiple rotations correctly
           final text = _rotationDetailsController.text.trim();
+          print('🎯 DEBUG: Trimmed text: "$text"');
+
           if (text.startsWith('{') && text.endsWith('}')) {
+            print('🎯 DEBUG: Text has valid JSON structure');
             final content = text.substring(1, text.length - 1);
-            final pairs = content.split('",').map((s) => s.trim());
 
             rotationDetails = {};
-            for (var pair in pairs) {
-              // Clean up the pair string
-              pair = pair
-                  .replaceAll('"', '')
-                  .replaceAll('{', '')
-                  .replaceAll('}', '');
 
-              // Split into key and value
-              final parts = pair.split(':');
-              if (parts.length == 2) {
-                final key = parts[0].trim();
-                final valueStr = parts[1].trim();
+            // FIXED: Use a completely different approach - split by "], " pattern
+            final pairs = <String>[];
+            var currentPair = '';
+            var bracketCount = 0;
+            var inQuotes = false;
+
+            for (int i = 0; i < content.length; i++) {
+              final char = content[i];
+              currentPair += char;
+
+              if (char == '"' && (i == 0 || content[i - 1] != '\\')) {
+                inQuotes = !inQuotes;
+              } else if (!inQuotes) {
+                if (char == '[') {
+                  bracketCount++;
+                } else if (char == ']') {
+                  bracketCount--;
+                  // FIXED: Look for "], " pattern instead of ", " after closing bracket
+                  if (bracketCount == 0 &&
+                      i + 2 < content.length &&
+                      content.substring(i + 1, i + 3) == ', ') {
+                    pairs.add(currentPair); // Keep the full pair including ']'
+                    currentPair = '';
+                    i += 2; // Skip the ", "
+                  }
+                }
+              }
+            }
+
+            // Add the last pair
+            if (currentPair.isNotEmpty) {
+              pairs.add(currentPair);
+            }
+
+            print('🎯 DEBUG: Split pairs: $pairs');
+
+            for (var pair in pairs) {
+              print('🎯 DEBUG: Processing pair: "$pair"');
+              // Find the first colon that's not inside quotes
+              var colonIndex = -1;
+              var inQuotes = false;
+              for (int i = 0; i < pair.length; i++) {
+                if (pair[i] == '"' && (i == 0 || pair[i - 1] != '\\')) {
+                  inQuotes = !inQuotes;
+                } else if (!inQuotes && pair[i] == ':') {
+                  colonIndex = i;
+                  break;
+                }
+              }
+
+              if (colonIndex != -1) {
+                var key =
+                    pair.substring(0, colonIndex).trim().replaceAll('"', '');
+                var valueStr = pair.substring(colonIndex + 1).trim();
+                print('🎯 DEBUG: Parsed key: "$key", valueStr: "$valueStr"');
 
                 // Parse the array value
                 if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
                   final listContent =
                       valueStr.substring(1, valueStr.length - 1);
-                  final items = listContent
-                      .split(',')
-                      .map((item) => item.trim().replaceAll('"', ''))
-                      .where((item) => item.isNotEmpty)
-                      .toList();
 
-                  rotationDetails[key] = items.cast<String>();
+                  final items = <String>[];
+                  if (listContent.isNotEmpty) {
+                    // Split by comma but respect quotes
+                    var currentItem = '';
+                    var inQuotes = false;
+
+                    for (int i = 0; i < listContent.length; i++) {
+                      final char = listContent[i];
+
+                      if (char == '"' &&
+                          (i == 0 || listContent[i - 1] != '\\')) {
+                        inQuotes = !inQuotes;
+                      } else if (!inQuotes && char == ',') {
+                        if (currentItem.trim().isNotEmpty) {
+                          items.add(currentItem.trim().replaceAll('"', ''));
+                        }
+                        currentItem = '';
+                      } else {
+                        currentItem += char;
+                      }
+                    }
+
+                    // Add the last item
+                    if (currentItem.trim().isNotEmpty) {
+                      items.add(currentItem.trim().replaceAll('"', ''));
+                    }
+                  }
+
+                  print('🎯 DEBUG: Parsed items for key "$key": $items');
+                  rotationDetails[key] = items;
                 }
               }
             }
           }
         } catch (e) {
+          print('🎯 DEBUG: Parsing failed with error: $e');
           // If parsing fails, keep existing rotation details
           rotationDetails = widget.question.rotationDetails;
         }
       } else {
+        print(
+            '🎯 DEBUG: Controller text is empty, using existing rotation details');
         // Keep existing rotation details if controller is empty
         rotationDetails = widget.question.rotationDetails;
       }
     }
+
+    print('🎯 DEBUG: Final rotation details to save: $rotationDetails');
 
     // For yesNo type, set options to Yes and No
     if (_typeController.text == 'yesNo') {
@@ -320,6 +414,9 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
       options: options,
       rotationDetails: rotationDetails,
     );
+
+    print(
+        '🎯 DEBUG: Created question object with rotation details: ${updatedQuestion.rotationDetails}');
 
     try {
       // If editing and ID changed, delete old document (but not for new questions)

@@ -17,6 +17,13 @@ class QuestionSaveUtils {
     required TextEditingController rotationDetailsController,
     required VoidCallback onSaveSuccess,
   }) async {
+    print('🚨 DEBUG: QuestionSaveUtils.saveQuestion() called');
+    print(
+        '🚨 DEBUG: rotationDetailsController.text: "${rotationDetailsController.text}"');
+    print(
+        '🚨 DEBUG: rotationDetailsController.hashCode: ${rotationDetailsController.hashCode}');
+    print('🚨 DEBUG: typeController.text: "${typeController.text}"');
+
     // Validate required fields
     if (orderController.text.isEmpty ||
         idController.text.isEmpty ||
@@ -81,44 +88,143 @@ class QuestionSaveUtils {
 
     // Handle rotation details for rotation type questions
     Map<String, List<String>>? rotationDetails;
+    print('💾 DEBUG: Processing rotation details');
+    print('💾 DEBUG: Type: ${typeController.text}');
+    print(
+        '💾 DEBUG: Rotation details controller text: "${rotationDetailsController.text}"');
+    print('💾 DEBUG: isNewQuestion: $isNewQuestion');
+    if (!isNewQuestion) {
+      print(
+          '💾 DEBUG: Original question rotation details: ${originalQuestion?.rotationDetails}');
+    }
+
     if (typeController.text == 'rotation' &&
         rotationDetailsController.text.isNotEmpty) {
       try {
-        // Basic parsing of JSON-like string to Map<String, List<String>>
+        print('💾 DEBUG: Parsing rotation details from controller text');
+        // FIXED: Better parsing logic that handles multiple rotations correctly
         final text = rotationDetailsController.text.trim();
+        print('💾 DEBUG: Trimmed text: "$text"');
+
         if (text.startsWith('{') && text.endsWith('}')) {
           final content = text.substring(1, text.length - 1);
-          final pairs = content.split('",').map((s) => s.trim());
+          print('💾 DEBUG: Content after removing braces: "$content"');
 
           rotationDetails = {};
-          for (var pair in pairs) {
-            // Clean up the pair string
-            pair = pair
-                .replaceAll('"', '')
-                .replaceAll('{', '')
-                .replaceAll('}', '');
 
-            // Split into key and value
-            final parts = pair.split(':');
-            if (parts.length == 2) {
-              final key = parts[0].trim();
-              final valueStr = parts[1].trim();
+          // FIXED: Use a more robust parsing approach
+          // Split by "], " to separate key-value pairs properly
+          final pairs = <String>[];
+          var currentPair = '';
+          var bracketCount = 0;
+          var inQuotes = false;
+
+          for (int i = 0; i < content.length; i++) {
+            final char = content[i];
+            currentPair += char;
+
+            if (char == '"' && (i == 0 || content[i - 1] != '\\')) {
+              inQuotes = !inQuotes;
+            } else if (!inQuotes) {
+              if (char == '[') {
+                bracketCount++;
+              } else if (char == ']') {
+                bracketCount--;
+                // If we've closed all brackets and the next chars are ", " then we have a complete pair
+                if (bracketCount == 0 &&
+                    i + 2 < content.length &&
+                    content.substring(i + 1, i + 3) == ', ') {
+                  pairs.add(currentPair.substring(
+                      0, currentPair.length - 1)); // Remove the ']'
+                  currentPair = '';
+                  i += 2; // Skip the ", "
+                }
+              }
+            }
+          }
+
+          // Add the last pair
+          if (currentPair.isNotEmpty) {
+            pairs.add(currentPair);
+          }
+
+          print('💾 DEBUG: Split pairs: $pairs');
+
+          for (var pair in pairs) {
+            print('💾 DEBUG: Processing pair: "$pair"');
+
+            // Find the first colon that's not inside quotes
+            var colonIndex = -1;
+            var inQuotes = false;
+            for (int i = 0; i < pair.length; i++) {
+              if (pair[i] == '"' && (i == 0 || pair[i - 1] != '\\')) {
+                inQuotes = !inQuotes;
+              } else if (!inQuotes && pair[i] == ':') {
+                colonIndex = i;
+                break;
+              }
+            }
+
+            if (colonIndex != -1) {
+              var key =
+                  pair.substring(0, colonIndex).trim().replaceAll('"', '');
+              var valueStr = pair.substring(colonIndex + 1).trim();
+
+              print('💾 DEBUG: Key: "$key", ValueStr: "$valueStr"');
 
               // Parse the array value
               if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
                 final listContent = valueStr.substring(1, valueStr.length - 1);
-                final items = listContent
-                    .split(',')
-                    .map((item) => item.trim().replaceAll('"', ''))
-                    .where((item) => item.isNotEmpty)
-                    .toList();
+                print('💾 DEBUG: List content: "$listContent"');
 
-                rotationDetails[key] = items.cast<String>();
+                final items = <String>[];
+                if (listContent.isNotEmpty) {
+                  // Split by comma but respect quotes
+                  var currentItem = '';
+                  var inQuotes = false;
+
+                  for (int i = 0; i < listContent.length; i++) {
+                    final char = listContent[i];
+
+                    if (char == '"' && (i == 0 || listContent[i - 1] != '\\')) {
+                      inQuotes = !inQuotes;
+                    } else if (!inQuotes && char == ',') {
+                      if (currentItem.trim().isNotEmpty) {
+                        items.add(currentItem.trim().replaceAll('"', ''));
+                      }
+                      currentItem = '';
+                    } else {
+                      currentItem += char;
+                    }
+                  }
+
+                  // Add the last item
+                  if (currentItem.trim().isNotEmpty) {
+                    items.add(currentItem.trim().replaceAll('"', ''));
+                  }
+                }
+
+                print('💾 DEBUG: Parsed items: $items');
+                rotationDetails[key] = items;
+                print(
+                    '💾 DEBUG: Added to rotationDetails - Key: "$key", Items: $items');
+              } else {
+                print(
+                    '💾 DEBUG: ValueStr does not start/end with brackets: "$valueStr"');
               }
+            } else {
+              print(
+                  '💾 DEBUG: Could not find colon separator in pair: "$pair"');
             }
           }
+
+          print('💾 DEBUG: Final parsed rotationDetails: $rotationDetails');
+        } else {
+          print('💾 DEBUG: Text does not start with { or end with }');
         }
       } catch (e) {
+        print('💾 DEBUG: Error parsing rotation details: $e');
+        print('💾 DEBUG: Stack trace: ${StackTrace.current}');
         if (!context.mounted) return;
         AdminUtils.showSnackBar(
           context,
@@ -130,8 +236,12 @@ class QuestionSaveUtils {
     } else if (!isNewQuestion &&
         originalQuestion!.rotationDetails != null &&
         typeController.text == 'rotation') {
+      print('💾 DEBUG: Using existing rotation details from original question');
       // Keep existing rotation details if not changed
       rotationDetails = originalQuestion.rotationDetails;
+      print('💾 DEBUG: Existing rotation details: $rotationDetails');
+    } else {
+      print('💾 DEBUG: No rotation details to process');
     }
 
     // For yesNo type, set options to Yes and No
