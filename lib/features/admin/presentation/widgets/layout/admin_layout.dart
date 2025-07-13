@@ -6,6 +6,7 @@ import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
+import 'package:gsecsurvey/app/config/app_constants.dart';
 
 /// A common layout for admin screens with consistent styling and behavior
 class AdminLayout extends StatelessWidget {
@@ -47,9 +48,7 @@ class AdminLayout extends StatelessWidget {
             ),
           ],
         ),
-        body: ResponsiveWrapper(
-          child: body,
-        ),
+        body: body,
         floatingActionButton: floatingActionButton,
         bottomNavigationBar: bottomNavigationBar,
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/theme/colors.dart';
@@ -23,7 +22,7 @@ class PasswordValidations extends StatelessWidget {
           radius: 2.5,
           backgroundColor: ColorsManager.gray,
         ),
-        Gap(6.w),
+        const Gap(6.0),
         Text(
           text,
           style: TextStyle(

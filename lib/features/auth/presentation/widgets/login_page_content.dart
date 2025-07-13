@@ -12,6 +12,7 @@ import 'package:gsecsurvey/shared/utils/helpers/app_extensions.dart';
 import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_scroll_wrapper.dart';
 
 /// Main content widget for the login page
 class LoginPageContent extends StatefulWidget {
@@ -28,28 +29,34 @@ class _LoginPageContentState extends State<LoginPageContent> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
+      child: ResponsiveScrollWrapper(
         padding: const EdgeInsets.only(
             left: 30.0, right: 30.0, bottom: 15.0, top: 5.0),
-        child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          child: BlocConsumer<AuthCubit, AuthState>(
-            buildWhen: (previous, current) => previous != current,
-            listenWhen: (previous, current) => previous != current,
-            listener: _handleAuthStateChanges,
-            builder: (context, state) {
-              return Column(
+        child: BlocConsumer<AuthCubit, AuthState>(
+          buildWhen: (previous, current) => previous != current,
+          listenWhen: (previous, current) => previous != current,
+          listener: _handleAuthStateChanges,
+          builder: (context, state) {
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom -
+                    50.0,
+              ),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Gap(10.0),
                   const LoginHeader(),
+                  const Gap(10.0),
                   const LoginForm(),
                   const Gap(15.0),
                   const LoginFooter(),
                 ],
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

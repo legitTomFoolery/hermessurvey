@@ -8,6 +8,7 @@ import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/swipe_to_delete_wrapper.dart';
 import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
 
 class QuestionManagementScreen extends StatefulWidget {
   const QuestionManagementScreen({super.key});
@@ -228,49 +229,55 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
         itemBuilder: (context, index) {
           if (index == 0) {
             // Preview Survey Button as first item
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: CommonWidgets.buildElevatedButton(
-                context: context,
-                text: 'Preview Survey',
-                onPressed: () {
-                  Navigator.of(context).pushNamed(Routes.homeScreen);
-                },
-                backgroundColor: theme.colorScheme.secondary,
-                textColor: theme.colorScheme.onSecondary,
+            return ResponsiveWrapper(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: CommonWidgets.buildElevatedButton(
+                  context: context,
+                  text: 'Preview Survey',
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(Routes.homeScreen);
+                  },
+                  backgroundColor: theme.colorScheme.secondary,
+                  textColor: theme.colorScheme.onSecondary,
+                ),
               ),
             );
           } else if (index <= _questions.length) {
             // Existing questions (index - 1 because button takes index 0)
             final question = _questions[index - 1];
-            return SwipeToDeleteWrapper(
-              dismissibleKey: Key(question.id),
-              deleteDialogTitle: 'Delete Question',
-              deleteDialogContent:
-                  'Are you sure you want to delete the question "${question.name}"? This action cannot be undone.',
-              shouldDisableDismissal: () => _expandedQuestionId != null,
-              onDelete: () async {
-                await FirestoreService.deleteQuestion(question);
-              },
-              onDeleteSuccess: _loadQuestions,
-              successMessage: 'Question deleted successfully',
-              child: ExpandableQuestionCard(
-                question: question,
-                onSave: _loadQuestions,
-                isExpanded: _expandedQuestionId == question.id,
-                onExpanded: () => _onQuestionExpanded(question.id),
-                onCollapsed: _onQuestionCollapsed,
+            return ResponsiveWrapper(
+              child: SwipeToDeleteWrapper(
+                dismissibleKey: Key(question.id),
+                deleteDialogTitle: 'Delete Question',
+                deleteDialogContent:
+                    'Are you sure you want to delete the question "${question.name}"? This action cannot be undone.',
+                shouldDisableDismissal: () => _expandedQuestionId != null,
+                onDelete: () async {
+                  await FirestoreService.deleteQuestion(question);
+                },
+                onDeleteSuccess: _loadQuestions,
+                successMessage: 'Question deleted successfully',
+                child: ExpandableQuestionCard(
+                  question: question,
+                  onSave: _loadQuestions,
+                  isExpanded: _expandedQuestionId == question.id,
+                  onExpanded: () => _onQuestionExpanded(question.id),
+                  onCollapsed: _onQuestionCollapsed,
+                ),
               ),
             );
           } else {
             // New question card (last item when adding)
-            return ExpandableQuestionCard(
-              question: _newQuestion!,
-              onSave: _loadQuestions,
-              isExpanded: _expandedQuestionId == 'new_question',
-              onExpanded: () => _onQuestionExpanded('new_question'),
-              onCollapsed: _onQuestionCollapsed,
-              isNewQuestion: true,
+            return ResponsiveWrapper(
+              child: ExpandableQuestionCard(
+                question: _newQuestion!,
+                onSave: _loadQuestions,
+                isExpanded: _expandedQuestionId == 'new_question',
+                onExpanded: () => _onQuestionExpanded('new_question'),
+                onCollapsed: _onQuestionCollapsed,
+                isNewQuestion: true,
+              ),
             );
           }
         },

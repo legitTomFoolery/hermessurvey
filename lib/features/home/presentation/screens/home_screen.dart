@@ -195,23 +195,24 @@ class _HomeState extends State<Home> {
               return Column(
                 children: [
                   Expanded(
-                    child: ResponsiveWrapper(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: ListView.builder(
-                          key: const PageStorageKey('question_list'),
-                          itemCount: questionStore.questions.length,
-                          itemBuilder: (context, index) {
-                            final question = questionStore.questions[index];
-                            return QuestionCard(
+                    child: ListView.builder(
+                      key: const PageStorageKey('question_list'),
+                      itemCount: questionStore.questions.length,
+                      itemBuilder: (context, index) {
+                        final question = questionStore.questions[index];
+                        return ResponsiveWrapper(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: QuestionCard(
                               key: ValueKey(question.id),
                               question: question,
                               onResponse: _updateResponse,
                               initialResponse: responses[question.id],
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Container(

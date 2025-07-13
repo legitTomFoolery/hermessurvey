@@ -11,6 +11,7 @@ import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_
 import 'package:gsecsurvey/features/admin/presentation/widgets/common/loading_view.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/modals/notification_modal.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -153,12 +154,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         child: ListView.builder(
           controller: _scrollController,
           itemCount: _users.length,
-          itemBuilder: (context, index) => ExpandableUserCard(
-            user: _users[index],
-            onUpdate: _loadUsers,
-            isExpanded: _expandedIndex == index,
-            onExpanded: () => _onUserExpanded(index),
-            onCollapsed: _onUserCollapsed,
+          itemBuilder: (context, index) => ResponsiveWrapper(
+            child: ExpandableUserCard(
+              user: _users[index],
+              onUpdate: _loadUsers,
+              isExpanded: _expandedIndex == index,
+              onExpanded: () => _onUserExpanded(index),
+              onCollapsed: _onUserCollapsed,
+            ),
           ),
         ),
       ),

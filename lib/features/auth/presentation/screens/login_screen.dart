@@ -18,18 +18,18 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
       resizeToAvoidBottomInset: false,
-      body: ResponsiveWrapper(
-        child: OfflineBuilder(
-          connectivityBuilder: (
-            BuildContext context,
-            ConnectivityResult connectivity,
-            Widget child,
-          ) {
-            final bool connected = connectivity != ConnectivityResult.none;
-            return connected
-                ? const LoginPageContent()
-                : const BuildNoInternet();
-          },
+      body: OfflineBuilder(
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          return connected
+              ? const LoginPageContent()
+              : ResponsiveWrapper(child: const BuildNoInternet());
+        },
+        child: ResponsiveWrapper(
           child: CommonWidgets.buildLoadingIndicator(
             context: context,
             message: 'Checking connection...',

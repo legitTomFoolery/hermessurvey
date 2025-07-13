@@ -14,6 +14,7 @@ import 'package:gsecsurvey/features/admin/data/services/response_export_service.
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_dialogs.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/swipe_to_delete_wrapper.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
 
 class ResponseManagementScreen extends StatefulWidget {
   const ResponseManagementScreen({super.key});
@@ -362,28 +363,30 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
               itemCount: _filteredResponses.length,
               itemBuilder: (context, index) {
                 final response = _filteredResponses[index];
-                return SwipeToDeleteWrapper(
-                  dismissibleKey: Key(response.id),
-                  deleteDialogTitle: 'Delete Response',
-                  deleteDialogContent:
-                      'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
-                  shouldDisableDismissal: () => _expandedResponseId != null,
-                  onDelete: () async {
-                    final success =
-                        await ResponseAdminService.deleteResponse(response.id);
-                    if (!success) {
-                      throw Exception('Failed to delete response');
-                    }
-                  },
-                  onDeleteSuccess: _loadData,
-                  successMessage: 'Response deleted successfully',
-                  child: ExpandableResponseCard(
-                    response: response,
-                    questions: _questions,
-                    onUpdate: _loadData,
-                    isExpanded: _expandedResponseId == response.id,
-                    onExpanded: () => _onResponseExpanded(response.id),
-                    onCollapsed: _onResponseCollapsed,
+                return ResponsiveWrapper(
+                  child: SwipeToDeleteWrapper(
+                    dismissibleKey: Key(response.id),
+                    deleteDialogTitle: 'Delete Response',
+                    deleteDialogContent:
+                        'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
+                    shouldDisableDismissal: () => _expandedResponseId != null,
+                    onDelete: () async {
+                      final success = await ResponseAdminService.deleteResponse(
+                          response.id);
+                      if (!success) {
+                        throw Exception('Failed to delete response');
+                      }
+                    },
+                    onDeleteSuccess: _loadData,
+                    successMessage: 'Response deleted successfully',
+                    child: ExpandableResponseCard(
+                      response: response,
+                      questions: _questions,
+                      onUpdate: _loadData,
+                      isExpanded: _expandedResponseId == response.id,
+                      onExpanded: () => _onResponseExpanded(response.id),
+                      onCollapsed: _onResponseCollapsed,
+                    ),
                   ),
                 );
               },

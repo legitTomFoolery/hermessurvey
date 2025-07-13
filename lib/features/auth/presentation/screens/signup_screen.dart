@@ -9,7 +9,7 @@ import 'package:gsecsurvey/features/auth/presentation/widgets/login_and_signup_a
 import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
-import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_scroll_wrapper.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -46,82 +46,85 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
       resizeToAvoidBottomInset: false,
-      body: ResponsiveWrapper(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(
-                left: 30.0, right: 30.0, bottom: 15.0, top: 5.0),
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'GSEC Survey Signup',
-                    style: TextStyle(
-                      fontSize: 28,
-                      color: theme.colorScheme.onSecondary,
-                    ),
+      body: SafeArea(
+        child: ResponsiveScrollWrapper(
+          padding: const EdgeInsets.only(
+              left: 30.0, right: 30.0, bottom: 15.0, top: 5.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom -
+                  50.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'GSEC Survey Signup',
+                  style: TextStyle(
+                    fontSize: 28,
+                    color: theme.colorScheme.onSecondary,
                   ),
-                  BlocConsumer<AuthCubit, AuthState>(
-                    buildWhen: (previous, current) => previous != current,
-                    listenWhen: (previous, current) => previous != current,
-                    listener: (context, state) {
-                      if (state is UserSingupButNotVerified) {
-                        _showVerificationDialog();
-                      } else if (state is ExistingEmailNotVerified) {
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.info,
-                          animType: AnimType.rightSlide,
-                          title: 'Email Already Registered',
-                          desc:
-                              'This email has been registered but not yet verified. Please check your email for the verification link.',
-                          btnOkText: 'Return to Login',
-                          btnOkOnPress: () {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              Routes.loginScreen,
-                              (route) => false,
-                            );
-                          },
-                          dismissOnTouchOutside: false,
-                          dismissOnBackKeyPress: false,
-                          btnOkColor: theme.colorScheme.primary,
-                        ).show();
-                      } else if (state is AuthError) {
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.error,
-                          animType: AnimType.rightSlide,
-                          title: 'Error',
-                          desc: state.message,
-                          btnOkText: 'OK',
-                          btnOkColor: theme.colorScheme.primary,
-                          btnOkOnPress: () {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              Routes.signupScreen,
-                              (route) => false,
-                            );
-                          },
-                          dismissOnTouchOutside: false,
-                          dismissOnBackKeyPress: false,
-                        ).show();
-                      }
-                    },
-                    builder: (context, state) {
-                      return Column(
-                        children: [
-                          EmailAndPassword(isSignUpPage: true),
-                          const Gap(15.0),
-                          const AlreadyHaveAccountText(),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
+                ),
+                BlocConsumer<AuthCubit, AuthState>(
+                  buildWhen: (previous, current) => previous != current,
+                  listenWhen: (previous, current) => previous != current,
+                  listener: (context, state) {
+                    if (state is UserSingupButNotVerified) {
+                      _showVerificationDialog();
+                    } else if (state is ExistingEmailNotVerified) {
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.info,
+                        animType: AnimType.rightSlide,
+                        title: 'Email Already Registered',
+                        desc:
+                            'This email has been registered but not yet verified. Please check your email for the verification link.',
+                        btnOkText: 'Return to Login',
+                        btnOkOnPress: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            Routes.loginScreen,
+                            (route) => false,
+                          );
+                        },
+                        dismissOnTouchOutside: false,
+                        dismissOnBackKeyPress: false,
+                        btnOkColor: theme.colorScheme.primary,
+                      ).show();
+                    } else if (state is AuthError) {
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.error,
+                        animType: AnimType.rightSlide,
+                        title: 'Error',
+                        desc: state.message,
+                        btnOkOnPress: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            Routes.signupScreen,
+                            (route) => false,
+                          );
+                        },
+                        dismissOnTouchOutside: false,
+                        dismissOnBackKeyPress: false,
+                        btnOkColor: theme.colorScheme.primary,
+                      ).show();
+                    }
+                  },
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        EmailAndPassword(isSignUpPage: true),
+                        const Gap(15.0),
+                        const AlreadyHaveAccountText(),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

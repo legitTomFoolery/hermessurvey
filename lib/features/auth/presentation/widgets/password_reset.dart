@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/shared/utils/helpers/app_regex.dart';
@@ -26,7 +25,7 @@ class _PasswordResetState extends State<PasswordReset> {
       child: Column(
         children: [
           emailField(),
-          Gap(30.h),
+          const Gap(30.0),
           resetButton(),
         ],
       ),

@@ -29,10 +29,10 @@ class AppTheme {
           // Using inversePrimary for success color (green)
           inversePrimary: LightColors.success,
         ),
-        textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: ColorsManager.mainBlue,
-          selectionColor: Color.fromARGB(188, 36, 124, 255),
-          selectionHandleColor: ColorsManager.mainBlue,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: const Color.fromARGB(255, 141, 27, 27),
+          selectionColor: const Color.fromARGB(188, 36, 124, 255),
+          selectionHandleColor: const Color.fromARGB(255, 141, 27, 27),
         ),
         textTheme: _buildTextTheme(LightColors.text, LightColors.secondaryText),
         appBarTheme: AppBarTheme(
@@ -68,10 +68,10 @@ class AppTheme {
           // Using inversePrimary for success color (green)
           inversePrimary: DarkColors.success,
         ),
-        textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: ColorsManager.mainBlue,
-          selectionColor: Color.fromARGB(188, 36, 124, 255),
-          selectionHandleColor: ColorsManager.mainBlue,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: const Color.fromARGB(255, 141, 27, 27),
+          selectionColor: const Color.fromARGB(188, 36, 124, 255),
+          selectionHandleColor: const Color.fromARGB(255, 141, 27, 27),
         ),
         textTheme: _buildTextTheme(DarkColors.text, DarkColors.secondaryText),
         appBarTheme: AppBarTheme(

@@ -201,6 +201,10 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
   void initState() {
     super.initState();
     riveHelper.loadRiveFile('assets/animation/headless_bear.riv').then((_) {
+      // Ensure idle animation is playing after load
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        riveHelper.resetToIdle();
+      });
       setState(() {});
     });
     setupPasswordControllerListener();

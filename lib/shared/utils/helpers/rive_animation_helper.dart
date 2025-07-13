@@ -56,6 +56,15 @@ class RiveAnimationControllerHelper {
 
   void addSuccessController() => addController(_controllerSuccess);
 
+  void addIdleController() => addController(_controllerIdle);
+
+  void resetToIdle() {
+    if (_riveArtboard != null) {
+      removeAllControllers();
+      _riveArtboard?.addController(_controllerIdle);
+    }
+  }
+
   Future<void> loadRiveFile(String assetPath) async {
     final data = await rootBundle.load(assetPath);
     await RiveFile.initialize();
