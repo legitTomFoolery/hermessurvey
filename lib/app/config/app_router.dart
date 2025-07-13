@@ -30,7 +30,6 @@ class AppRouter {
       case Routes.homeScreen:
         return MaterialPageRoute(
           builder: (context) {
-            Provider.of<QuestionStore>(context, listen: false).reset();
             return BlocProvider.value(
               value: authCubit,
               child: const Home(),

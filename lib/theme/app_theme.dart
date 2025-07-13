@@ -26,6 +26,9 @@ class AppTheme {
           outline: LightColors.fieldOutline,
           surfaceContainerHighest: LightColors.fieldFill,
           error: LightColors.danger,
+          onSurfaceVariant: LightColors.modalSecondaryText,
+          // Using inversePrimary for success color (green)
+          inversePrimary: LightColors.success,
         ),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: ColorsManager.mainBlue,
@@ -62,6 +65,9 @@ class AppTheme {
           outline: DarkColors.fieldOutline,
           surfaceContainerHighest: DarkColors.fieldFill,
           error: DarkColors.danger,
+          onSurfaceVariant: DarkColors.modalSecondaryText,
+          // Using inversePrimary for success color (green)
+          inversePrimary: DarkColors.success,
         ),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: ColorsManager.mainBlue,

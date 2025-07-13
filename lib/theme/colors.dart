@@ -9,6 +9,11 @@ class ColorsManager {
   static const Color lightShadeOfGray = Color(0xFFFDFDFF);
   static const Color mediumLightShadeOfGray = Color(0xFF9E9E9E);
   static const Color coralRed = Color(0xFFFF4C5E);
+
+  // Modal colors - standardized across the app
+  static const Color successGreen = Colors.green;
+  static const Color errorRed = Colors.red;
+  static const Color modalSecondaryText = Color(0xFF757575); // Same as gray
 }
 
 class LightColors {
@@ -18,9 +23,13 @@ class LightColors {
   static const Color secondaryText = ColorsManager.gray;
   static const Color fieldOutline = Colors.black;
   static const Color fieldFill = Colors.white;
-  static const Color success = Colors.green;
+  static const Color success = ColorsManager.successGreen;
   static const Color warning = Colors.orange;
-  static const Color danger = Colors.red;
+  static const Color danger = ColorsManager.errorRed;
+
+  // Modal colors
+  static const Color cancelButtonText = ColorsManager.modalSecondaryText;
+  static const Color modalSecondaryText = ColorsManager.modalSecondaryText;
 }
 
 class DarkColors {
@@ -30,7 +39,11 @@ class DarkColors {
   static const Color secondaryText = ColorsManager.gray76;
   static const Color fieldOutline = Colors.white;
   static const Color fieldFill = ColorsManager.darkBlue;
-  static const Color success = Colors.green;
+  static const Color success = ColorsManager.successGreen;
   static const Color warning = Colors.orange;
-  static const Color danger = Colors.red;
+  static const Color danger = ColorsManager.errorRed;
+
+  // Modal colors
+  static const Color cancelButtonText = ColorsManager.gray76;
+  static const Color modalSecondaryText = ColorsManager.gray76;
 }

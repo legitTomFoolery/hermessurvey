@@ -58,9 +58,17 @@ class _HomeState extends State<Home> {
   }
 
   void _initializeQuestions() {
-    final questionStore = Provider.of<QuestionStore>(context, listen: false);
-    questionStore.reset();
-    questionStore.fetchQuestionsOnce();
+    // Use post-frame callback to avoid calling setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final questionStore =
+            Provider.of<QuestionStore>(context, listen: false);
+        // Always reset and fetch when home screen initializes
+        // This ensures fresh questions whether coming from login or app resume
+        questionStore.reset();
+        questionStore.fetchQuestionsOnce();
+      }
+    });
   }
 
   void _checkConnectivity() async {
@@ -186,6 +194,7 @@ class _HomeState extends State<Home> {
                   const BoxConstraints(maxWidth: AppConstants.maxContentWidth),
               child: Consumer<QuestionStore>(
                 builder: (context, questionStore, child) {
+                  // Always show the questions list - no loading spinner
                   return Column(
                     children: [
                       Expanded(

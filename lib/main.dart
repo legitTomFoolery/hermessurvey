@@ -9,6 +9,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'features/home/data/services/question_store.dart';
 import 'shared/data/services/response_provider.dart';
 import 'shared/data/services/user_service.dart';
+import 'features/auth/logic/auth_cubit.dart';
 import 'firebase_options.dart';
 import 'app/config/app_router.dart';
 import 'app/config/routes.dart';
@@ -60,7 +61,7 @@ Future<void> preloadSVGs(List<String> paths) async {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final AppRouter router;
   final String initialRoute;
 
@@ -69,6 +70,30 @@ class MyApp extends StatelessWidget {
     required this.router,
     required this.initialRoute,
   });
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // App lifecycle handling removed - questions are now handled properly
+    // in the home screen using post-frame callbacks to avoid build conflicts
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +122,9 @@ class MyApp extends StatelessWidget {
             title: AppConstants.appTitle,
             theme: theme,
             darkTheme: darkTheme,
-            onGenerateRoute: router.generateRoute,
+            onGenerateRoute: widget.router.generateRoute,
             debugShowCheckedModeBanner: false,
-            initialRoute: initialRoute,
+            initialRoute: widget.initialRoute,
           ),
         ),
       ),

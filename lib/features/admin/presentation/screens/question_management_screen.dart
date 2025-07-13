@@ -5,6 +5,8 @@ import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/features/admin/presentation/widgets/cards/expandable_question_card.dart';
 import 'package:gsecsurvey/shared/data/services/firestore_service.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/swipe_to_delete_wrapper.dart';
+import 'package:gsecsurvey/shared/utils/helpers/admin_utils.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
 
 class QuestionManagementScreen extends StatefulWidget {
@@ -241,12 +243,24 @@ class _QuestionManagementScreenState extends State<QuestionManagementScreen> {
           } else if (index <= _questions.length) {
             // Existing questions (index - 1 because button takes index 0)
             final question = _questions[index - 1];
-            return ExpandableQuestionCard(
-              question: question,
-              onSave: _loadQuestions,
-              isExpanded: _expandedQuestionId == question.id,
-              onExpanded: () => _onQuestionExpanded(question.id),
-              onCollapsed: _onQuestionCollapsed,
+            return SwipeToDeleteWrapper(
+              dismissibleKey: Key(question.id),
+              deleteDialogTitle: 'Delete Question',
+              deleteDialogContent:
+                  'Are you sure you want to delete the question "${question.name}"? This action cannot be undone.',
+              shouldDisableDismissal: () => _expandedQuestionId != null,
+              onDelete: () async {
+                await FirestoreService.deleteQuestion(question);
+              },
+              onDeleteSuccess: _loadQuestions,
+              successMessage: 'Question deleted successfully',
+              child: ExpandableQuestionCard(
+                question: question,
+                onSave: _loadQuestions,
+                isExpanded: _expandedQuestionId == question.id,
+                onExpanded: () => _onQuestionExpanded(question.id),
+                onCollapsed: _onQuestionCollapsed,
+              ),
             );
           } else {
             // New question card (last item when adding)

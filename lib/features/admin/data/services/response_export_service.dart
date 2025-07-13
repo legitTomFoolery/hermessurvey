@@ -6,6 +6,7 @@ import 'package:excel/excel.dart' as excel_lib;
 import 'package:path_provider/path_provider.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/features/home/data/models/question_model.dart';
 import 'package:gsecsurvey/features/home/data/models/survey_response_model.dart';
 
@@ -17,21 +18,22 @@ class ResponseExportService {
   }) async {
     try {
       // Show loading indicator
+      final theme = AdaptiveTheme.of(context).theme;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Row(
             children: [
               SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white),
+                    strokeWidth: 2, color: theme.colorScheme.onPrimary),
               ),
-              SizedBox(width: 16),
-              Text('Generating Excel file...'),
+              const SizedBox(width: 16),
+              const Text('Generating Excel file...'),
             ],
           ),
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
 
@@ -119,10 +121,11 @@ class ResponseExportService {
       }
     } catch (e) {
       if (context.mounted) {
+        final theme = AdaptiveTheme.of(context).theme;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error exporting to Excel: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: theme.colorScheme.error,
           ),
         );
       }
@@ -165,14 +168,15 @@ class ResponseExportService {
 
           // Show success message with option to share
           if (context.mounted) {
+            final theme = AdaptiveTheme.of(context).theme;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Excel file saved to Downloads: $fileName'),
-                backgroundColor: Colors.green,
+                backgroundColor: theme.colorScheme.inversePrimary,
                 duration: const Duration(seconds: 5),
                 action: SnackBarAction(
                   label: 'Share',
-                  textColor: Colors.white,
+                  textColor: theme.colorScheme.onPrimary,
                   onPressed: () async {
                     try {
                       await Share.shareXFiles(
@@ -206,13 +210,14 @@ class ResponseExportService {
         );
 
         if (context.mounted) {
+          final theme = AdaptiveTheme.of(context).theme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Excel file saved: $fileName'),
-              backgroundColor: Colors.green,
+              backgroundColor: theme.colorScheme.inversePrimary,
               action: SnackBarAction(
                 label: 'OK',
-                textColor: Colors.white,
+                textColor: theme.colorScheme.onPrimary,
                 onPressed: () {},
               ),
             ),
@@ -227,6 +232,8 @@ class ResponseExportService {
     required int responseCount,
     required VoidCallback onExport,
   }) {
+    final theme = AdaptiveTheme.of(context).theme;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -237,24 +244,37 @@ class ResponseExportService {
           children: [
             Text('Export $responseCount filtered responses to Excel?'),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'The export will include all response details and survey answers.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton.icon(
+          // Export button (moved above Cancel button)
+          TextButton.icon(
             onPressed: () {
               Navigator.of(context).pop();
               onExport();
             },
-            icon: const Icon(Icons.download),
-            label: const Text('Export'),
+            style: TextButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+            icon: Icon(Icons.download, color: theme.colorScheme.onPrimary),
+            label: Text('Export',
+                style: TextStyle(color: theme.colorScheme.onPrimary)),
+          ),
+          // Cancel button
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.onSurfaceVariant,
+            ),
+            child: Text('Cancel',
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
           ),
         ],
       ),

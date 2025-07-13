@@ -9,6 +9,7 @@ class QuestionStore extends ChangeNotifier {
 
   List<Question> get questions => List.unmodifiable(_questions);
   bool get isLoading => _isLoading;
+  bool get hasLoaded => _hasLoaded;
 
   void addQuestion(Question question) async {
     await FirestoreService.addQuestion(question);
@@ -23,38 +24,39 @@ class QuestionStore extends ChangeNotifier {
   }
 
   Future<void> fetchQuestionsOnce() async {
-    if (!_hasLoaded && !_isLoading) {
-      _isLoading = true;
-      notifyListeners();
+    if (_isLoading) return;
 
-      try {
-        _questions.clear();
-        final snapshot = await FirestoreService.getQuestionsOnce();
+    _isLoading = true;
+    notifyListeners();
 
-        final List<Question> newQuestions = [];
-        for (var doc in snapshot.docs) {
-          newQuestions.add(doc.data());
-        }
+    try {
+      _questions.clear();
+      final snapshot = await FirestoreService.getQuestionsOnce();
 
-        // Sort questions numerically by the number before the first hyphen
-        newQuestions.sort((a, b) {
-          final aNum = int.tryParse(a.id.split('-').first) ?? 0;
-          final bNum = int.tryParse(b.id.split('-').first) ?? 0;
-          return aNum.compareTo(bNum);
-        });
-
-        // Update questions list
-        _questions
-          ..clear()
-          ..addAll(newQuestions);
-
-        _hasLoaded = true;
-      } catch (e) {
-        _hasLoaded = false;
-      } finally {
-        _isLoading = false;
-        notifyListeners();
+      final List<Question> newQuestions = [];
+      for (var doc in snapshot.docs) {
+        newQuestions.add(doc.data());
       }
+
+      // Sort questions numerically by the number before the first hyphen
+      newQuestions.sort((a, b) {
+        final aNum = int.tryParse(a.id.split('-').first) ?? 0;
+        final bNum = int.tryParse(b.id.split('-').first) ?? 0;
+        return aNum.compareTo(bNum);
+      });
+
+      // Update questions list
+      _questions
+        ..clear()
+        ..addAll(newQuestions);
+
+      _hasLoaded = true;
+    } catch (e) {
+      _hasLoaded = false;
+      _questions.clear();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

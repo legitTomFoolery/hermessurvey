@@ -13,6 +13,7 @@ import 'package:gsecsurvey/features/admin/data/services/response_admin_service.d
 import 'package:gsecsurvey/features/admin/data/services/response_export_service.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_dialogs.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/swipe_to_delete_wrapper.dart';
 
 class ResponseManagementScreen extends StatefulWidget {
   const ResponseManagementScreen({super.key});
@@ -361,79 +362,21 @@ class _ResponseManagementScreenState extends State<ResponseManagementScreen> {
               itemCount: _filteredResponses.length,
               itemBuilder: (context, index) {
                 final response = _filteredResponses[index];
-                return Dismissible(
-                  key: Key(response.id),
-                  dismissThresholds: _expandedResponseId != null
-                      ? const {
-                          DismissDirection.startToEnd: 1.0,
-                          DismissDirection.endToStart: 1.0
-                        }
-                      : const {},
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
-                  secondaryBackground: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
-                  confirmDismiss: (direction) async {
-                    if (_expandedResponseId != null) {
-                      return false;
-                    }
-                    return await CommonDialogs.showDeleteConfirmationDialog(
-                      context: context,
-                      title: 'Delete Response',
-                      content:
-                          'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
-                    );
-                  },
-                  onDismissed: (direction) async {
-                    final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    try {
-                      final success = await ResponseAdminService.deleteResponse(
-                          response.id);
-                      if (success) {
-                        _loadData();
-                        if (mounted) {
-                          scaffoldMessenger.showSnackBar(
-                            const SnackBar(
-                              content: Text('Response deleted successfully'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        }
-                      } else {
-                        if (mounted) {
-                          scaffoldMessenger.showSnackBar(
-                            const SnackBar(
-                              content: Text('Failed to delete response'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
-                    } catch (e) {
-                      if (mounted) {
-                        scaffoldMessenger.showSnackBar(
-                          SnackBar(
-                            content: Text('Error deleting response: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
+                return SwipeToDeleteWrapper(
+                  dismissibleKey: Key(response.id),
+                  deleteDialogTitle: 'Delete Response',
+                  deleteDialogContent:
+                      'Are you sure you want to delete the response from ${response.formattedDate}? This action cannot be undone.',
+                  shouldDisableDismissal: () => _expandedResponseId != null,
+                  onDelete: () async {
+                    final success =
+                        await ResponseAdminService.deleteResponse(response.id);
+                    if (!success) {
+                      throw Exception('Failed to delete response');
                     }
                   },
+                  onDeleteSuccess: _loadData,
+                  successMessage: 'Response deleted successfully',
                   child: ExpandableResponseCard(
                     response: response,
                     questions: _questions,
