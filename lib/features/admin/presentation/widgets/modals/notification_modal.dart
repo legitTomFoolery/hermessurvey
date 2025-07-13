@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
 import 'package:gsecsurvey/shared/data/services/notification_service.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/app_text_form_field.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
@@ -123,38 +124,51 @@ class _NotificationModalState extends State<NotificationModal> {
 
     return AlertDialog(
       title: const Text('Send Custom Notification'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Last notification info
-          Text(
-            _formatLastNotificationTime(),
-            style: TextStyle(
-                fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 16),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Last notification info
+              Text(
+                _formatLastNotificationTime(),
+                style: TextStyle(
+                    fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 12),
 
-          // Web platform warning
-          if (kIsWeb)
-            Text(
-              'Web Platform: Push notifications work best on mobile devices. This will store the notification but may not send push notifications to users.',
-              style: TextStyle(
-                  fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
-            ),
-          if (kIsWeb) const SizedBox(height: 16),
+              // Web platform warning
+              if (kIsWeb)
+                Text(
+                  'Web Platform: Push notifications are intended for mobile devices. This will not send push notifications to users.',
+                  style: TextStyle(
+                      fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
+                ),
+              if (kIsWeb) const SizedBox(height: 12),
 
-          // Message input
-          TextField(
-            controller: _messageController,
-            maxLines: 4,
-            decoration: InputDecoration(
-              hintText: defaultMessage,
-              border: const OutlineInputBorder(),
-              isDense: true,
-            ),
+              // Message input using AppTextFormField for DRY methodology
+              AppTextFormField(
+                controller: _messageController,
+                hint: 'Enter custom message or leave blank for default',
+                validator: (value) =>
+                    null, // No validation needed for this field
+              ),
+              const SizedBox(height: 8),
+
+              // Helper text showing default message
+              Text(
+                'Default: $defaultMessage',
+                style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7)),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       actions: [
         // Send button (matching export modal style)
