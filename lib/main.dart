@@ -9,7 +9,6 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'features/home/data/services/question_store.dart';
 import 'shared/data/services/response_provider.dart';
 import 'shared/data/services/user_service.dart';
-import 'features/auth/logic/auth_cubit.dart';
 import 'firebase_options.dart';
 import 'app/config/app_router.dart';
 import 'app/config/routes.dart';

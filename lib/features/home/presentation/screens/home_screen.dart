@@ -16,6 +16,7 @@ import 'package:gsecsurvey/app/config/routes.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/account_not_exists_popup.dart';
 import 'package:gsecsurvey/features/home/presentation/widgets/question_card.dart';
 import 'package:gsecsurvey/shared/data/services/user_service.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -188,48 +189,44 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          body: Center(
-            child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: AppConstants.maxContentWidth),
-              child: Consumer<QuestionStore>(
-                builder: (context, questionStore, child) {
-                  // Always show the questions list - no loading spinner
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: ListView.builder(
-                            key: const PageStorageKey('question_list'),
-                            itemCount: questionStore.questions.length,
-                            itemBuilder: (context, index) {
-                              final question = questionStore.questions[index];
-                              return QuestionCard(
-                                key: ValueKey(question.id),
-                                question: question,
-                                onResponse: _updateResponse,
-                                initialResponse: responses[question.id],
-                              );
-                            },
-                          ),
+          body: ResponsiveWrapper(
+            child: Consumer<QuestionStore>(
+              builder: (context, questionStore, child) {
+                // Always show the questions list - no loading spinner
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ListView.builder(
+                          key: const PageStorageKey('question_list'),
+                          itemCount: questionStore.questions.length,
+                          itemBuilder: (context, index) {
+                            final question = questionStore.questions[index];
+                            return QuestionCard(
+                              key: ValueKey(question.id),
+                              question: question,
+                              onResponse: _updateResponse,
+                              initialResponse: responses[question.id],
+                            );
+                          },
                         ),
                       ),
-                      Container(
-                        width: double.infinity,
-                        color: theme.colorScheme.secondary,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildProgressBar(theme),
-                            _buildSubmitButton(theme),
-                          ],
-                        ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      color: theme.colorScheme.secondary,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildProgressBar(theme),
+                          _buildSubmitButton(theme),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),

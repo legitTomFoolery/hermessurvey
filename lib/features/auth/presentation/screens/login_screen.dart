@@ -5,6 +5,7 @@ import 'package:flutter_offline/flutter_offline.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/common_widgets.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/no_internet.dart';
 import 'package:gsecsurvey/features/auth/presentation/widgets/login_page_content.dart';
+import 'package:gsecsurvey/shared/presentation/widgets/responsive_wrapper.dart';
 
 /// Login screen with offline connectivity handling
 class LoginScreen extends StatelessWidget {
@@ -17,18 +18,22 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.colorScheme.secondary,
       resizeToAvoidBottomInset: false,
-      body: OfflineBuilder(
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
-          final bool connected = connectivity != ConnectivityResult.none;
-          return connected ? const LoginPageContent() : const BuildNoInternet();
-        },
-        child: CommonWidgets.buildLoadingIndicator(
-          context: context,
-          message: 'Checking connection...',
+      body: ResponsiveWrapper(
+        child: OfflineBuilder(
+          connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+          ) {
+            final bool connected = connectivity != ConnectivityResult.none;
+            return connected
+                ? const LoginPageContent()
+                : const BuildNoInternet();
+          },
+          child: CommonWidgets.buildLoadingIndicator(
+            context: context,
+            message: 'Checking connection...',
+          ),
         ),
       ),
     );

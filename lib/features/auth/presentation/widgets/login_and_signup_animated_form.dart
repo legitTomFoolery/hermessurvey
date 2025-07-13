@@ -2,7 +2,6 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rive/rive.dart';
@@ -71,15 +70,8 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               if (riveHelper.riveArtboard != null)
                 Center(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width > 600
-                        ? MediaQuery.of(context).size.width *
-                            0.8 // 80% of screen width for wider screens
-                        : MediaQuery.of(context)
-                            .size
-                            .width, // 100% for small screens
-                    height: MediaQuery.of(context).size.width > 600
-                        ? 300.h // Larger height for wider screens
-                        : 200.h, // Smaller height for small screens
+                    width: MediaQuery.of(context).size.width,
+                    height: 200.0, // Fixed height regardless of screen size
                     child: Rive(
                       artboard: riveHelper.riveArtboard!,
                       fit: BoxFit.contain,
@@ -89,12 +81,12 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               nameField(),
               emailField(),
               passwordField(),
-              if (widget.isSignUpPage ?? false) Gap(16.h),
+              if (widget.isSignUpPage ?? false) const Gap(16.0),
               passwordConfirmationField(),
               forgetPasswordTextButton(),
               if (widget.isSignUpPage ?? false)
                 PasswordValidations(hasMinLength: hasMinLength),
-              if (widget.isSignUpPage ?? false) Gap(10.h),
+              if (widget.isSignUpPage ?? false) const Gap(10.0),
               loginOrSignUpOrPasswordButton(context),
             ],
           ),
@@ -176,7 +168,7 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
             },
             controller: emailController,
           ),
-          Gap(18.h),
+          const Gap(18.0),
         ],
       );
     }
@@ -276,7 +268,7 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
             },
             controller: nameController,
           ),
-          Gap(18.h),
+          const Gap(18.0),
         ],
       );
     }

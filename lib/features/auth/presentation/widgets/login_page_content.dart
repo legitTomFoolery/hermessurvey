@@ -1,7 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,8 +29,8 @@ class _LoginPageContentState extends State<LoginPageContent> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding:
-            EdgeInsets.only(left: 30.w, right: 30.w, bottom: 15.h, top: 5.h),
+        padding: const EdgeInsets.only(
+            left: 30.0, right: 30.0, bottom: 15.0, top: 5.0),
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: BlocConsumer<AuthCubit, AuthState>(
@@ -42,10 +41,10 @@ class _LoginPageContentState extends State<LoginPageContent> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Gap(10.h),
+                  const Gap(10.0),
                   const LoginHeader(),
                   const LoginForm(),
-                  Gap(15.h),
+                  const Gap(15.0),
                   const LoginFooter(),
                 ],
               );
@@ -202,7 +201,7 @@ class LoginFooter extends StatelessWidget {
     return Column(
       children: [
         const DoNotHaveAccountText(),
-        Gap(20.h),
+        const Gap(20.0),
         const DeleteAccountButton(),
       ],
     );
