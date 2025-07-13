@@ -189,13 +189,13 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          body: ResponsiveWrapper(
-            child: Consumer<QuestionStore>(
-              builder: (context, questionStore, child) {
-                // Always show the questions list - no loading spinner
-                return Column(
-                  children: [
-                    Expanded(
+          body: Consumer<QuestionStore>(
+            builder: (context, questionStore, child) {
+              // Always show the questions list - no loading spinner
+              return Column(
+                children: [
+                  Expanded(
+                    child: ResponsiveWrapper(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: ListView.builder(
@@ -213,21 +213,23 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    Container(
-                      width: double.infinity,
-                      color: theme.colorScheme.secondary,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildProgressBar(theme),
-                          _buildSubmitButton(theme),
-                        ],
-                      ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    color: theme.colorScheme.secondary,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildProgressBar(theme),
+                        ResponsiveWrapper(
+                          child: _buildSubmitButton(theme),
+                        ),
+                      ],
                     ),
-                  ],
-                );
-              },
-            ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -280,8 +282,8 @@ class _HomeState extends State<Home> {
     }
 
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(vertical: AppConstants.defaultSpacing),
+      padding: const EdgeInsets.fromLTRB(
+          5.0, AppConstants.defaultSpacing, 5.0, AppConstants.defaultSpacing),
       child: CommonWidgets.buildElevatedButton(
         context: context,
         text: buttonText,

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
@@ -26,7 +25,6 @@ Future<void> main() async {
 
   // Then initialize other services that may depend on Firebase
   await Future.wait([
-    ScreenUtil.ensureScreenSize(),
     preloadSVGs([AppConstants.googleLogoSvg]),
     setupDependencies(),
   ]);
@@ -96,35 +94,27 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(
-        AppConstants.designWidth,
-        AppConstants.designHeight,
-      ),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (_, child) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider<QuestionStore>(
-            create: (_) => getIt<QuestionStore>(),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<ResponseProvider>(
-            create: (_) => getIt<ResponseProvider>(),
-          ),
-        ],
-        child: AdaptiveTheme(
-          light: AppTheme.lightTheme,
-          dark: AppTheme.darkTheme,
-          initial: AdaptiveThemeMode.system,
-          builder: (theme, darkTheme) => MaterialApp(
-            title: AppConstants.appTitle,
-            theme: theme,
-            darkTheme: darkTheme,
-            onGenerateRoute: widget.router.generateRoute,
-            debugShowCheckedModeBanner: false,
-            initialRoute: widget.initialRoute,
-          ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<QuestionStore>(
+          create: (_) => getIt<QuestionStore>(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider<ResponseProvider>(
+          create: (_) => getIt<ResponseProvider>(),
+        ),
+      ],
+      child: AdaptiveTheme(
+        light: AppTheme.lightTheme,
+        dark: AppTheme.darkTheme,
+        initial: AdaptiveThemeMode.system,
+        builder: (theme, darkTheme) => MaterialApp(
+          title: AppConstants.appTitle,
+          theme: theme,
+          darkTheme: darkTheme,
+          onGenerateRoute: widget.router.generateRoute,
+          debugShowCheckedModeBanner: false,
+          initialRoute: widget.initialRoute,
         ),
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/app/config/app_constants.dart';
 
@@ -48,15 +47,14 @@ class AppTextButton extends StatelessWidget {
         padding: WidgetStateProperty.all<EdgeInsets>(
           EdgeInsets.symmetric(
             horizontal:
-                horizontalPadding?.w ?? AppConstants.buttonHorizontalPadding.w,
-            vertical:
-                verticalPadding?.h ?? AppConstants.buttonVerticalPadding.h,
+                horizontalPadding ?? AppConstants.buttonHorizontalPadding,
+            vertical: verticalPadding ?? AppConstants.buttonVerticalPadding,
           ),
         ),
         fixedSize: WidgetStateProperty.all(
           Size(
-            buttonWidth?.w ?? double.maxFinite,
-            buttonHeight?.h ?? AppConstants.defaultButtonHeight.h,
+            buttonWidth ?? double.maxFinite,
+            buttonHeight ?? AppConstants.defaultButtonHeight,
           ),
         ),
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:gsecsurvey/app/config/app_constants.dart';
 
@@ -33,7 +32,7 @@ class CommonWidgets {
             title,
             style: theme.textTheme.displayLarge?.copyWith(
               color: theme.colorScheme.onPrimary,
-              fontSize: 18.sp,
+              fontSize: 18.0,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -116,7 +115,7 @@ class CommonWidgets {
     if (width != null) {
       return SizedBox(
         width: width,
-        height: height ?? AppConstants.defaultButtonHeight.h,
+        height: height ?? AppConstants.defaultButtonHeight,
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
@@ -140,7 +139,7 @@ class CommonWidgets {
       );
     } else {
       return SizedBox(
-        height: height ?? AppConstants.defaultButtonHeight.h,
+        height: height ?? AppConstants.defaultButtonHeight,
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
@@ -182,8 +181,8 @@ class CommonWidgets {
       style: TextButton.styleFrom(
         foregroundColor: textStyle?.color ?? theme.colorScheme.primary,
         padding: EdgeInsets.symmetric(
-          horizontal: AppConstants.buttonHorizontalPadding.w,
-          vertical: AppConstants.buttonVerticalPadding.h,
+          horizontal: AppConstants.buttonHorizontalPadding,
+          vertical: AppConstants.buttonVerticalPadding,
         ),
       ),
       child: Text(
@@ -219,34 +218,34 @@ class CommonWidgets {
         filled: true,
         fillColor: theme.colorScheme.secondary,
         contentPadding: EdgeInsets.symmetric(
-          horizontal: AppConstants.textFieldHorizontalPadding.w,
-          vertical: AppConstants.textFieldVerticalPadding.h,
+          horizontal: AppConstants.textFieldHorizontalPadding,
+          vertical: AppConstants.textFieldVerticalPadding,
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.surface,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.primary,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.shadow,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: theme.colorScheme.primary,
-            width: AppConstants.textFieldBorderWidth.w,
+            width: AppConstants.textFieldBorderWidth,
           ),
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
@@ -301,7 +300,7 @@ class CommonWidgets {
           children: [
             Icon(
               Icons.error_outline,
-              size: 64.sp,
+              size: 64.0,
               color: theme.colorScheme.primary,
             ),
             const SizedBox(height: AppConstants.defaultSpacing),
@@ -341,7 +340,7 @@ class CommonWidgets {
           children: [
             Icon(
               icon,
-              size: 64.sp,
+              size: 64.0,
               color: theme.colorScheme.shadow,
             ),
             const SizedBox(height: AppConstants.defaultSpacing),

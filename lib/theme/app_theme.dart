@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'colors.dart';
 import 'styles.dart';
 import 'package:gsecsurvey/app/config/app_constants.dart';
@@ -91,27 +90,27 @@ class AppTheme {
   static TextTheme _buildTextTheme(Color primaryText, Color secondaryText) {
     return TextTheme(
       displayLarge: TextStyle(
-        fontSize: 22.sp,
+        fontSize: 22.0,
         fontWeight: FontWeight.w500,
         color: primaryText,
       ),
       headlineLarge: TextStyle(
-        fontSize: 22.sp,
+        fontSize: 22.0,
         fontWeight: FontWeight.w500,
         color: primaryText,
       ),
       titleLarge: TextStyle(
-        fontSize: 20.sp,
+        fontSize: 20.0,
         fontWeight: FontWeight.w500,
         color: primaryText,
       ),
       bodyLarge: TextStyle(
-        fontSize: 16.sp,
+        fontSize: 16.0,
         fontWeight: FontWeight.w400,
         color: primaryText,
       ),
       bodyMedium: TextStyle(
-        fontSize: 14.sp,
+        fontSize: 14.0,
         fontWeight: FontWeight.w400,
         color: secondaryText,
       ),
@@ -126,10 +125,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: AppConstants.buttonHorizontalPadding.w,
-          vertical: AppConstants.buttonVerticalPadding.h,
+          horizontal: AppConstants.buttonHorizontalPadding,
+          vertical: AppConstants.buttonVerticalPadding,
         ),
-        minimumSize: Size(double.infinity, AppConstants.defaultButtonHeight.h),
+        minimumSize: Size(double.infinity, AppConstants.defaultButtonHeight),
       ),
     );
   }
@@ -142,10 +141,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: AppConstants.buttonHorizontalPadding.w,
-          vertical: AppConstants.buttonVerticalPadding.h,
+          horizontal: AppConstants.buttonHorizontalPadding,
+          vertical: AppConstants.buttonVerticalPadding,
         ),
-        minimumSize: Size(double.infinity, AppConstants.defaultButtonHeight.h),
+        minimumSize: Size(double.infinity, AppConstants.defaultButtonHeight),
       ),
     );
   }
@@ -162,42 +161,42 @@ class AppTheme {
       filled: true,
       fillColor: colors,
       contentPadding: EdgeInsets.symmetric(
-        horizontal: AppConstants.textFieldHorizontalPadding.w,
-        vertical: AppConstants.textFieldVerticalPadding.h,
+        horizontal: AppConstants.textFieldHorizontalPadding,
+        vertical: AppConstants.textFieldVerticalPadding,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         borderSide: BorderSide(
           color: borderColor,
-          width: AppConstants.textFieldBorderWidth.w,
+          width: AppConstants.textFieldBorderWidth,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         borderSide: BorderSide(
           color: borderColor,
-          width: AppConstants.textFieldBorderWidth.w,
+          width: AppConstants.textFieldBorderWidth,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         borderSide: BorderSide(
           color: ColorsManager.mainBlue,
-          width: AppConstants.textFieldBorderWidth.w,
+          width: AppConstants.textFieldBorderWidth,
         ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         borderSide: BorderSide(
           color: ColorsManager.coralRed,
-          width: AppConstants.textFieldBorderWidth.w,
+          width: AppConstants.textFieldBorderWidth,
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         borderSide: BorderSide(
           color: ColorsManager.coralRed,
-          width: AppConstants.textFieldBorderWidth.w,
+          width: AppConstants.textFieldBorderWidth,
         ),
       ),
     );
