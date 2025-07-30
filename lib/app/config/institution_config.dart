@@ -83,6 +83,18 @@ class InstitutionConfig {
   static const String defaultNotificationTitle = '$institutionName Survey';
 
   // ============================================================================
+  // EMAIL DOMAIN CONFIGURATION
+  // ============================================================================
+
+  /// Required email domain for user registration (e.g., 'stanford.edu')
+  /// Set to null to allow any email domain
+  static const String? requiredEmailDomain = 'stanford.edu';
+
+  /// Error message shown when user enters email with wrong domain
+  static const String invalidEmailDomainMessage =
+      'Please enter a Stanford email';
+
+  // ============================================================================
   // HELPER METHODS
   // ============================================================================
 
@@ -94,5 +106,23 @@ class InstitutionConfig {
   /// Get a formatted notification message with custom content
   static String getNotificationMessage(String customMessage) {
     return '$institutionName Survey - $customMessage';
+  }
+
+  /// Check if an email domain is valid according to institution requirements
+  static bool isEmailDomainValid(String email) {
+    if (requiredEmailDomain == null) {
+      return true; // No domain restriction
+    }
+    return email
+        .toLowerCase()
+        .endsWith('@${requiredEmailDomain!.toLowerCase()}');
+  }
+
+  /// Get the formatted email domain requirement message
+  static String getEmailDomainErrorMessage() {
+    if (requiredEmailDomain == null) {
+      return 'Please enter a valid email address';
+    }
+    return invalidEmailDomainMessage;
   }
 }

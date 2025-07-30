@@ -14,6 +14,7 @@ import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/app_text_button.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/app_text_form_field.dart';
+import 'package:gsecsurvey/app/config/institution_config.dart';
 import 'password_validations.dart';
 
 // ignore: must_be_immutable
@@ -160,11 +161,11 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
                 return 'Please enter a valid email address';
               }
 
-              // Check if the email ends with @stanford.edu
-              //if (!email.endsWith('@stanford.edu')) {
-              //  riveHelper.addFailController();
-              //  return 'Please enter a Stanford email address';
-              //}
+              // Check if the email domain is valid according to institution requirements
+              if (!InstitutionConfig.isEmailDomainValid(email)) {
+                riveHelper.addFailController();
+                return InstitutionConfig.getEmailDomainErrorMessage();
+              }
             },
             controller: emailController,
           ),
