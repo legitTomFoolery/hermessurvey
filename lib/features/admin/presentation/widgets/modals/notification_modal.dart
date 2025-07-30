@@ -4,6 +4,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 
 import 'package:gsecsurvey/shared/data/services/notification_service.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/app_text_form_field.dart';
+import 'package:gsecsurvey/app/config/institution_config.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
@@ -18,7 +19,7 @@ class _NotificationModalState extends State<NotificationModal> {
   DateTime? _lastNotificationTime;
 
   static const String defaultMessage =
-      "GSEC Survey - This is a reminder to complete your feedback using the feedback evaluation tool.";
+      InstitutionConfig.defaultNotificationMessage;
 
   @override
   void initState() {
@@ -56,7 +57,7 @@ class _NotificationModalState extends State<NotificationModal> {
           : _messageController.text.trim();
 
       final success = await NotificationService.sendCustomNotification(
-        title: 'GSEC Survey',
+        title: InstitutionConfig.defaultNotificationTitle,
         body: message,
       );
 

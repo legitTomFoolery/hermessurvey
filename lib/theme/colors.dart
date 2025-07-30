@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/config/institution_config.dart';
 
 class ColorsManager {
   static const Color mainBlue = Color(0xFF247CFF);
@@ -17,7 +18,7 @@ class ColorsManager {
 }
 
 class LightColors {
-  static const Color primary = ColorsManager.mainBlue;
+  static const Color primary = InstitutionConfig.primaryColor;
   static const Color background = Colors.white;
   static const Color text = Colors.black;
   static const Color secondaryText = ColorsManager.gray;
@@ -33,7 +34,7 @@ class LightColors {
 }
 
 class DarkColors {
-  static const Color primary = ColorsManager.mainBlue;
+  static const Color primary = InstitutionConfig.primaryColor;
   static const Color background = ColorsManager.darkBlue;
   static const Color text = Colors.white;
   static const Color secondaryText = ColorsManager.gray76;

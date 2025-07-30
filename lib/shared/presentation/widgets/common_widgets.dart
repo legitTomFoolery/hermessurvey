@@ -180,7 +180,7 @@ class CommonWidgets {
       onPressed: onPressed,
       style: TextButton.styleFrom(
         foregroundColor: textStyle?.color ?? theme.colorScheme.primary,
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.buttonHorizontalPadding,
           vertical: AppConstants.buttonVerticalPadding,
         ),
@@ -217,7 +217,7 @@ class CommonWidgets {
         isDense: isDense,
         filled: true,
         fillColor: theme.colorScheme.secondary,
-        contentPadding: EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: AppConstants.textFieldHorizontalPadding,
           vertical: AppConstants.textFieldVerticalPadding,
         ),

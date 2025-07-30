@@ -13,6 +13,7 @@ import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/responsive_scroll_wrapper.dart';
+import 'package:gsecsurvey/app/config/institution_config.dart';
 
 /// Main content widget for the login page
 class LoginPageContent extends StatefulWidget {
@@ -44,15 +45,15 @@ class _LoginPageContentState extends State<LoginPageContent> {
                     MediaQuery.of(context).padding.bottom -
                     50.0,
               ),
-              child: Column(
+              child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const LoginHeader(),
-                  const Gap(10.0),
-                  const LoginForm(),
-                  const Gap(15.0),
-                  const LoginFooter(),
+                  LoginHeader(),
+                  Gap(10.0),
+                  LoginForm(),
+                  Gap(15.0),
+                  LoginFooter(),
                 ],
               ),
             );
@@ -177,7 +178,7 @@ class LoginHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'GSEC Survey Login',
+            InstitutionConfig.loginTitle,
             style: TextStyle(
               fontSize: 28,
               color: theme.colorScheme.onSecondary,
@@ -205,11 +206,11 @@ class LoginFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const DoNotHaveAccountText(),
-        const Gap(20.0),
-        const DeleteAccountButton(),
+        DoNotHaveAccountText(),
+        Gap(20.0),
+        DeleteAccountButton(),
       ],
     );
   }

@@ -10,6 +10,7 @@ import 'package:gsecsurvey/shared/utils/helpers/rive_animation_helper.dart';
 import 'package:gsecsurvey/features/auth/logic/auth_cubit.dart';
 import 'package:gsecsurvey/app/config/routes.dart';
 import 'package:gsecsurvey/shared/presentation/widgets/responsive_scroll_wrapper.dart';
+import 'package:gsecsurvey/app/config/institution_config.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -62,7 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'GSEC Survey Signup',
+                  InstitutionConfig.signupTitle,
                   style: TextStyle(
                     fontSize: 28,
                     color: theme.colorScheme.onSecondary,

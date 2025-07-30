@@ -1,8 +1,10 @@
+import 'institution_config.dart';
+
 /// Application-wide constants
 class AppConstants {
   // App Information
-  static const String appTitle = 'GSEC Survey App';
-  static const String appBarTitle = 'Feedback Evaluation Tool';
+  static const String appTitle = InstitutionConfig.appTitle;
+  static const String appBarTitle = InstitutionConfig.appBarTitle;
 
   // Design System
   static const double defaultBorderRadius = 16.0;
@@ -39,9 +41,9 @@ class AppConstants {
   static const String googleLogoSvg = 'assets/svgs/google_logo.svg';
 
   // Text Content
-  static const String appName = 'GSEC Survey';
+  static const String appName = InstitutionConfig.appDisplayName;
   static const String defaultNotificationMessage =
-      'You have a new notification';
+      InstitutionConfig.defaultNotificationMessage;
   static const String noQuestionsFound = 'No questions found';
   static const String submitResponses = 'Submit Responses';
   static const String noInternet = 'No Internet';

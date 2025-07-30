@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
           final bool connected = connectivity != ConnectivityResult.none;
           return connected
               ? const LoginPageContent()
-              : ResponsiveWrapper(child: const BuildNoInternet());
+              : const ResponsiveWrapper(child: BuildNoInternet());
         },
         child: ResponsiveWrapper(
           child: CommonWidgets.buildLoadingIndicator(

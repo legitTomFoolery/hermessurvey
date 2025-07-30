@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 import 'styles.dart';
 import 'package:gsecsurvey/app/config/app_constants.dart';
+import '../app/config/institution_config.dart';
 
 /// Centralized theme configuration for the application
 class AppTheme {
@@ -15,10 +16,10 @@ class AppTheme {
         primaryColor: ColorsManager.mainBlue,
         scaffoldBackgroundColor: ColorsManager.lightShadeOfGray,
         colorScheme: const ColorScheme.light().copyWith(
-          primary: const Color.fromARGB(255, 141, 27, 27),
+          primary: InstitutionConfig.primaryColor,
           secondary: Colors.white,
           tertiary: const Color.fromARGB(255, 188, 188, 188),
-          onPrimary: Colors.white,
+          onPrimary: InstitutionConfig.onPrimaryColor,
           onSecondary: Colors.black,
           surface: const Color.fromARGB(255, 236, 230, 240),
           shadow: const Color.fromARGB(255, 24, 24, 24),
@@ -29,10 +30,10 @@ class AppTheme {
           // Using inversePrimary for success color (green)
           inversePrimary: LightColors.success,
         ),
-        textSelectionTheme: TextSelectionThemeData(
-          cursorColor: const Color.fromARGB(255, 141, 27, 27),
-          selectionColor: const Color.fromARGB(188, 36, 124, 255),
-          selectionHandleColor: const Color.fromARGB(255, 141, 27, 27),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: InstitutionConfig.primaryColor,
+          selectionColor: Color.fromARGB(188, 36, 124, 255),
+          selectionHandleColor: InstitutionConfig.primaryColor,
         ),
         textTheme: _buildTextTheme(LightColors.text, LightColors.secondaryText),
         appBarTheme: AppBarTheme(
@@ -54,10 +55,10 @@ class AppTheme {
         primaryColor: ColorsManager.mainBlue,
         scaffoldBackgroundColor: ColorsManager.darkBlue,
         colorScheme: const ColorScheme.dark().copyWith(
-          primary: const Color.fromARGB(255, 141, 27, 27),
+          primary: InstitutionConfig.primaryColor,
           secondary: Colors.black,
           tertiary: const Color.fromARGB(255, 10, 10, 10),
-          onPrimary: Colors.white,
+          onPrimary: InstitutionConfig.onPrimaryColor,
           onSecondary: Colors.white,
           surface: const Color.fromARGB(255, 42, 41, 47),
           shadow: const Color.fromARGB(255, 171, 171, 171),
@@ -68,10 +69,10 @@ class AppTheme {
           // Using inversePrimary for success color (green)
           inversePrimary: DarkColors.success,
         ),
-        textSelectionTheme: TextSelectionThemeData(
-          cursorColor: const Color.fromARGB(255, 141, 27, 27),
-          selectionColor: const Color.fromARGB(188, 36, 124, 255),
-          selectionHandleColor: const Color.fromARGB(255, 141, 27, 27),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: InstitutionConfig.primaryColor,
+          selectionColor: Color.fromARGB(188, 36, 124, 255),
+          selectionHandleColor: InstitutionConfig.primaryColor,
         ),
         textTheme: _buildTextTheme(DarkColors.text, DarkColors.secondaryText),
         appBarTheme: AppBarTheme(
@@ -124,11 +125,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.buttonHorizontalPadding,
           vertical: AppConstants.buttonVerticalPadding,
         ),
-        minimumSize: Size(double.infinity, AppConstants.defaultButtonHeight),
+        minimumSize:
+            const Size(double.infinity, AppConstants.defaultButtonHeight),
       ),
     );
   }
@@ -140,11 +142,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.buttonHorizontalPadding,
           vertical: AppConstants.buttonVerticalPadding,
         ),
-        minimumSize: Size(double.infinity, AppConstants.defaultButtonHeight),
+        minimumSize:
+            const Size(double.infinity, AppConstants.defaultButtonHeight),
       ),
     );
   }
@@ -160,7 +163,7 @@ class AppTheme {
       isDense: true,
       filled: true,
       fillColor: colors,
-      contentPadding: EdgeInsets.symmetric(
+      contentPadding: const EdgeInsets.symmetric(
         horizontal: AppConstants.textFieldHorizontalPadding,
         vertical: AppConstants.textFieldVerticalPadding,
       ),
@@ -180,21 +183,21 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
           color: ColorsManager.mainBlue,
           width: AppConstants.textFieldBorderWidth,
         ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
           color: ColorsManager.coralRed,
           width: AppConstants.textFieldBorderWidth,
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
           color: ColorsManager.coralRed,
           width: AppConstants.textFieldBorderWidth,
         ),

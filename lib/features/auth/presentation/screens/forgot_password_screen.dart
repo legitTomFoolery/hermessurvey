@@ -93,11 +93,11 @@ class _ForgetScreenState extends State<ForgetScreen> {
                     return previous != current;
                   },
                   builder: (context, state) {
-                    return Column(
+                    return const Column(
                       children: [
-                        const PasswordReset(),
-                        const Gap(24.0),
-                        const AlreadyHaveAccountText(),
+                        PasswordReset(),
+                        Gap(24.0),
+                        AlreadyHaveAccountText(),
                       ],
                     );
                   },

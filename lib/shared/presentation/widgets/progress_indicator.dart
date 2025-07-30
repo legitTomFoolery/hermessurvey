@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:gsecsurvey/theme/colors.dart';
+import 'package:gsecsurvey/app/config/institution_config.dart';
 
 class ProgressIndicaror {
   static showProgressIndicator(BuildContext context) {
@@ -10,7 +10,7 @@ class ProgressIndicaror {
       builder: (context) {
         return const Center(
           child: CircularProgressIndicator(
-            color: ColorsManager.mainBlue,
+            color: InstitutionConfig.primaryColor,
           ),
         );
       },

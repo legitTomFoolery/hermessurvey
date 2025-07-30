@@ -86,13 +86,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    // App lifecycle handling removed - questions are now handled properly
-    // in the home screen using post-frame callbacks to avoid build conflicts
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [

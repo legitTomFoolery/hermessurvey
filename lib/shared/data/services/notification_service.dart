@@ -7,8 +7,8 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:gsecsurvey/app/config/app_constants.dart';
 import 'package:gsecsurvey/app/config/environment_config.dart';
+import 'package:gsecsurvey/app/config/institution_config.dart';
 
 class NotificationService {
   static final FirebaseMessaging _firebaseMessaging =
@@ -131,8 +131,8 @@ class NotificationService {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'gsec_survey_channel',
-      'GSEC Survey Notifications',
-      channelDescription: 'Notifications for GSEC Survey App',
+      InstitutionConfig.notificationChannelName,
+      channelDescription: InstitutionConfig.notificationChannelDescription,
       importance: Importance.max,
       priority: Priority.high,
       showWhen: false,
@@ -152,8 +152,9 @@ class NotificationService {
 
     await _localNotifications.show(
       message.hashCode,
-      message.notification?.title ?? AppConstants.appName,
-      message.notification?.body ?? AppConstants.defaultNotificationMessage,
+      message.notification?.title ?? InstitutionConfig.defaultNotificationTitle,
+      message.notification?.body ??
+          InstitutionConfig.defaultNotificationMessage,
       platformChannelSpecifics,
     );
   }
