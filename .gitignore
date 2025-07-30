@@ -42,5 +42,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Scripting
+# Scripts - ignore entire directory for security (contains sensitive Firebase keys)
 /scripts/
+
+# Firebase service account keys
+assets/service-account-key.json

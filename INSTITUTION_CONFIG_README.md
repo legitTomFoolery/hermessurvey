@@ -135,6 +135,57 @@ The following files automatically use the centralized configuration:
 
 ## Additional Customization
 
+### Rive Animations
+
+The app uses **Rive** animations for enhanced user experience. Rive is a real-time interactive design and animation tool that creates lightweight, interactive animations for apps.
+
+#### What is Rive?
+- **Rive** is a modern animation platform that creates vector-based animations
+- Animations are stored in `.riv` files that are much smaller than video files
+- Supports interactive animations that can respond to user input
+- Provides smooth, scalable animations that work across all screen sizes
+
+#### Headless Bear Animation
+
+The app includes a custom "headless bear" animation located in `assets/animation/`:
+
+- **`headless_bear.riv`** - Main animation file used in the app
+- **`backup_headless_bear.riv`** - Backup version of the animation
+
+**What is the Headless Bear?**
+- A custom mascot animation created specifically for the GSEC Survey App
+- Used as a loading animation and visual element throughout the app
+- Provides a friendly, approachable visual identity
+- The "headless" design is intentionally minimalist and professional
+
+**Where it's used:**
+- Loading screens during data synchronization
+- Transition animations between screens
+- Empty state illustrations
+- Progress indicators
+
+#### Customizing Animations for Your Institution
+
+To replace the headless bear with your own institution's mascot or branding:
+
+1. **Create your animation** in [Rive Editor](https://rive.app/)
+2. **Export as .riv file** from Rive
+3. **Replace the files** in `assets/animation/`:
+   ```
+   assets/animation/
+   ├── your_mascot.riv          # Replace headless_bear.riv
+   └── backup_your_mascot.riv   # Replace backup_headless_bear.riv
+   ```
+4. **Update references** in the code to point to your new animation files
+5. **Test thoroughly** to ensure animations work correctly
+
+**Animation Guidelines:**
+- Keep file size under 500KB for optimal performance
+- Use vector-based graphics for scalability
+- Ensure animations work well on both light and dark themes
+- Test on various screen sizes and orientations
+- Consider accessibility - animations should not be essential for app functionality
+
 ### Package Identifier
 Remember to also update the package identifier in:
 - `android/app/build.gradle` (applicationId)

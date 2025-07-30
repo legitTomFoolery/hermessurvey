@@ -15,7 +15,7 @@ class EnvironmentConfig {
   /// Whether the app is running in development mode
   /// Set this to true to use development collections (with 'dev-' prefix)
   /// Set this to false to use production collections (without prefix)
-  bool _isDevelopment = true;
+  bool _isDevelopment = false;
 
   /// Get the current environment mode
   bool get isDevelopment => _isDevelopment;
