@@ -260,7 +260,7 @@ class _ExpandableResponseCardState extends State<ExpandableResponseCard>
         color: theme.colorScheme.secondary,
         borderRadius: BorderRadius.circular(AppConstants.defaultSpacing),
         border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.2),
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),

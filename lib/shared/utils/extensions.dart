@@ -225,7 +225,7 @@ extension MapExtensions<K, V> on Map<K, V> {
 extension ColorExtensions on Color {
   /// Converts color to hex string
   String get toHex {
-    return '#${(value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+    return '#${(toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
   }
 
   /// Creates a lighter version of the color

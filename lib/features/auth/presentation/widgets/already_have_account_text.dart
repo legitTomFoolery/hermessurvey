@@ -26,7 +26,8 @@ class AlreadyHaveAccountText extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14, // Adjusted font size
                 fontWeight: FontWeight.w400, // Normal weight
-                color: theme.textTheme.displayLarge?.color?.withOpacity(0.6) ??
+                color: theme.textTheme.displayLarge?.color
+                        ?.withValues(alpha: 0.6) ??
                     Colors.grey, // Lighter text color
               ),
             ),

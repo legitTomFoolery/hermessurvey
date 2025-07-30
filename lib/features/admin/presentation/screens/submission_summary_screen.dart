@@ -103,7 +103,7 @@ class _SubmissionSummaryScreenState extends State<SubmissionSummaryScreen> {
                 color: theme.colorScheme.secondary,
                 borderRadius: BorderRadius.circular(8.0),
                 border: Border.all(
-                  color: theme.colorScheme.primary.withOpacity(0.2),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -151,7 +151,7 @@ class _SubmissionSummaryScreenState extends State<SubmissionSummaryScreen> {
                   color: theme.colorScheme.secondary,
                   borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -207,11 +207,12 @@ class _SubmissionSummaryScreenState extends State<SubmissionSummaryScreen> {
                             decoration: BoxDecoration(
                               color: isEven
                                   ? theme.colorScheme.secondary
-                                  : theme.colorScheme.surface.withOpacity(0.3),
+                                  : theme.colorScheme.surface
+                                      .withValues(alpha: 0.3),
                               border: Border(
                                 bottom: BorderSide(
                                   color: theme.colorScheme.primary
-                                      .withOpacity(0.1),
+                                      .withValues(alpha: 0.1),
                                   width: 0.5,
                                 ),
                               ),
@@ -259,11 +260,11 @@ class _SubmissionSummaryScreenState extends State<SubmissionSummaryScreen> {
                                         horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: theme.colorScheme.primary
-                                          .withOpacity(0.1),
+                                          .withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
                                         color: theme.colorScheme.primary
-                                            .withOpacity(0.3),
+                                            .withValues(alpha: 0.3),
                                         width: 1,
                                       ),
                                     ),

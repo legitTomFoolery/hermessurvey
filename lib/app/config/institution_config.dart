@@ -10,16 +10,11 @@ class InstitutionConfig {
   // INSTITUTION IDENTITY
   // ============================================================================
 
-  static const String institutionName = 'UCSF';
-  static const String institutionFullName =
-      'University of California San Francisco';
-  static const Color primaryColor = Color(0xFF003366); // Navy blue
-
   /// Short name of the institution (used in titles and labels)
-  //static const String institutionName = 'GSEC';
+  static const String institutionName = 'GSEC';
 
   /// Full name of the institution
-  //static const String institutionFullName = 'Goodman Surgical Education Center';
+  static const String institutionFullName = 'Goodman Surgical Education Center';
 
   /// Institution affiliation or parent organization
   static const String institutionAffiliation = 'Stanford Medicine';
@@ -44,7 +39,7 @@ class InstitutionConfig {
   // ============================================================================
 
   /// Primary brand color (main color used throughout the app)
-  //static const Color primaryColor = Color.fromARGB(255, 141, 27, 27);
+  static const Color primaryColor = Color.fromARGB(255, 141, 27, 27);
 
   /// Color for text and icons that appear on the primary color
   static const Color onPrimaryColor = Colors.white;
