@@ -88,7 +88,7 @@ class InstitutionConfig {
 
   /// Required email domain for user registration (e.g., 'stanford.edu')
   /// Set to null to allow any email domain
-  static const String? requiredEmailDomain = 'stanford.edu';
+  static const String requiredEmailDomain = 'stanford.edu';
 
   /// Error message shown when user enters email with wrong domain
   static const String invalidEmailDomainMessage =
@@ -110,19 +110,13 @@ class InstitutionConfig {
 
   /// Check if an email domain is valid according to institution requirements
   static bool isEmailDomainValid(String email) {
-    if (requiredEmailDomain == null) {
-      return true; // No domain restriction
-    }
     return email
         .toLowerCase()
-        .endsWith('@${requiredEmailDomain!.toLowerCase()}');
+        .endsWith('@${requiredEmailDomain.toLowerCase()}');
   }
 
   /// Get the formatted email domain requirement message
   static String getEmailDomainErrorMessage() {
-    if (requiredEmailDomain == null) {
-      return 'Please enter a valid email address';
-    }
     return invalidEmailDomainMessage;
   }
 }
