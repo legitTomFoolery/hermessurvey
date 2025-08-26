@@ -47,3 +47,9 @@ app.*.map.json
 
 # Firebase service account keys
 assets/service-account-key.json
+
+# Firebase configuration files (contain sensitive API keys)
+lib/firebase_options.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
